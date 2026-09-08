@@ -97,12 +97,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Configure GMT
-        run: |
-          if [ "$RUNNER_OS" != "Windows" ]; then
-            bash ci/config-gmt-unix.sh
-          else
-            bash ci/config-gmt-windows.sh
-          fi
+        run: bash ci/config-gmt.sh
 
       - name: Compile GMT (Linux/macOS)
         run: |
