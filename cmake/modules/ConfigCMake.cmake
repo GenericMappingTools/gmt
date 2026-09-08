@@ -51,6 +51,11 @@ endif (EXISTS "${CMAKE_BINARY_DIR}/cmake/ConfigUserAdvanced.cmake")
 # Do any needed processing of the configuration variables #
 ###########################################################
 
+# Normalize the installation prefix on Windows (avoid mixing slashed and backslashed).
+if (WIN32)
+	file (TO_CMAKE_PATH "${CMAKE_INSTALL_PREFIX}" CMAKE_INSTALL_PREFIX)
+endif (WIN32)
+
 # Set default build type to 'Release'
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE Release)
