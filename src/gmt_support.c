@@ -12906,33 +12906,26 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	/* Front for the real BC setter; see gmtsupport_poison_pad above for why */
 	int error;
 	bool thin_pad = false;
-	unsigned int k;
+	unsigned int k, pad2[4] = {2U, 2U, 2U, 2U};
 	struct GMT_GRID_HEADER_HIDDEN *HH = (G && G->header) ? gmt_get_H_hidden (G->header) : NULL;
 
-	/* A grid with no pad still needs boundary conditions, and the code that computes them works on a
-	 * padded matrix.  Compute them on a private padded copy and keep only the halo, so that the grid
-	 * itself is never given a pad and its data matrix - which may belong to Julia, Python or MATLAB -
-	 * is never reallocated (issue #4358).
+	/* A grid with no pad still needs boundary conditions, and they are written straight into the
+	 * ghost halo, so give the grid one if it does not have it yet.  No pad is created at any point
+	 * and the data matrix - which may belong to Julia, Python or MATLAB - is never reallocated
+	 * (issue #4358).
 	 *
-	 * This is done in both directions.  On the way out a module hands the caller a grid whose halo
-	 * must describe the data the grid now holds - the gradient, not the relief it was computed from -
-	 * so any halo it still carries is recomputed rather than kept; skipping that left every grid
-	 * produced by one module and sampled by another with no halo at all. */
-	if (HH && G->data && !HH->no_ghost && !HH->no_BC && (direction == GMT_OUT || HH->ghost == NULL) &&
+	 * This runs in both directions.  On the way out a module hands the caller a grid whose halo
+	 * must describe the data the grid now holds - the gradient, not the relief it was computed
+	 * from - and the setter recomputes every side that is not marked as holding real data, so an
+	 * existing halo is refreshed rather than kept.  Skipping the outgoing direction left every
+	 * grid produced by one module and sampled by another with no halo at all. */
+	if (HH && G->data && !HH->no_ghost && !HH->no_BC &&
 	    !(G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) && gmtlib_ghost_wanted (GMT) && !gmtlib_ghost_is_suspended ()) {
 		for (k = 0; !thin_pad && k < 4; k++) if (G->header->pad[k] < 2) thin_pad = true;
-		if (thin_pad) {	/* Too thin for the BC code to work in, so it works in a copy instead */
-			unsigned int pad2[4] = {2U, 2U, 2U, 2U};
-			struct GMT_GRID *P = NULL;
-			/* The copy inherits the halo, so a side that holds real data (GMT_BC_IS_DATA) survives
-			 * the round trip and only the sides the BC code actually sets are recomputed */
-			if ((P = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA)) == NULL) return (GMT_MEMORY_ERROR);
-			gmt_grd_pad_on (GMT, P, pad2);	/* The copy carries the pad that the BC code needs */
-			error = gmtsupport_grd_BC_set (GMT, P, direction);
-			gmtsupport_poison_pad (GMT, P);
-			gmtlib_ghost_from_grid (GMT, G, P);	/* Keep the halo it computed, drop the padded copy */
-			gmt_free_grid (GMT, &P, true);
-			return (error);
+		if (thin_pad && HH->ghost == NULL) {	/* No pad to work in and no halo yet, so attach one */
+			struct GMT_GRID_GHOST *g = gmtlib_ghost_alloc (GMT, G->header, pad2);
+			if (g == NULL) return (GMT_MEMORY_ERROR);
+			HH->ghost = g;
 		}
 	}
 
@@ -12941,8 +12934,16 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	/* With GMT_GHOST_CELLS set we move the halo we just computed out of the data
 	 * matrix, so the rest of the run sees a contiguous pad-less grid (issue #4358). */
 	if (direction == GMT_IN && gmtlib_ghost_wanted (GMT)) gmtlib_ghost_from_pad (GMT, G);
+	if (HH && HH->ghost) HH->ghost->mode = HH->BC[XLO];	/* Remember what kind of halo this now is */
 	return (error);
 }
+
+/* Address a node of the grid or of its boundary halo while the conditions are being computed.
+ * In the padded layout this is &data[gmt_M_ijp (h,row,col)] - exactly what the flat index
+ * arithmetic in this function used to compute by hand - and in the ghost-cell layout it lands
+ * in the halo slabs instead, which is what lets the conditions be written straight into the
+ * halo with no pad anywhere (issue #4358). */
+#define BCN(row,col) (*gmt_grd_node_ptr (G->header, G->data, (int64_t)(row), (int64_t)(col)))
 
 GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction) {
 	/* Set two rows of padding (pad[] can be larger) around data according
@@ -12958,21 +12959,28 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	   not used here.
 
 	   This is the revised, two-rows version (WHFS 6 May 1998).
+
+	   Nodes are addressed by (row,col) through BCN rather than by node number, so that the
+	   halo this fills can be either the pad inside the data matrix or the ghost slabs
+	   outside it (issue #4358).
 	*/
 
-	uint64_t mx;		/* Width of padded array; width as malloc'ed  */
-	uint64_t mxnyp;		/* distance to periodic constraint in j direction  */
-	uint64_t i, jmx;		/* Current i, j * mx  */
-	uint64_t nxp2;		/* 1/2 the xg period (180 degrees) in cells  */
-	uint64_t i180;		/* index to 180 degree phase shift  */
-	uint64_t iw, iwo1, iwo2, iwi1, ie, ieo1, ieo2, iei1;  /* see below  */
-	uint64_t jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
-	uint64_t jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
-	uint64_t j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
-	unsigned int n_skip, n_set;
+	int64_t r, c;		/* Current row, col */
+	int64_t nxp2;		/* 1/2 the xg period (180 degrees) in cells  */
+	int64_t c180;		/* Column 180 degrees away, for the pole phase shift */
+	int64_t col_w, col_wo1, col_wo2, col_wi1;	/* West-most data col, 1st and 2nd col outside, 1st col inside */
+	int64_t col_e, col_eo1, col_eo2, col_ei1;	/* Likewise for the east side */
+	int64_t row_n, row_no1, row_no2, row_ni1;	/* North-most data row, 1st and 2nd row outside, 1st row inside */
+	int64_t row_s, row_so1, row_so2, row_si1;	/* Likewise for the south side */
+	int64_t col_wo1k, col_wo2k, col_eo1k, col_eo2k;	/* Data cols periodic to the boundary cols */
+	int64_t row_no1k, row_no2k, row_so1k, row_so2k;	/* Data rows periodic to the boundary rows */
+	int64_t r1p, r2p;	/* Pole constraint rows for row_no1|row_so1 and row_no2|row_so2 */
+	int64_t phase;		/* Column offset the pole phase shift is measured from; see below */
+	unsigned int i, n_skip, n_set;
 	unsigned int bok;		/* bok used to test that things are OK  */
 	bool set[4] = {true, true, true, true};
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
+	struct GMT_GRID_GHOST *ghost = NULL;
 
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
@@ -12980,6 +12988,7 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) return (GMT_NOERROR);	/* Only set up for real arrays */
 	if (HH->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
 	if (G->data == NULL) return (GMT_NOERROR);	/* Premature call; no grid data yet */
+	ghost = HH->ghost;	/* The halo outside the matrix, or NULL for the legacy padded layout */
 
 	for (i = n_skip = 0; i < 4; i++) {
 		if (HH->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
@@ -12995,8 +13004,13 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 		return (GMT_NOERROR);
 	}
 
-	/* Check that pad is at least 2 */
-	for (i = bok = 0; i < 4; i++) if (G->header->pad[i] < 2) bok++;
+	/* Check that there are two layers of halo to write into, wherever the halo lives */
+	for (i = bok = 0; i < 4; i++) {
+		if (ghost) {
+			if (ghost->pad[i] < 2) bok++;
+		}
+		else if (G->header->pad[i] < 2) bok++;
+	}
 	if (bok > 0) {
 		if (direction == GMT_IN) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Called with a pad < 2; skipped.\n");
 		return (GMT_NOERROR);
@@ -13004,45 +13018,50 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 	/* Initialize stuff:  */
 
-	mx = G->header->mx;
-	nxp2 = HH->nxp / 2;	/* Used for 180 phase shift at poles  */
+	nxp2 = (int64_t)(HH->nxp / 2);	/* Used for 180 phase shift at poles  */
 
-	iw = G->header->pad[XLO];	/* i for west-most data column */
-	iwo1 = iw - 1;		/* 1st column outside west  */
-	iwo2 = iwo1 - 1;	/* 2nd column outside west  */
-	iwi1 = iw + 1;		/* 1st column  inside west  */
+	col_w = 0;			/* West-most data column */
+	col_wo1 = col_w - 1;		/* 1st column outside west  */
+	col_wo2 = col_wo1 - 1;		/* 2nd column outside west  */
+	col_wi1 = col_w + 1;		/* 1st column  inside west  */
 
-	ie = G->header->pad[XLO] + G->header->n_columns - 1;	/* i for east-most data column */
-	ieo1 = ie + 1;		/* 1st column outside east  */
-	ieo2 = ieo1 + 1;	/* 2nd column outside east  */
-	iei1 = ie - 1;		/* 1st column  inside east  */
+	col_e = (int64_t)G->header->n_columns - 1;	/* East-most data column */
+	col_eo1 = col_e + 1;		/* 1st column outside east  */
+	col_eo2 = col_eo1 + 1;		/* 2nd column outside east  */
+	col_ei1 = col_e - 1;		/* 1st column  inside east  */
 
-	jn = mx * G->header->pad[YHI];	/* j*mx for north-most data row  */
-	jno1 = jn - mx;		/* 1st row outside north  */
-	jno2 = jno1 - mx;	/* 2nd row outside north  */
-	jni1 = jn + mx;		/* 1st row  inside north  */
+	row_n = 0;			/* North-most data row */
+	row_no1 = row_n - 1;		/* 1st row outside north  */
+	row_no2 = row_no1 - 1;		/* 2nd row outside north  */
+	row_ni1 = row_n + 1;		/* 1st row  inside north  */
 
-	js = mx * (G->header->pad[YHI] + G->header->n_rows - 1);	/* j*mx for south-most data row  */
-	jso1 = js + mx;		/* 1st row outside south  */
-	jso2 = jso1 + mx;	/* 2nd row outside south  */
-	jsi1 = js - mx;		/* 1st row  inside south  */
+	row_s = (int64_t)G->header->n_rows - 1;	/* South-most data row */
+	row_so1 = row_s + 1;		/* 1st row outside south  */
+	row_so2 = row_so1 + 1;		/* 2nd row outside south  */
+	row_si1 = row_s - 1;		/* 1st row  inside south  */
 
-	mxnyp = mx * HH->nyp;
+	row_no1k = row_no1 + (int64_t)HH->nyp;	/* data rows periodic to boundary rows  */
+	row_no2k = row_no2 + (int64_t)HH->nyp;
+	row_so1k = row_so1 - (int64_t)HH->nyp;
+	row_so2k = row_so2 - (int64_t)HH->nyp;
 
-	jno1k = jno1 + mxnyp;	/* data rows periodic to boundary rows  */
-	jno2k = jno2 + mxnyp;
-	jso1k = jso1 - mxnyp;
-	jso2k = jso2 - mxnyp;
+	col_wo1k = col_wo1 + (int64_t)HH->nxp;	/* data cols periodic to bndry cols  */
+	col_wo2k = col_wo2 + (int64_t)HH->nxp;
+	col_eo1k = col_eo1 - (int64_t)HH->nxp;
+	col_eo2k = col_eo2 - (int64_t)HH->nxp;
 
-	iwo1k = iwo1 + HH->nxp;	/* data cols periodic to bndry cols  */
-	iwo2k = iwo2 + HH->nxp;
-	ieo1k = ieo1 - HH->nxp;
-	ieo2k = ieo2 - HH->nxp;
+	/* The pole phase shift below was computed from the *padded* column index, so it carried
+	 * pad[XLO] into the modulo.  That is reproduced here - with the ghost layout using the
+	 * depth of the halo it stands in for - so that no answer moves.  (The storage layout has
+	 * no business being in that expression: the 180-degree partner of a column does not depend
+	 * on how the grid is padded.  Changing it would move every polar grid, so it is left as it
+	 * was and flagged here instead.) */
+	phase = (int64_t)(ghost ? ghost->pad[XLO] : G->header->pad[XLO]);
 
 	/* Duplicate rows and columns if n_columns or n_rows equals 1 */
 
-	if (G->header->n_columns == 1) for (i = jn+iw; i <= js+iw; i += mx) G->data[i-1] = G->data[i+1] = G->data[i];
-	if (G->header->n_rows == 1) for (i = jn+iw; i <= jn+ie; i++) G->data[i-mx] = G->data[i+mx] = G->data[i];
+	if (G->header->n_columns == 1) for (r = row_n; r <= row_s; r++) BCN(r, col_wo1) = BCN(r, col_wi1) = BCN(r, col_w);
+	if (G->header->n_rows == 1) for (c = col_w; c <= col_e; c++) BCN(row_no1, c) = BCN(row_ni1, c) = BCN(row_n, c);
 
 	/* Check poles for grid case.  It would be nice to have done this
 		in GMT_boundcond_param_prep() but at that point the data
@@ -13054,22 +13073,22 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	if (G->header->registration == GMT_GRID_NODE_REG) {	/* A pole can only be a grid node with gridline registration */
 		if (HH->gn) {	/* North pole case */
 			bok = 0;
-			if (gmt_M_is_fnan (G->data[jn + iw])) {	/* First is NaN so all should be NaN */
-				for (i = iw+1; i <= ie; i++) if (!gmt_M_is_fnan (G->data[jn + i])) bok++;
+			if (gmt_M_is_fnan (BCN(row_n, col_w))) {	/* First is NaN so all should be NaN */
+				for (c = col_w+1; c <= col_e; c++) if (!gmt_M_is_fnan (BCN(row_n, c))) bok++;
 			}
 			else {	/* First is not NaN so all should be identical */
-				for (i = iw+1; i <= ie; i++) if (G->data[jn + i] != G->data[jn + iw]) bok++;
+				for (c = col_w+1; c <= col_e; c++) if (BCN(row_n, c) != BCN(row_n, col_w)) bok++;
 			}
 			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at North pole.\n", bok, G->header->n_columns);
 		}
 
 		if (HH->gs) {	/* South pole case */
 			bok = 0;
-			if (gmt_M_is_fnan (G->data[js + iw])) {	/* First is NaN so all should be NaN */
-				for (i = iw+1; i <= ie; i++) if (!gmt_M_is_fnan (G->data[js + i])) bok++;
+			if (gmt_M_is_fnan (BCN(row_s, col_w))) {	/* First is NaN so all should be NaN */
+				for (c = col_w+1; c <= col_e; c++) if (!gmt_M_is_fnan (BCN(row_s, c))) bok++;
 			}
 			else {	/* First is not NaN so all should be identical */
-				for (i = iw+1; i <= ie; i++) if (G->data[js + i] != G->data[js + iw]) bok++;
+				for (c = col_w+1; c <= col_e; c++) if (BCN(row_s, c) != BCN(row_s, col_w)) bok++;
 			}
 			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South pole.\n", bok, G->header->n_columns);
 		}
@@ -13081,16 +13100,16 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 		if (HH->nyp > 0) {	/* y is periodic  */
 
-			for (i = iw, bok = 0; i <= ie; ++i) {
-				if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
+			for (c = col_w, bok = 0; c <= col_e; ++c) {
+				if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (BCN(row_n, c), BCN(row_s, c)))
 					++bok;
 				if (set[YHI]) {
-					G->data[jno1 + i] = G->data[jno1k + i];
-					G->data[jno2 + i] = G->data[jno2k + i];
+					BCN(row_no1, c) = BCN(row_no1k, c);
+					BCN(row_no2, c) = BCN(row_no2k, c);
 				}
 				if (set[YLO]) {
-					G->data[jso1 + i] = G->data[jso1k + i];
-					G->data[jso2 + i] = G->data[jso2k + i];
+					BCN(row_so1, c) = BCN(row_so1k, c);
+					BCN(row_so2, c) = BCN(row_so2k, c);
 				}
 			}
 			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
@@ -13100,38 +13119,38 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 				Begin with Laplacian = 0, and include 1st outside rows
 				in loop, since y's already loaded to 2nd outside.  */
 
-			for (jmx = jno1; jmx <= jso1; jmx += mx) {
-				if (set[XLO]) G->data[jmx + iwo1] = (gmt_grdfloat)(4.0 * G->data[jmx + iw]) - (G->data[jmx + iw + mx] + G->data[jmx + iw - mx] + G->data[jmx + iwi1]);
-				if (set[XHI]) G->data[jmx + ieo1] = (gmt_grdfloat)(4.0 * G->data[jmx + ie]) - (G->data[jmx + ie + mx] + G->data[jmx + ie - mx] + G->data[jmx + iei1]);
+			for (r = row_no1; r <= row_so1; r++) {
+				if (set[XLO]) BCN(r, col_wo1) = (gmt_grdfloat)(4.0 * BCN(r, col_w)) - (BCN(r+1, col_w) + BCN(r-1, col_w) + BCN(r, col_wi1));
+				if (set[XHI]) BCN(r, col_eo1) = (gmt_grdfloat)(4.0 * BCN(r, col_e)) - (BCN(r+1, col_e) + BCN(r-1, col_e) + BCN(r, col_ei1));
 			}
 
 			/* Copy that result to 2nd outside row using periodicity.  */
 			if (set[XLO]) {
-				G->data[jno2 + iwo1] = G->data[jno2k + iwo1];
-				G->data[jso2 + iwo1] = G->data[jso2k + iwo1];
+				BCN(row_no2, col_wo1) = BCN(row_no2k, col_wo1);
+				BCN(row_so2, col_wo1) = BCN(row_so2k, col_wo1);
 			}
 			if (set[XHI]) {
-				G->data[jno2 + ieo1] = G->data[jno2k + ieo1];
-				G->data[jso2 + ieo1] = G->data[jso2k + ieo1];
+				BCN(row_no2, col_eo1) = BCN(row_no2k, col_eo1);
+				BCN(row_so2, col_eo1) = BCN(row_so2k, col_eo1);
 			}
 
 			/* Now set d[laplacian]/dx = 0 on 2nd outside column.  Include 1st outside rows in loop.  */
-			for (jmx = jno1; jmx <= jso1; jmx += mx) {
-				if (set[XLO]) G->data[jmx + iwo2] = (G->data[jmx + iw - mx] + G->data[jmx + iw + mx] + G->data[jmx + iwi1])
-					- (G->data[jmx + iwo1 - mx] + G->data[jmx + iwo1 + mx]) + (gmt_grdfloat)(5.0 * (G->data[jmx + iwo1] - G->data[jmx + iw]));
-				if (set[XHI]) G->data[jmx + ieo2] = (G->data[jmx + ie - mx] + G->data[jmx + ie + mx] + G->data[jmx + iei1])
-					- (G->data[jmx + ieo1 - mx] + G->data[jmx + ieo1 + mx]) + (gmt_grdfloat)(5.0 * (G->data[jmx + ieo1] - G->data[jmx + ie]));
+			for (r = row_no1; r <= row_so1; r++) {
+				if (set[XLO]) BCN(r, col_wo2) = (BCN(r-1, col_w) + BCN(r+1, col_w) + BCN(r, col_wi1))
+					- (BCN(r-1, col_wo1) + BCN(r+1, col_wo1)) + (gmt_grdfloat)(5.0 * (BCN(r, col_wo1) - BCN(r, col_w)));
+				if (set[XHI]) BCN(r, col_eo2) = (BCN(r-1, col_e) + BCN(r+1, col_e) + BCN(r, col_ei1))
+					- (BCN(r-1, col_eo1) + BCN(r+1, col_eo1)) + (gmt_grdfloat)(5.0 * (BCN(r, col_eo1) - BCN(r, col_e)));
 			}
 
 			/* Now copy that result also, for complete periodicity's sake  */
 			if (set[XLO]) {
-				G->data[jno2 + iwo2] = G->data[jno2k + iwo2];
-				G->data[jso2 + iwo2] = G->data[jso2k + iwo2];
+				BCN(row_no2, col_wo2) = BCN(row_no2k, col_wo2);
+				BCN(row_so2, col_wo2) = BCN(row_so2k, col_wo2);
 				HH->BC[XLO] = GMT_BC_IS_NATURAL;
 			}
 			if (set[XHI]) {
-				G->data[jno2 + ieo2] = G->data[jno2k + ieo2];
-				G->data[jso2 + ieo2] = G->data[jso2k + ieo2];
+				BCN(row_no2, col_eo2) = BCN(row_no2k, col_eo2);
+				BCN(row_so2, col_eo2) = BCN(row_so2k, col_eo2);
 				HH->BC[XHI] = GMT_BC_IS_NATURAL;
 			}
 
@@ -13157,45 +13176,45 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 				but explicitly that d2f/dx2 = 0 and d2f/dy2 = 0.
 				Also set d2f/dxdy = 0.  Then can set remaining points.  */
 
-	/* d2/dx2 */	if (set[XLO]) G->data[jn + iwo1]   = (gmt_grdfloat)(2.0 * G->data[jn + iw] - G->data[jn + iwi1]);
-	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + iw]   = (gmt_grdfloat)(2.0 * G->data[jn + iw] - G->data[jni1 + iw]);
-	/* d2/dxdy */	if (set[XLO] && set[YHI]) G->data[jno1 + iwo1] = G->data[jn + iwo1] + G->data[jno1 + iw] - G->data[jn + iw];
+	/* d2/dx2 */	if (set[XLO]) BCN(row_n, col_wo1)   = (gmt_grdfloat)(2.0 * BCN(row_n, col_w) - BCN(row_n, col_wi1));
+	/* d2/dy2 */	if (set[YHI]) BCN(row_no1, col_w)   = (gmt_grdfloat)(2.0 * BCN(row_n, col_w) - BCN(row_ni1, col_w));
+	/* d2/dxdy */	if (set[XLO] && set[YHI]) BCN(row_no1, col_wo1) = BCN(row_n, col_wo1) + BCN(row_no1, col_w) - BCN(row_n, col_w);
 
-	/* d2/dx2 */	if (set[XHI]) G->data[jn + ieo1]   = (gmt_grdfloat)(2.0 * G->data[jn + ie] - G->data[jn + iei1]);
-	/* d2/dy2 */	if (set[YHI]) G->data[jno1 + ie]   = (gmt_grdfloat)(2.0 * G->data[jn + ie] - G->data[jni1 + ie]);
-	/* d2/dxdy */	if (set[XHI] && set[YHI]) G->data[jno1 + ieo1] = G->data[jn + ieo1] + G->data[jno1 + ie] - G->data[jn + ie];
+	/* d2/dx2 */	if (set[XHI]) BCN(row_n, col_eo1)   = (gmt_grdfloat)(2.0 * BCN(row_n, col_e) - BCN(row_n, col_ei1));
+	/* d2/dy2 */	if (set[YHI]) BCN(row_no1, col_e)   = (gmt_grdfloat)(2.0 * BCN(row_n, col_e) - BCN(row_ni1, col_e));
+	/* d2/dxdy */	if (set[XHI] && set[YHI]) BCN(row_no1, col_eo1) = BCN(row_n, col_eo1) + BCN(row_no1, col_e) - BCN(row_n, col_e);
 
-	/* d2/dx2 */	if (set[XLO]) G->data[js + iwo1]   = (gmt_grdfloat)(2.0 * G->data[js + iw] - G->data[js + iwi1]);
-	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + iw]   = (gmt_grdfloat)(2.0 * G->data[js + iw] - G->data[jsi1 + iw]);
-	/* d2/dxdy */	if (set[XLO] && set[YLO]) G->data[jso1 + iwo1] = G->data[js + iwo1] + G->data[jso1 + iw] - G->data[js + iw];
+	/* d2/dx2 */	if (set[XLO]) BCN(row_s, col_wo1)   = (gmt_grdfloat)(2.0 * BCN(row_s, col_w) - BCN(row_s, col_wi1));
+	/* d2/dy2 */	if (set[YLO]) BCN(row_so1, col_w)   = (gmt_grdfloat)(2.0 * BCN(row_s, col_w) - BCN(row_si1, col_w));
+	/* d2/dxdy */	if (set[XLO] && set[YLO]) BCN(row_so1, col_wo1) = BCN(row_s, col_wo1) + BCN(row_so1, col_w) - BCN(row_s, col_w);
 
-	/* d2/dx2 */	if (set[XHI]) G->data[js + ieo1]   = (gmt_grdfloat)(2.0 * G->data[js + ie] - G->data[js + iei1]);
-	/* d2/dy2 */	if (set[YLO]) G->data[jso1 + ie]   = (gmt_grdfloat)(2.0 * G->data[js + ie] - G->data[jsi1 + ie]);
-	/* d2/dxdy */	if (set[XHI] && set[YLO]) G->data[jso1 + ieo1] = G->data[js + ieo1] + G->data[jso1 + ie] - G->data[js + ie];
+	/* d2/dx2 */	if (set[XHI]) BCN(row_s, col_eo1)   = (gmt_grdfloat)(2.0 * BCN(row_s, col_e) - BCN(row_s, col_ei1));
+	/* d2/dy2 */	if (set[YLO]) BCN(row_so1, col_e)   = (gmt_grdfloat)(2.0 * BCN(row_s, col_e) - BCN(row_si1, col_e));
+	/* d2/dxdy */	if (set[XHI] && set[YLO]) BCN(row_so1, col_eo1) = BCN(row_s, col_eo1) + BCN(row_so1, col_e) - BCN(row_s, col_e);
 
 			/* Now set Laplacian = 0 on interior edge points, skipping corners:  */
-			for (i = iwi1; i <= iei1; i++) {
-				if (set[YHI]) G->data[jno1 + i] = (gmt_grdfloat)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
-				if (set[YLO]) G->data[jso1 + i] = (gmt_grdfloat)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
+			for (c = col_wi1; c <= col_ei1; c++) {
+				if (set[YHI]) BCN(row_no1, c) = (gmt_grdfloat)(4.0 * BCN(row_n, c)) - (BCN(row_n, c-1) + BCN(row_n, c+1) + BCN(row_ni1, c));
+				if (set[YLO]) BCN(row_so1, c) = (gmt_grdfloat)(4.0 * BCN(row_s, c)) - (BCN(row_s, c-1) + BCN(row_s, c+1) + BCN(row_si1, c));
 			}
-			for (jmx = jni1; jmx <= jsi1; jmx += mx) {
-				if (set[XLO]) G->data[iwo1 + jmx] = (gmt_grdfloat)(4.0 * G->data[iw + jmx]) - (G->data[iw + jmx + mx] + G->data[iw + jmx - mx] + G->data[iwi1 + jmx]);
-				if (set[XHI]) G->data[ieo1 + jmx] = (gmt_grdfloat)(4.0 * G->data[ie + jmx]) - (G->data[ie + jmx + mx] + G->data[ie + jmx - mx] + G->data[iei1 + jmx]);
+			for (r = row_ni1; r <= row_si1; r++) {
+				if (set[XLO]) BCN(r, col_wo1) = (gmt_grdfloat)(4.0 * BCN(r, col_w)) - (BCN(r+1, col_w) + BCN(r-1, col_w) + BCN(r, col_wi1));
+				if (set[XHI]) BCN(r, col_eo1) = (gmt_grdfloat)(4.0 * BCN(r, col_e)) - (BCN(r+1, col_e) + BCN(r-1, col_e) + BCN(r, col_ei1));
 			}
 
 			/* Now set d[Laplacian]/dn = 0 on all edge pts, including
 				corners, since the points needed in this are now set.  */
-			for (i = iw; i <= ie; i++) {
-				if (set[YHI]) G->data[jno2 + i] = G->data[jni1 + i] + (gmt_grdfloat)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
-					+ (G->data[jn + i - 1] - G->data[jno1 + i - 1]) + (G->data[jn + i + 1] - G->data[jno1 + i + 1]);
-				if (set[YLO]) G->data[jso2 + i] = G->data[jsi1 + i] + (gmt_grdfloat)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
-					+ (G->data[js + i - 1] - G->data[jso1 + i - 1]) + (G->data[js + i + 1] - G->data[jso1 + i + 1]);
+			for (c = col_w; c <= col_e; c++) {
+				if (set[YHI]) BCN(row_no2, c) = BCN(row_ni1, c) + (gmt_grdfloat)(5.0 * (BCN(row_no1, c) - BCN(row_n, c)))
+					+ (BCN(row_n, c-1) - BCN(row_no1, c-1)) + (BCN(row_n, c+1) - BCN(row_no1, c+1));
+				if (set[YLO]) BCN(row_so2, c) = BCN(row_si1, c) + (gmt_grdfloat)(5.0 * (BCN(row_so1, c) - BCN(row_s, c)))
+					+ (BCN(row_s, c-1) - BCN(row_so1, c-1)) + (BCN(row_s, c+1) - BCN(row_so1, c+1));
 			}
-			for (jmx = jn; jmx <= js; jmx += mx) {
-				if (set[XLO]) G->data[iwo2 + jmx] = G->data[iwi1 + jmx] + (gmt_grdfloat)(5.0 * (G->data[iwo1 + jmx] - G->data[iw + jmx]))
-					+ (G->data[iw + jmx - mx] - G->data[iwo1 + jmx - mx]) + (G->data[iw + jmx + mx] - G->data[iwo1 + jmx + mx]);
-				if (set[XHI]) G->data[ieo2 + jmx] = G->data[iei1 + jmx] + (gmt_grdfloat)(5.0 * (G->data[ieo1 + jmx] - G->data[ie + jmx]))
-					+ (G->data[ie + jmx - mx] - G->data[ieo1 + jmx - mx]) + (G->data[ie + jmx + mx] - G->data[ieo1 + jmx + mx]);
+			for (r = row_n; r <= row_s; r++) {
+				if (set[XLO]) BCN(r, col_wo2) = BCN(r, col_wi1) + (gmt_grdfloat)(5.0 * (BCN(r, col_wo1) - BCN(r, col_w)))
+					+ (BCN(r-1, col_w) - BCN(r-1, col_wo1)) + (BCN(r+1, col_w) - BCN(r+1, col_wo1));
+				if (set[XHI]) BCN(r, col_eo2) = BCN(r, col_ei1) + (gmt_grdfloat)(5.0 * (BCN(r, col_eo1) - BCN(r, col_e)))
+					+ (BCN(r-1, col_e) - BCN(r-1, col_eo1)) + (BCN(r+1, col_e) - BCN(r+1, col_eo1));
 			}
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three corner-most points at each corner.  */
 
@@ -13217,31 +13236,31 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 		bool check_repeat = (G->header->registration == GMT_GRID_NODE_REG && HH->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
 		if (set[XLO]) HH->BC[XLO] = GMT_BC_IS_PERIODIC;
 		if (set[XHI]) HH->BC[XHI] = GMT_BC_IS_PERIODIC;
-		for (jmx = jn, bok = 0; jmx <= js; jmx += mx) {
-			if (check_repeat && !doubleAlmostEqualZero (G->data[jmx+iw], G->data[jmx+ie]))
+		for (r = row_n, bok = 0; r <= row_s; r++) {
+			if (check_repeat && !doubleAlmostEqualZero (BCN(r, col_w), BCN(r, col_e)))
 				++bok;
 			if (set[XLO]) {
-				G->data[iwo1 + jmx] = G->data[iwo1k + jmx];
-				G->data[iwo2 + jmx] = G->data[iwo2k + jmx];
+				BCN(r, col_wo1) = BCN(r, col_wo1k);
+				BCN(r, col_wo2) = BCN(r, col_wo2k);
 			}
 			if (set[XHI]) {
-				G->data[ieo1 + jmx] = G->data[ieo1k + jmx];
-				G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
+				BCN(r, col_eo1) = BCN(r, col_eo1k);
+				BCN(r, col_eo2) = BCN(r, col_eo2k);
 			}
 		}
 		if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->n_rows);
 
 		if (HH->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
-			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
-				if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
+			for (c = col_wo2, bok = 0; c <= col_eo2; ++c) {
+				if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (BCN(row_n, c), BCN(row_s, c)))
 					++bok;
 				if (set[YHI]) {
-					G->data[jno1 + i] = G->data[jno1k + i];
-					G->data[jno2 + i] = G->data[jno2k + i];
+					BCN(row_no1, c) = BCN(row_no1k, c);
+					BCN(row_no2, c) = BCN(row_no2k, c);
 				}
 				if (set[YLO]) {
-					G->data[jso1 + i] = G->data[jso1k + i];
-					G->data[jso2 + i] = G->data[jso2k + i];
+					BCN(row_so1, c) = BCN(row_so1k, c);
+					BCN(row_so2, c) = BCN(row_so2k, c);
 				}
 			}
 			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
@@ -13266,17 +13285,17 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 		if (HH->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {
-				j1p = jn;	/* constraint for jno1  */
-				j2p = jni1;	/* constraint for jno2  */
+				r1p = row_n;		/* constraint for row_no1  */
+				r2p = row_ni1;		/* constraint for row_no2  */
 			}
 			else {
-				j1p = jni1;		/* constraint for jno1  */
-				j2p = jni1 + mx;	/* constraint for jno2  */
+				r1p = row_ni1;		/* constraint for row_no1  */
+				r2p = row_ni1 + 1;	/* constraint for row_no2  */
 			}
-			for (i = iwo2; set[YHI] && i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%HH->nxp);
-				G->data[jno1 + i] = G->data[j1p + i180];
-				G->data[jno2 + i] = G->data[j2p + i180];
+			for (c = col_wo2; set[YHI] && c <= col_eo2; c++) {
+				c180 = (c + phase + nxp2) % (int64_t)HH->nxp;
+				BCN(row_no1, c) = BCN(r1p, c180);
+				BCN(row_no2, c) = BCN(r2p, c180);
 			}
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_GEO;
@@ -13288,22 +13307,22 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 				First do Laplacian.  Start/end loop 1 col outside,
 				then use periodicity to set 2nd col outside.  */
 
-			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
-				G->data[jno1 + i] = (gmt_grdfloat)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
+			for (c = col_wo1; set[YHI] && c <= col_eo1; c++) {
+				BCN(row_no1, c) = (gmt_grdfloat)(4.0 * BCN(row_n, c)) - (BCN(row_n, c-1) + BCN(row_n, c+1) + BCN(row_ni1, c));
 			}
-			if (set[XLO] && set[YHI]) G->data[jno1 + iwo2] = G->data[jno1 + iwo2 + HH->nxp];
-			if (set[XHI] && set[YHI]) G->data[jno1 + ieo2] = G->data[jno1 + ieo2 - HH->nxp];
+			if (set[XLO] && set[YHI]) BCN(row_no1, col_wo2) = BCN(row_no1, col_wo2 + (int64_t)HH->nxp);
+			if (set[XHI] && set[YHI]) BCN(row_no1, col_eo2) = BCN(row_no1, col_eo2 - (int64_t)HH->nxp);
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
 				use periodicity to set 2nd out col after loop.  */
 
-			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
-				G->data[jno2 + i] = G->data[jni1 + i] + (gmt_grdfloat)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
-					+ (G->data[jn + i - 1] - G->data[jno1 + i - 1]) + (G->data[jn + i + 1] - G->data[jno1 + i + 1]);
+			for (c = col_wo1; set[YHI] && c <= col_eo1; c++) {
+				BCN(row_no2, c) = BCN(row_ni1, c) + (gmt_grdfloat)(5.0 * (BCN(row_no1, c) - BCN(row_n, c)))
+					+ (BCN(row_n, c-1) - BCN(row_no1, c-1)) + (BCN(row_n, c+1) - BCN(row_no1, c+1));
 			}
-			if (set[XLO] && set[YHI]) G->data[jno2 + iwo2] = G->data[jno2 + iwo2 + HH->nxp];
-			if (set[XHI] && set[YHI]) G->data[jno2 + ieo2] = G->data[jno2 + ieo2 - HH->nxp];
+			if (set[XLO] && set[YHI]) BCN(row_no2, col_wo2) = BCN(row_no2, col_wo2 + (int64_t)HH->nxp);
+			if (set[XHI] && set[YHI]) BCN(row_no2, col_eo2) = BCN(row_no2, col_eo2 - (int64_t)HH->nxp);
 
 			/* End of X is periodic, north (top) is Natural.  */
 			if (set[YHI]) {
@@ -13316,17 +13335,17 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 		if (HH->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {
-				j1p = js;	/* constraint for jso1  */
-				j2p = jsi1;	/* constraint for jso2  */
+				r1p = row_s;		/* constraint for row_so1  */
+				r2p = row_si1;		/* constraint for row_so2  */
 			}
 			else {
-				j1p = jsi1;		/* constraint for jso1  */
-				j2p = jsi1 - mx;	/* constraint for jso2  */
+				r1p = row_si1;		/* constraint for row_so1  */
+				r2p = row_si1 - 1;	/* constraint for row_so2  */
 			}
-			for (i = iwo2; set[YLO] && i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%HH->nxp);
-				G->data[jso1 + i] = G->data[j1p + i180];
-				G->data[jso2 + i] = G->data[j2p + i180];
+			for (c = col_wo2; set[YLO] && c <= col_eo2; c++) {
+				c180 = (c + phase + nxp2) % (int64_t)HH->nxp;
+				BCN(row_so1, c) = BCN(r1p, c180);
+				BCN(row_so2, c) = BCN(r2p, c180);
 			}
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_GEO;
@@ -13338,22 +13357,25 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 				First do Laplacian.  Start/end loop 1 col outside,
 				then use periodicity to set 2nd col outside.  */
 
-			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
-				G->data[jso1 + i] = (gmt_grdfloat)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
+			for (c = col_wo1; set[YLO] && c <= col_eo1; c++) {
+				BCN(row_so1, c) = (gmt_grdfloat)(4.0 * BCN(row_s, c)) - (BCN(row_s, c-1) + BCN(row_s, c+1) + BCN(row_si1, c));
 			}
-			if (set[XLO] && set[YLO]) G->data[jso1 + iwo2] = G->data[jso1 + iwo2 + HH->nxp];
-			if (set[XHI] && set[YHI]) G->data[jso1 + ieo2] = G->data[jso1 + ieo2 - HH->nxp];
+			if (set[XLO] && set[YLO]) BCN(row_so1, col_wo2) = BCN(row_so1, col_wo2 + (int64_t)HH->nxp);
+			/* NOTE: the test below reads set[YHI], which looks like a slip for set[YLO] in this
+			 * south-side block.  Kept as it stands so that this conversion moves no answer. */
+			if (set[XHI] && set[YHI]) BCN(row_so1, col_eo2) = BCN(row_so1, col_eo2 - (int64_t)HH->nxp);
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
 				use periodicity to set 2nd out col after loop.  */
 
-			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
-				G->data[jso2 + i] = G->data[jsi1 + i] + (gmt_grdfloat)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
-					+ (G->data[js + i - 1] - G->data[jso1 + i - 1]) + (G->data[js + i + 1] - G->data[jso1 + i + 1]);
+			for (c = col_wo1; set[YLO] && c <= col_eo1; c++) {
+				BCN(row_so2, c) = BCN(row_si1, c) + (gmt_grdfloat)(5.0 * (BCN(row_so1, c) - BCN(row_s, c)))
+					+ (BCN(row_s, c-1) - BCN(row_so1, c-1)) + (BCN(row_s, c+1) - BCN(row_so1, c+1));
 			}
-			if (set[XLO] && set[YLO]) G->data[jso2 + iwo2] = G->data[jso2 + iwo2 + HH->nxp];
-			if (set[XHI] && set[YHI]) G->data[jso2 + ieo2] = G->data[jso2 + ieo2 - HH->nxp];
+			if (set[XLO] && set[YLO]) BCN(row_so2, col_wo2) = BCN(row_so2, col_wo2 + (int64_t)HH->nxp);
+			/* NOTE: set[YHI] again, as just above */
+			if (set[XHI] && set[YHI]) BCN(row_so2, col_eo2) = BCN(row_so2, col_eo2 - (int64_t)HH->nxp);
 
 			/* End of X is periodic, south (bottom) is Natural.  */
 			if (set[YLO]) {
@@ -13367,6 +13389,8 @@ GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 		return (GMT_NOERROR);
 	}
 }
+
+#undef BCN
 
 /* Clipper to ensure a byte stays in 0-255 range */
 GMT_LOCAL inline unsigned char gmtsupport_clip_to_byte(int byte) { if (byte < 0) return (0); else if (byte > 255) return (255); else return ((unsigned char)byte);}

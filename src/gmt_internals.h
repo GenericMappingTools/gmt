@@ -118,7 +118,6 @@ EXTERN_MSC void gmtlib_ghost_free (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER 
 EXTERN_MSC int gmtlib_ghost_from_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 EXTERN_MSC int gmtlib_ghost_to_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 EXTERN_MSC int gmtlib_ghost_duplicate (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, struct GMT_GRID_HEADER *from);
-EXTERN_MSC int gmtlib_ghost_from_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *P);
 
 EXTERN_MSC void gmtlib_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned int n_rows, unsigned int *f, double *r, size_t *s, double *t);
 EXTERN_MSC int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, enum GMT_enum_type type, struct GMT_OGR *S);
