@@ -1454,9 +1454,7 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0, pad_mode = 0;
 	uint64_t node, k, kk, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET, ftype2 = GMT_NOTSET;
-	/* Dimensions and increments of the projected grid/image.  These must be declared (and initialized) here at
-	 * function scope: the variable-transparency shortcut below does "goto tr_image", which jumps into the middle
-	 * of the projection block and would skip the initializers of any variables declared inside it. */
+	/* Projected dimensions/increments; declared here since "goto tr_image" below would skip their initializers */
 	int nx_proj = 0, ny_proj = 0;
 	double inc[2] = {0.0, 0.0};
 
