@@ -112,7 +112,7 @@ jobs:
         with:
           arch: x64
 
-      - name: Compile and Install GMT (Windows)
+      - name: Compile GMT (Windows)
         if: runner.os == 'Windows'
         shell: cmd
         run: |
@@ -120,11 +120,8 @@ jobs:
           cd build
           cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build .
-          cmake --build . --target install
-          echo %INSTALLDIR%\bin>> %GITHUB_PATH%
 
-      - name: Install GMT (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Install GMT
         run: |
           cd build
           cmake --build . --target install
