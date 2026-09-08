@@ -155,10 +155,15 @@ Optional Arguments
     - **5** - Records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v` (2-D or 3-D data set).
     - **6** - Records contain *x*, *y*, *z*: successive points along a profile or track
       (2-D data set only). For each pair of consecutive points we derive a gradient
-      constraint at their midpoint, using their separation and z-difference to obtain
-      the gradient magnitude :math:`v` and azimuth (equivalent to format **2**). A data
-      gap or segment header starts a new profile, so no gradient constraint is derived
-      across such a break.
+      constraint at their midpoint, with :math:`v` given by the *z*-difference divided by
+      the separation of the two points and the direction given by the azimuth from the
+      first to the second point; i.e., we build format **2** for you. **Note**: Unlike the
+      other formats, :math:`v` is here a *signed* directional derivative rather than a
+      magnitude, and its unit follows |-Z|: per user unit for **-Z1** but per km for
+      **-Z2** and **-Z3** (**-Z4**, and hence **-Sp** and **-Sq**, is not supported since
+      those distances are cosines). Each segment of the file is treated as a separate
+      profile, so no constraint is derived across a segment boundary; consecutive
+      coincident points are an error.
 
     **Note**: The slope constraints must not be at the same locations as the
     data constraints. That scenario has not yet been implemented.

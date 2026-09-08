@@ -268,8 +268,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "6: x, y, z (2-D only): Successive points along a profile or track.");
 	GMT_Usage (API, -2, "Here, X = (x, y[, z]) is the position vector, V = (Vx, Vy[, Vz]) is the gradient vector. "
 		"For format 6, we derive the gradient constraint at the midpoint of each pair of consecutive points "
-		"in the file, using their separation and z-difference to get the gradient magnitude and azimuth "
-		"(same as format 2). A new profile or track starts whenever a data gap or segment header is found.");
+		"in the file: the slope is dz divided by the point separation and the direction is the azimuth from "
+		"the first to the second point (i.e., we build format 2 for you). The slope is thus signed and is "
+		"per user unit for -Z1 but per km for -Z2|3. Each segment is a separate profile. Not available for -Z4.");
 	GMT_Usage (API, 1, "\n-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]");
 	GMT_Usage (API, -2, "Solve by SVD and control how many eigenvalues to use. Optionally append a directive and value:");
 	GMT_Usage (API, 3, "n: Only use the largest <val> eigenvalues [all].");
@@ -806,7 +807,9 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Option -A: Cannot read file %s!\n", Ctrl->A.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode > 6, "Option -A: format must be in 0-6 range\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode == 6 && Ctrl->dimension != 2, "Option -A: format 6 only applies to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode == 6 && dimension != 2, "Option -A: format 6 only applies to 2-D gridding\n");
+	/* Under -Z4 gmt_distance returns the cosine of the angular distance, so we cannot form dz/ds */
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode == 6 && Ctrl->Z.mode == 4, "Option -A: format 6 cannot be used with -Z4 (or -Sp|-Sq) since those distances are cosines\n");
 	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.history && dimension != 2, "The -C +c+i modifiers only apply to 2-D gridding\n");
@@ -1625,7 +1628,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	double *v = NULL, *s = NULL, *b = NULL, *ssave = NULL;
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
-	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad;
+	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, dz, ds, dlon;
 	double *A = NULL, *A_orig = NULL, r_min, r_max, err_sum = 0.0, var_sum = 0.0;
 	double x0 = 0.0, x1 = 5.0;
 
@@ -1950,12 +1953,28 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			Slp = Din->table[0]->segment[seg];
 			for (row = (Ctrl->A.mode == 6) ? 1 : 0; row < (openmp_int)Slp->n_rows; row++, k++, p++) {
 				if (Ctrl->A.mode == 6) {	/* Derive midpoint, gradient, and azimuth from this and the previous point */
-					double dz = Slp->data[GMT_Z][row] - Slp->data[GMT_Z][row-1];
-					double ds = gmt_distance (GMT, Slp->data[GMT_X][row-1], Slp->data[GMT_Y][row-1], Slp->data[GMT_X][row], Slp->data[GMT_Y][row]);
-					X[p][GMT_X] = 0.5 * (Slp->data[GMT_X][row-1] + Slp->data[GMT_X][row]);
+					dz = Slp->data[GMT_Z][row] - Slp->data[GMT_Z][row-1];
+					ds = gmt_distance (GMT, Slp->data[GMT_X][row-1], Slp->data[GMT_Y][row-1], Slp->data[GMT_X][row], Slp->data[GMT_Y][row]);
+					if (gmt_M_is_zero (ds)) {	/* Coincident points: gradient is undefined and would poison the linear system */
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Points %d and %d in segment %" PRIu64 " of %s are coincident so no gradient can be derived - reconcile these first\n",
+						            (int)row, (int)row-1, seg, Ctrl->A.file);
+						for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
+						gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
+						Return (GMT_DATA_READ_ERROR);
+					}
+					if (check_longitude) {	/* Geographic: must take the short way around so a leg spanning the Dateline gets the right midpoint */
+						gmt_M_set_delta_lon (Slp->data[GMT_X][row-1], Slp->data[GMT_X][row], dlon);
+						X[p][GMT_X] = Slp->data[GMT_X][row-1] + 0.5 * dlon;
+						/* Ensure the midpoint fits the range since the normalization function expects it */
+						if (X[p][GMT_X] < Ctrl->R3.range[XLO] && (X[p][GMT_X] + 360.0) < Ctrl->R3.range[XHI]) X[p][GMT_X] += 360.0;
+						else if (X[p][GMT_X] > Ctrl->R3.range[XHI] && (X[p][GMT_X] - 360.0) > Ctrl->R3.range[XLO]) X[p][GMT_X] -= 360.0;
+					}
+					else
+						X[p][GMT_X] = 0.5 * (Slp->data[GMT_X][row-1] + Slp->data[GMT_X][row]);
 					X[p][GMT_Y] = 0.5 * (Slp->data[GMT_Y][row-1] + Slp->data[GMT_Y][row]);
+					if (Ctrl->W.active) X[p][dimension] = 1.0;	/* Derived constraints carry no uncertainty estimate, so weight them neutrally */
 					az = D2R * gmt_az_backaz (GMT, Slp->data[GMT_X][row-1], Slp->data[GMT_Y][row-1], Slp->data[GMT_X][row], Slp->data[GMT_Y][row], false);
-					obs[p] = gmt_M_is_zero (ds) ? GMT->session.d_NaN : dz / ds;
+					obs[p] = dz / ds;
 					sincos (az, &D[k][GMT_X], &D[k][GMT_Y]);
 				}
 				else {
