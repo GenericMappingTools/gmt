@@ -8528,8 +8528,11 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);
 	struct GMT_GRID *I2 = NULL;
 
-	/* Only input grid MUST have at least 2 rows/cols padding - otherwise we must allocate a temp grid */
-	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
+	/* Only input grid MUST have at least 2 rows/cols padding - otherwise we must allocate a temp grid.
+	 * A grid in the ghost-cell layout carries its halo outside the data matrix and the accessors find
+	 * it there, so it needs neither a pad nor a duplicate; duplicating it would also recompute the
+	 * boundary conditions and thereby discard a halo that holds real data (issue #4358) */
+	if (HH->ghost == NULL && (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2)) {
 		unsigned int def_pad[4], pad2[4] = {2, 2, 2, 2};
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_project: Input grid has insufficient padding - create and work on a duplicate with r row/col pad\n");
 		gmt_M_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Save default pad */
