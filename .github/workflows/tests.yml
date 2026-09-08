@@ -145,7 +145,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Install GMT 
+      - name: Install GMT
         run: |
           cd build
           cmake --build . --target install

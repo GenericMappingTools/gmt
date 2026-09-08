@@ -51,7 +51,7 @@ endif (EXISTS "${CMAKE_BINARY_DIR}/cmake/ConfigUserAdvanced.cmake")
 # Do any needed processing of the configuration variables #
 ###########################################################
 
-# Normalize the installation prefix on Windows (avoid mixing slashed and backslashed).
+# Normalize the installation prefix on Windows (avoid mixing slashes and backslashes).
 if (WIN32)
 	file (TO_CMAKE_PATH "${CMAKE_INSTALL_PREFIX}" CMAKE_INSTALL_PREFIX)
 endif (WIN32)
