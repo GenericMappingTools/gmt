@@ -200,7 +200,7 @@ Get the grid spacing in earth_relief_10m::
 
 To learn about the extreme values and coordinates in the 3-D data cube S362ANI_kmps.nc?vs::
 
-    gmt grdinfo -M S362ANI_kmps.nc?vs
+    gmt grdinfo -M @S362ANI_kmps.nc?vs
 
 **Note**: if you do a subset of a remote tiled file, e.g., earth_relief_01m, you must add |-G|
 so that any missing tiles are first downloaded::
