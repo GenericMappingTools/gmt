@@ -51,7 +51,7 @@ jobs:
       INSTALLDIR: ${{ github.workspace }}/gmt-install-dir
       # disable auto-display of GMT plots
       GMT_END_SHOW: off
-      # Compile only. Used by ci/config-gmt-unix.sh
+      # Compile only. Used by ci/config-gmt.sh
       RUN_TESTS: false
 
     strategy:
@@ -102,7 +102,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Configure GMT
-        run: bash ci/config-gmt-unix.sh
+        run: bash ci/config-gmt.sh
 
       - name: Compile and install GMT
         run: |
