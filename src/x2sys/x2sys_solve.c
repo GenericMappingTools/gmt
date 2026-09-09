@@ -67,15 +67,9 @@
 #define F_IS_DRIFT_T	6	/* Subtract a trend with time from each track */
 #define F_IS_SCALE_OFF	7	/* Apply a scale and offset to the observations for each track */
 
-/* A track's solved offset should be of the same order as the COE scale it is meant to remove.
- * When a model has more than one parameter per track (e.g., -Ed, -Et, -Eh, -Eg, -Ez) but a track's
- * crossings are few and/or poorly distributed, the per-track normal-equation sub-block can be so
- * poorly conditioned that gmt_gaussjordan returns a mathematically valid but physically meaningless
- * solution: crossover residuals stay small (the fit still "closes") while the absolute correction
- * blows up to many times the data's own COE scale, silently destroying the corrected signal instead
- * of fixing it. This is not a singular matrix (no error is raised) so it must be caught after the
- * fact by comparing the size of each solved offset to old_stdev (the pre-correction COE scale). */
-#define X2SYS_SOLVE_UNSTABLE_RATIO	20.0	/* Flag a track offset larger than this many old_stdev's */
+/* Few or clustered crossings leave a track's offset poorly constrained: the fit still closes but the
+ * offset can come back orders of magnitude too large, and the matrix is not singular so nothing errors */
+#define X2SYS_SOLVE_UNSTABLE_RATIO	20.0	/* Offsets exceeding this many old_stdev's are suspect */
 
 struct X2SYS_SOLVE_CTRL {
 	struct X2SYS_SOLVE_In {
@@ -89,8 +83,8 @@ struct X2SYS_SOLVE_CTRL {
 	struct X2SYS_SOLVE_E {	/* -E[+r[<K>]] */
 		bool active;
 		int mode;
-		bool regularize;	/* Ridge-regularize the drift models (d, t) against instability from poorly-conditioned tracks */
-		double K;		/* Trust multiplier: prior belief is |offset| <~ K * (COE st.dev.); smaller K regularizes harder */
+		bool regularize;	/* Ridge-regularize the d|t solve */
+		double K;		/* Trust multiplier: |offset| not expected to exceed K * COE st.dev. */
 	} E;
 	struct X2SYS_SOLVE_T {	/* -T */
 		bool active;
@@ -174,7 +168,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->E.K = 10.0;	/* Default trust multiplier if -E...+r is given without a value */
+	C->E.K = 10.0;	/* Default +r trust multiplier */
 
 	return (C);
 }
@@ -285,7 +279,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 						n_errors++;
 						break;
 				}
-				{	/* Check for an optional +r[<K>] modifier requesting ridge regularization */
+				{	/* Optional +r[<K>] modifier */
 					char *mod = strstr (opt->arg, "+r");
 					if (mod) {
 						Ctrl->E.regularize = true;
@@ -678,7 +672,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		R[i]++;		/* Increase COE count for track i */
 		R[j]++;		/* Increase COE count for track j */
 	}
-	n_cross = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);	/* Keep the raw (uncapped) crossing count per track for later diagnostics */
+	n_cross = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);	/* Raw crossing count, before R[] is capped */
 	for (p = 0; p < n_tracks; p++) n_cross[p] = R[p];
 	for (p = n = 0; p < n_tracks; p++) {	/* For each track, determine R[track], total number of parameters, and the column offsets */
 		(GMT->common.b.active[GMT_IN]) ? sprintf (trk[0], "%" PRIu64, p) : sprintf (trk[0], "%s", trk_list[p]);
@@ -814,13 +808,8 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->E.regularize && n > 0) {
-		/* Ridge-regularize: add a small lambda to the diagonal of the real (non-Lagrange) unknowns
-		 * only, so poorly-conditioned tracks are pulled towards a plain offset instead of being
-		 * free to blow up (see the note on X2SYS_SOLVE_UNSTABLE_RATIO above for why this is needed).
-		 * lambda is scaled to the system's own mean diagonal (not a fixed absolute number) so it
-		 * self-adjusts to whatever COE and weight units this particular dataset happens to use:
-		 * lambda = mean(diag(N)) / K^2, i.e., a track offset has to be backed by roughly 1/K^2 of
-		 * the "typical" track's worth of weighted crossings before it is trusted at face value. */
+		/* Only the real unknowns get lambda; the Lagrange rows must stay exact equality constraints.
+		 * Scaling lambda to the mean diagonal keeps it invariant to the COE and weight units in use */
 		double mean_diag = 0.0, lambda;
 		for (i = 0; i < n; i++) mean_diag += N[i*m+i];
 		mean_diag /= n;
@@ -896,10 +885,6 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		gmt_M_memset (var, N_BASIS, double);	/* Reset all parameters to zero */
 		for (r = 0; r < R[p]; r++) var[r] = a[col_off[p]+r];	/* Just get the first R(p) items; the rest are set to 0 */
 		if (Ctrl->E.mode != F_IS_SCALE && old_stdev > 0.0 && fabs (var[0]) > X2SYS_SOLVE_UNSTABLE_RATIO * old_stdev) {
-			/* This track's solved offset dwarfs the COE scale it is supposed to remove: the crossovers
-			 * for this track were too few and/or too poorly distributed to pin down all its parameters,
-			 * so gmt_gaussjordan returned a valid but useless answer (see the note on X2SYS_SOLVE_UNSTABLE_RATIO
-			 * above). Flag it -- applying this correction will likely corrupt the track, not fix it. */
 			(GMT->common.b.active[GMT_IN]) ? sprintf (trk[0], "%" PRIu64, p) : sprintf (trk[0], "%s", trk_list[p]);
 			GMT_Report (API, GMT_MSG_WARNING,
 				"Track %s: solved offset %.4g is %.0fx the pre-correction COE st.dev. (%.4g), backed by only %" PRIu64 " crossing(s) -- "
