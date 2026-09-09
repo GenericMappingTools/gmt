@@ -63,8 +63,9 @@ cat << EOF > gspline_9_gprofile.txt
 EOF
 
 # Build the format 2 equivalent with mapproject: -Af gives the forward azimuth
-# from the previous point and -G+uk+i the incremental distance in km
-gmt mapproject gspline_9_gprofile.txt -Af -G+uk+i -jf -fg --FORMAT_FLOAT_OUT=%.17g | \
+# from the previous point and -G+uk+i the incremental distance in km.  We need
+# -jf to match -Z2, and -Vq to mute the resulting "-j takes precedence" warning
+gmt mapproject gspline_9_gprofile.txt -Af -G+uk+i -jf -fg -Vq --FORMAT_FLOAT_OUT=%.17g | \
 	$AWK 'NR > 1 {printf "%.17g\t%.17g\t%.17g\t%.17g\n", 0.5*(px+$1), 0.5*(py+$2), ($3-pz)/$5, $4} {px = $1; py = $2; pz = $3}' > gspline_9_gformat2.txt
 
 gmt greenspline gspline_9_gdata.txt -R10/12/20/22 -I0.25 -Sl -Z2 -Agspline_9_gprofile.txt+f6 -Ggspline_9_gmode6.grd -fg
