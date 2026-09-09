@@ -2998,10 +2998,41 @@ GMT_LOCAL int gmtmap_init_polar (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.proj.fwd = &gmtproj_polar;
 	GMT->current.proj.inv = &gmtproj_ipolar;
 	GMT->current.map.is_world = false;	/* There is no wrapping around here */
+	{
+		/* Fix for #7059: the gave_map_width scale-fit normally done in gmtmap_setinfo() rescales
+		 * using the x-extent of the PROJECTED (i.e. already-rotated by +t) bounding box. That
+		 * extent is not rotation-invariant: for a narrow wedge it shrinks toward zero as the
+		 * rotation approaches 90 deg from the wedge's own bisector, which blows the fitted scale
+		 * up (the reported "hang"/huge-PS case with +t90), and even away from that extreme it
+		 * makes the fitted size - and therefore the pole's plotted position - depend on +t at all
+		 * (the reported origin-drift between successive -O overlays at different +t). We compute
+		 * the fit factor using the UNROTATED wedge instead (replicating gmtmap_setinfo()'s factor
+		 * logic here rather than calling it, since we still need one gmtmap_setxy() call below
+		 * using the real, rotated bbox for rect[]/origin[]), so +t only rotates the
+		 * already-correctly-sized plot instead of participating in the sizing. */
+		double xmin0, xmax0, ymin0, ymax0, w, h, factor = 1.0, base_angle_save = GMT->current.proj.p_base_angle;
+		GMT->current.proj.p_base_angle = 0.0;
+		gmtmap_xy_search (GMT, &xmin0, &xmax0, &ymin0, &ymax0, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		GMT->current.proj.p_base_angle = base_angle_save;
+		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[0];
+		w = (xmax0 - xmin0) * GMT->current.proj.scale[GMT_X];
+		h = (ymax0 - ymin0) * GMT->current.proj.scale[GMT_Y];
+		if (GMT->current.proj.gave_map_width == 1) factor = GMT->current.proj.pars[0] / w;
+		else if (GMT->current.proj.gave_map_width == 2) factor = GMT->current.proj.pars[0] / h;
+		else if (GMT->current.proj.gave_map_width == 3) factor = GMT->current.proj.pars[0] / MAX (w, h);
+		else if (GMT->current.proj.gave_map_width == 4) factor = GMT->current.proj.pars[0] / MIN (w, h);
+		GMT->current.proj.scale[GMT_X] *= factor;
+		GMT->current.proj.scale[GMT_Y] *= factor;
+		GMT->current.proj.w_r *= factor;
+	}
 	gmtmap_xy_search (GMT, &xmin, &xmax, &ymin, &ymax, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
-	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[0];
-	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[0]);
+	gmtmap_setxy (GMT, xmin, xmax, ymin, ymax);	/* Derive rect[]/origin[] from the actual rotated bbox, using the now rotation-invariant scale[] */
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &GMT->current.proj.c_x0, &GMT->current.proj.c_y0);
+	if (!GMT->current.proj.flip) {	/* Fix for #7059: anchor plot origin at the pole (r=0) rather than the rotated wedge's bbox min, so -t rotations stay aligned across -O overlays */
+		GMT->current.proj.origin[GMT_X] -= GMT->current.proj.c_x0;
+		GMT->current.proj.origin[GMT_Y] -= GMT->current.proj.c_y0;
+		GMT->current.proj.c_x0 = GMT->current.proj.c_y0 = 0.0;	/* Pole is now exactly at the plot origin */
+	}
 	/* GMT->current.proj.r = 0.5 * GMT->current.proj.rect[XHI]; */
 	GMT->current.proj.r = GMT->current.proj.scale[GMT_Y] * GMT->common.R.wesn[YHI];
 	GMT->current.map.outside = &gmtmap_polar_outside;
@@ -10128,6 +10159,13 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
 	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
+	/* Fix for #7059: for a very thin GMT_POLAR wedge rotated (via +t) so its plot bounding box collapses
+	 * toward zero width or height, the divisions above can round to 0, which silences the crossing-search
+	 * loops in gmtlib_map_latcross/gmtlib_map_loncross entirely (no tick marks or annotations get placed).
+	 * A width/height of exactly 0 has no valid resolution to infer from, so fall back to a minimum step
+	 * count (matches the "> 2 to avoid map-jumps" minimum used elsewhere in this file). */
+	if (GMT->current.map.n_lon_nodes < 2) GMT->current.map.n_lon_nodes = 2;
+	if (GMT->current.map.n_lat_nodes < 2) GMT->current.map.n_lat_nodes = 2;
 
 	error = gmtmap_init_three_D (GMT);
 
