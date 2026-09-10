@@ -48,8 +48,9 @@ jobs:
             channels:
               - conda-forge
               - nodefaults
+          # Older releases can no longer reach the data server mirrors (see #9068)
           create-args: >-
-            gmt=6.5.0
+            gmt>=6.7.0
 
       - name: Download remote data
         run: |
@@ -91,25 +92,29 @@ jobs:
                 @earth_day_01d_p \
                 @earth_night_20m_p \
                 @earth_mask_30s_p"
-          # Use the static server
+          # Use the static server, which puts everything under ~/.gmt/static
           export GMT_DATA_SERVER=static
           # Download remote data multiple times to make sure all are downloaded
           gmt which -Ga $data
           gmt which -Ga $data
           gmt which -Ga $data
           # Download cache files multiple times to make sure all are downloaded
-          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
-          mv ~/.gmt/gmt_data_server.txt ~/.gmt/server/
-          mv ~/.gmt/gmt_hash_server.txt ~/.gmt/server/
           gmt get -Dcache
           gmt get -Dcache
           gmt get -Dcache
-          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
-          mkdir ~/.gmt/static/
-          mv ~/.gmt/server ~/.gmt/static/
-          mv ~/.gmt/cache ~/.gmt/static/
           # check files
           ls -lR ~/.gmt
+
+      # The test jobs only refresh the mtime of the two index files, so an empty or
+      # missing index there makes GMT disable all remote downloads and fail every
+      # test that needs remote data.
+      - name: Check that the cache is complete
+        run: |
+          set -e
+          test -s ~/.gmt/static/gmt_data_server.txt
+          test -s ~/.gmt/static/gmt_hash_server.txt
+          test -d ~/.gmt/static/server
+          test -d ~/.gmt/static/cache
 
       # Upload the downloaded files as artifacts to GitHub
       - name: Upload artifacts to GitHub
@@ -117,6 +122,7 @@ jobs:
         with:
           name: gmt-cache
           path: ~/.gmt/static
+          if-no-files-found: error
 
   coastline_cache:
     name: Cache GSHHG and DCW datasets
