@@ -674,6 +674,8 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Collecting %ld SAC files to plot.\n", n_files);
 
+	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);	/* Clip to map so border-crossing traces don't leak stray pen segments outside the frame */
+
 	for (n = 0; n < (int)n_files; n++) {  /* Loop over all SAC files */
  		GMT_Report (API, GMT_MSG_INFORMATION, "Plotting SAC file %d: %s\n", n, L[n].file);
 
@@ -936,6 +938,8 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 	gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		/* They might not have been released above due to 'continues' */
 	gmt_M_free (GMT, L);
 	gmt_M_free (GMT, Ctrl->In.file);
+
+	gmt_map_clip_off (GMT);
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -Ctrl->D.dx, -Ctrl->D.dy, 0.0, PSL_FWD);	/* Reset shift */
 
