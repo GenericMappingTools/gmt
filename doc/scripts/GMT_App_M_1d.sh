@@ -30,7 +30,7 @@ plot () {
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
 # Here we list all the cmocean cpts:
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep cmocean | awk '{print $1}' | sort > tt.lis
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep cmocean | awk '{print $1}' | LC_ALL=C sort > tt.lis
 
 n=$(cat tt.lis | wc -l)
 # dy is line spacing and y0 is total box height
