@@ -94,14 +94,38 @@ jobs:
                 @earth_mask_30s_p"
           # Use the static server, which puts everything under ~/.gmt/static
           export GMT_DATA_SERVER=static
-          # Download remote data multiple times to make sure all are downloaded
-          gmt which -Ga $data
-          gmt which -Ga $data
-          gmt which -Ga $data
-          # Download cache files multiple times to make sure all are downloaded
-          gmt get -Dcache
-          gmt get -Dcache
-          gmt get -Dcache
+
+          # Neither "gmt which -Ga" nor "gmt get -Dcache" reports a failed download
+          # through its exit status: gmtwhich.c only prints "File ... not found!" and
+          # gmtget.c discards the return value of gmt_download_file_if_not_found(). The
+          # "Check that the cache is complete" step below only looks at directories, so
+          # it would pass on a partially-downloaded tree too. Scan the actual output for
+          # the messages GMT emits on failure and retry, so a transient server hiccup
+          # doesn't produce a silently incomplete cache (note: "shell: bash -l {0}" does
+          # not imply -e, so failures must be propagated explicitly).
+          failures='Unable to obtain remote file|not found!|Remote download is currently deactivated'
+          download() {  # $1: log file, $2...: command to run
+            local log=$1; shift
+            local attempt status
+            for attempt in 1 2 3; do
+              if [ ${attempt} -gt 1 ]; then
+                echo "Some files are still missing; retrying in 60s (attempt ${attempt}/3)."
+                sleep 60
+              fi
+              status=0
+              "$@" > "${log}" 2>&1 || status=$?
+              cat "${log}"
+              [ ${status} -eq 0 ] && ! grep -Eq "${failures}" "${log}" && return 0
+            done
+            echo "::error::Failed to download all files after 3 attempts:"
+            grep -E "${failures}" "${log}" || echo "last exit status: ${status}"
+            return 1
+          }
+
+          # Download remote data
+          download data.log gmt which -Ga $data || exit 1
+          # Download cache files
+          download cache.log gmt get -Dcache || exit 1
           # check files
           ls -lR ~/.gmt
 
