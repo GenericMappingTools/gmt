@@ -184,7 +184,6 @@ EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 
 EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	int error = GMT_NOERROR;
-	unsigned int first = 0;
 	bool missing = false;
 	char *datasets = NULL, *c = NULL, file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 
@@ -282,16 +281,14 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				else {
 					if (API->remote_info[k].tile_size > 0.0) {	/* Must obtain all tiles */
 						char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles, NULL);
-						for (t = 0; t < n_tiles; t++) {
-							first = gmt_download_file_if_not_found (GMT, list[t], GMT_AUTO_DIR);
-							if (gmt_getdatapath (GMT, &list[t][first], path, R_OK) == NULL) missing = true;
-						}
+						for (t = 0; t < n_tiles; t++)
+							gmt_download_file_if_not_found (GMT, list[t], GMT_AUTO_DIR);
 						gmt_free_list (GMT, list, n_tiles);
 					}
 					else {
 						sprintf (file, "@%s", API->remote_info[k].file);
-						first = gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
-						if (gmt_getdatapath (GMT, &file[first], path, R_OK) == NULL) missing = true;
+						gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
+						if (gmt_getdatapath (GMT, &file[1], path, R_OK) == NULL) missing = true;
 					}
 				}
 			}
@@ -319,8 +316,8 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			fgets (line, GMT_LEN256, fp);	/* Skip first record with record count */
 			while (fscanf (fp, "%s %*s %*s", line) == 1) {
 				sprintf (file, "@%s", line);
-				first = gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
-				if (gmt_getdatapath (GMT, &file[first], path, R_OK) == NULL) missing = true;
+				gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
+				if (gmt_getdatapath (GMT, &file[1], path, R_OK) == NULL) missing = true;
 			}
 			fclose (fp);
 		}
