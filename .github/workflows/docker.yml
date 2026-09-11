@@ -29,6 +29,9 @@ jobs:
   changes:
     name: Detect relevant changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read  # required by dorny/paths-filter on pull_request events
     outputs:
       relevant: ${{ steps.filter.outputs.relevant }}
     steps:
