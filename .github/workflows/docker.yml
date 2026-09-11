@@ -10,19 +10,7 @@ on:
     branches:
       - master
       - 6.[0-9]+
-    paths:
-      - 'ci/**'
-      - 'cmake/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/docker.yml'
   pull_request:
-    paths:
-      - 'ci/**'
-      - 'cmake/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/docker.yml'
   workflow_dispatch:
 
 defaults:
@@ -38,8 +26,30 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
+  changes:
+    name: Detect relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      relevant: ${{ steps.filter.outputs.relevant }}
+    steps:
+      # paths-filter needs a checkout for push events; on PRs it uses the API
+      - uses: actions/checkout@v6.0.2
+
+      - uses: dorny/paths-filter@v4.0.3
+        id: filter
+        with:
+          filters: |
+            relevant:
+              - 'ci/**'
+              - 'cmake/**'
+              - 'src/**'
+              - '**/CMakeLists.txt'
+              - '.github/workflows/docker.yml'
+
   docker:
     name: ${{ matrix.image }}
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.image }}
