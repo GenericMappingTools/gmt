@@ -184,7 +184,9 @@ EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 
 EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	int error = GMT_NOERROR;
-	char *datasets = NULL, *c = NULL, file[PATH_MAX] = {""};
+	unsigned int first = 0;
+	bool missing = false;
+	char *datasets = NULL, *c = NULL, file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 
 	struct GMTGET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -280,13 +282,16 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				else {
 					if (API->remote_info[k].tile_size > 0.0) {	/* Must obtain all tiles */
 						char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles, NULL);
-						for (t = 0; t < n_tiles; t++)
-							gmt_download_file_if_not_found (GMT, list[t], GMT_AUTO_DIR);
+						for (t = 0; t < n_tiles; t++) {
+							first = gmt_download_file_if_not_found (GMT, list[t], GMT_AUTO_DIR);
+							if (gmt_getdatapath (GMT, &list[t][first], path, R_OK) == NULL) missing = true;
+						}
 						gmt_free_list (GMT, list, n_tiles);
 					}
 					else {
 						sprintf (file, "@%s", API->remote_info[k].file);
-						gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
+						first = gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
+						if (gmt_getdatapath (GMT, &file[first], path, R_OK) == NULL) missing = true;
 					}
 				}
 			}
@@ -314,11 +319,12 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			fgets (line, GMT_LEN256, fp);	/* Skip first record with record count */
 			while (fscanf (fp, "%s %*s %*s", line) == 1) {
 				sprintf (file, "@%s", line);
-				gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
+				first = gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
+				if (gmt_getdatapath (GMT, &file[first], path, R_OK) == NULL) missing = true;
 			}
 			fclose (fp);
 		}
-		Return (GMT_NOERROR);
+		Return (missing ? GMT_FILE_NOT_FOUND : GMT_NOERROR);
 	}
 
 	/* Read the supplied default file or the users defaults to override system settings */
