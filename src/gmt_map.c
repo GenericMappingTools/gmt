@@ -5330,6 +5330,14 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 			GMT->current.proj.inv = &gmt_proj4_inv;
 			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.proj4_scl;
 			GMT->current.map.n_lon_nodes = 360;	GMT->current.map.n_lat_nodes = 180;
+			if (GMT->current.proj.projection == GMT_PROJ4_EQEARTH) {	/* Need the central meridian and world status as for the GMT pseudo-cylindricals */
+				char *pch = strstr(GMT->common.J.proj4string, "+lon_0=");
+				GMT->current.proj.central_meridian = (pch) ? atof(&pch[7]) : 0.0;
+				GMT->current.map.is_world = gmt_M_360_range(GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+				/* Must be in place before the xy search below since those wrap the GDAL transforms to honor the central meridian */
+				GMT->current.proj.fwd = &gmtproj_proj4_pcyl_fwd;
+				GMT->current.proj.inv = &gmtproj_proj4_pcyl_inv;
+			}
 			if (GMT->common.R.oblique) {
 				gmt_proj4_fwd(GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 				gmt_proj4_fwd(GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
@@ -5347,8 +5355,17 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 				GMT->current.map.crossing = &gmtmap_wesn_crossing;
 				GMT->current.map.overlap = &gmtmap_wesn_overlap;
 				GMT->current.map.clip = &gmt_map_wesn_clip;
-				GMT->current.map.left_edge = &gmtmap_left_rect;
-				GMT->current.map.right_edge = &gmtmap_right_rect;
+				if (GMT->current.proj.projection == GMT_PROJ4_EQEARTH) {	/* Pseudo-cylindrical, so curved W/E boundaries as in Robinson */
+					GMT->current.map.left_edge = &gmtproj_left_proj4_pcyl;
+					GMT->current.map.right_edge = &gmtproj_right_proj4_pcyl;
+					GMT->current.map.parallel_straight = 1;	/* Parallels are straight horizontal lines */
+					/* Unless MAP_ANNOT_OBLIQUE is set manually, we must add normal ticks for this pole-is-line projection */
+					if (!GMT->current.setting.map_annot_oblique_set) GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_NORMAL_TICKS;
+				}
+				else {
+					GMT->current.map.left_edge = &gmtmap_left_rect;
+					GMT->current.map.right_edge = &gmtmap_right_rect;
+				}
 				GMT->current.map.frame.horizontal = 2;
 			}
 			gmtmap_setinfo(GMT, xmin, xmax, ymin, ymax, GMT->current.proj.proj4_scl);
@@ -5367,6 +5384,11 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 	/* Now we only have to replace the pointers to the FWD and INV transform functions */
 	GMT->current.proj.fwd = &gmt_proj4_fwd;
 	GMT->current.proj.inv = &gmt_proj4_inv;
+	if (GMT->current.proj.projection == GMT_PROJ4_EQEARTH) {	/* So that the frame/annotation/gridline machinery recognizes this projection */
+		GMT->current.proj.projection_GMT = GMT->current.proj.projection;
+		GMT->current.proj.fwd = &gmtproj_proj4_pcyl_fwd;	/* These wrap the GDAL transforms to honor the central meridian */
+		GMT->current.proj.inv = &gmtproj_proj4_pcyl_inv;
+	}
 	return error;
 }
 
@@ -7657,6 +7679,7 @@ double gmt_half_map_width (struct GMT_CTRL *GMT, double y) {
 		case GMT_ROBINSON:
 		case GMT_ECKERT4:
 		case GMT_ECKERT6:
+		case GMT_PROJ4_EQEARTH:
 			if (!GMT->common.R.oblique && GMT->current.map.is_world)
 				half_width = gmtlib_right_boundary (GMT, y) - GMT->current.map.half_width;
 			else
@@ -9102,6 +9125,9 @@ uint64_t gmt_map_clip_path(struct GMT_CTRL *GMT, double **x, double **y, bool *d
 			case GMT_PROJ4_SPILHAUS:
 				np = 4;
 				break;
+			case GMT_PROJ4_EQEARTH:	/* Pseudo-cylindrical: curved W/E boundaries, straight N/S, as for Robinson */
+				np = 2 * GMT->current.map.n_lat_nodes + 2;
+				break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad case in gmt_map_clip_path (%d)\n", GMT->current.proj.projection_GMT);
 				np = 0;
@@ -9235,6 +9261,7 @@ uint64_t gmt_map_clip_path(struct GMT_CTRL *GMT, double **x, double **y, bool *d
 			case GMT_MOLLWEIDE:
 			case GMT_SINUSOIDAL:
 			case GMT_ROBINSON:
+			case GMT_PROJ4_EQEARTH:
 				for (i = j = 0; i <= GMT->current.map.n_lat_nodes; i++, j++) {	/* Right */
 					lat = (i == GMT->current.map.n_lat_nodes) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat;
 					gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], lat, &work_x[j], &work_y[j]);
