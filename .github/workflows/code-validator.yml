@@ -14,24 +14,35 @@ on:
     branches:
       - master
       - '[0-9]+.[0-9]+'
-    paths:
-      - 'src/**'
-      - 'cmake/**'
-      - '**/*.sh'
-      - '.github/workflows/code-validator.yml'
   pull_request:
-    paths:
-      - 'src/**'
-      - 'cmake/**'
-      - '**/*.sh'
-      - '.github/workflows/code-validator.yml'
   workflow_dispatch:
 
 name: Code Validator
 
 jobs:
+  changes:
+    name: Detect relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      relevant: ${{ steps.filter.outputs.relevant }}
+    steps:
+      # paths-filter needs a checkout for push events; on PRs it uses the API
+      - uses: actions/checkout@v6.0.2
+
+      - uses: dorny/paths-filter@v4.0.3
+        id: filter
+        with:
+          filters: |
+            relevant:
+              - 'src/**'
+              - 'cmake/**'
+              - '**/*.sh'
+              - '.github/workflows/code-validator.yml'
+
   code-validator:
     name: Code Validator
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
