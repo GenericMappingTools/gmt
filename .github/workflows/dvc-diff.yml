@@ -40,8 +40,7 @@ jobs:
         DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
       run: |
         dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-        dvc pull --remote origin --no-run-cache
-        dvc pull --remote origin --no-run-cache
+        dvc pull --remote origin --no-run-cache || dvc pull --remote origin --no-run-cache
 
     - name: Download DVC cache from GitHub Artifacts and restore baseline image data
       if: steps.dvc-pull.outcome == 'failure'
@@ -111,12 +110,7 @@ jobs:
         rm -r test/baseline/**/*.ps doc/examples/images/*.ps doc/scripts/images/*.ps
         # Restore images for the master branch, using the DVC remote when available.
         git checkout master
-        if ! dvc pull --remote origin --no-run-cache; then
-          dvc checkout --force
-        fi
-        if ! dvc pull --remote origin --no-run-cache; then
-          dvc checkout --force
-        fi
+        dvc pull --remote origin --no-run-cache || dvc pull --remote origin --no-run-cache || dvc checkout --force
 
         # Append each image to the markdown report
         echo -e "## Image diff(s)\n" >> report.md

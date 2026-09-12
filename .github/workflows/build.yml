@@ -8,19 +8,7 @@ on:
     branches:
       - master
       - 6.[0-9]+
-    paths:
-      - 'ci/**'
-      - 'cmake/**'
-      - 'src/**'
-      - '**/CMakeLists.txt'
-      - '.github/workflows/build.yml'
   pull_request:
-    paths:
-      - 'ci/**'
-      - 'cmake/**'
-      - 'src/**'
-      - 'CMakeLists.txt'
-      - '.github/workflows/build.yml'
   workflow_dispatch:
 
 defaults:
@@ -33,8 +21,30 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
+  changes:
+    name: Detect relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      relevant: ${{ steps.filter.outputs.relevant }}
+    steps:
+      # paths-filter needs a checkout for push events; on PRs it uses the API
+      - uses: actions/checkout@v6.0.2
+
+      - uses: dorny/paths-filter@v4.0.3
+        id: filter
+        with:
+          filters: |
+            relevant:
+              - 'ci/**'
+              - 'cmake/**'
+              - 'src/**'
+              - '**/CMakeLists.txt'
+              - '.github/workflows/build.yml'
+
   build:
     name: ${{ matrix.name }}
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ${{ matrix.os }}
 
     env:
@@ -91,12 +101,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Configure GMT
-        run: |
-          if [ "$RUNNER_OS" != "Windows" ]; then
-            bash ci/config-gmt-unix.sh
-          else
-            bash ci/config-gmt-windows.sh
-          fi
+        run: bash ci/config-gmt.sh
 
       - name: Compile GMT (Linux/macOS)
         run: |
@@ -112,24 +117,16 @@ jobs:
         with:
           arch: x64
 
-      - name: Compile and Install GMT (Windows)
+      - name: Compile GMT (Windows)
         if: runner.os == 'Windows'
         shell: cmd
         run: |
           mkdir build
           cd build
-          setlocal enabledelayedexpansion
-          set "INSTALLDIR=%INSTALLDIR:\=/%"
-          set "WINVCPKGROOT=%VCPKG_INSTALLATION_ROOT:/=\%"
-          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=!WINVCPKGROOT!\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build .
-          cmake --build . --target install
-          set "WININSTALLDIR=!INSTALLDIR:/=\!"
-          echo !WININSTALLDIR!\bin>> %GITHUB_PATH%
-          endlocal
 
-      - name: Install GMT (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Install GMT
         run: |
           cd build
           cmake --build . --target install
@@ -145,9 +142,7 @@ jobs:
 
       - name: Check a few simple commands
         shell: bash
-        run: |
-          export PATH="$INSTALLDIR/bin:$PATH"
-          bash ci/simple-gmt-tests.sh
+        run: bash ci/simple-gmt-tests.sh
 
       - name: Check a few simple commands (Windows)
         shell: cmd
