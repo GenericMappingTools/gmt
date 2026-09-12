@@ -163,10 +163,6 @@ jobs:
       - name: Download cached GMT remote data from GitHub Artifacts
         run: |
           gh run download -n gmt-cache -D ~/.gmt/static/
-          # Show what we actually got: gh prints nothing, so a short or empty download is
-          # invisible here and only surfaces much later as many failing tests. In particular
-          # gmt_data_server.txt must be present and non-empty, since the touch below would
-          # otherwise create it empty and GMT deletes an index file it cannot parse.
           ls -l ~/.gmt/static/ || true
           ls -l ~/.gmt/static/server/ || true
           touch ~/.gmt/static/gmt_data_server.txt ~/.gmt/static/gmt_hash_server.txt
