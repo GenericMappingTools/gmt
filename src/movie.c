@@ -1746,8 +1746,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
 				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
-					fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
 					if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
+					fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
 					gmt_set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
 					fprintf (fp, "\tgmt figure movie_background ps\n");
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
@@ -1923,8 +1923,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_POSTFLIGHT].fp)) {	/* Read the foreground script and copy to postflight script with some exceptions */
 				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert gmt figure after this line */
-					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 					if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
+					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 					gmt_set_comment (fp, Ctrl->In.mode, "\tSet fixed foreground output ps name");
 					fprintf (fp, "\tgmt figure movie_foreground ps\n");
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
@@ -2084,8 +2084,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else {	/* Read the title script */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->E.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
-					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 					if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
+					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 					gmt_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 					fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
@@ -2414,8 +2414,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				}
 				while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->E.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 					if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
-						fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 						if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
+						fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 						gmt_set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
 						fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 						fprintf (fp, " %s", extra);
@@ -2440,8 +2440,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else {	/* Process main script */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the mainscript and copy to loop script, with some exceptions */
 				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
-					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 					if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
+					fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 					gmt_set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
 					fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 					fprintf (fp, " %s", extra);
@@ -2604,8 +2604,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	fprintf (fp, "cd %s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"));		/* cd to the temp directory */
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 		if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
-			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 			if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
+			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 			gmt_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 			fprintf (fp, "\tgmt figure ../%s %s", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
 			fprintf (fp, " E%s,%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
