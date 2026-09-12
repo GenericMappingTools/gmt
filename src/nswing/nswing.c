@@ -1115,9 +1115,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	int     writeLevel = 0;              /* If save grids, will hold the saving level (when nesting) */
 	int     i, j, k, n;
-	int     grn = 0, cumint = 0, decimate_max = 1, iprc, r_bin_b, r_bin_f, r_bin_mM, r_bin_mN;
+	int     grn = 0, cumint = 0, decimate_max = 1, iprc;
 	int     error = 0;
-	bool    w_bin = true, cumpt = false, do_2Dgrids = false, do_maxs = false, mareg_xy = false;
+	bool    cumpt = false, do_2Dgrids = false, do_maxs = false, mareg_xy = false;
 	double  mareg_x = 0, mareg_y = 0;
 	bool    out_energy = false, max_energy = false, out_power = false, max_power = false;
 	bool    first_anuga_time = true, out_sww = false, out_most = false, out_3D = false;
@@ -1129,7 +1129,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	bool    out_oranges_nc = false;      /* For when tracers in output are written in netCDF */
 	bool    do_HotStart = false;         /* For when doing a Hot Start */
 	int     n_arg_no_char = 0;
-	int     ncid, ncid_most[3], z_id = -1, ids[13], ids_ha[6], ids_ua[6], ids_va[6], ids_most[3];
+	int     ncid, ncid_most[3], ids[13], ids_ha[6], ids_ua[6], ids_va[6], ids_most[3];
 	int     ncid_3D[3], ids_z[10], ids_3D[4], ncid_Mar, ids_Mar[8];
 	int     n_of_cycles = 1010;          /* Default number of cycles to compute */
 	int     num_of_nestGrids = 0;        /* Number of nesting grids */
@@ -1142,9 +1142,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	int     KbGridCols = 1, KbGridRows = 1; /* Number of rows & columns IF computing a grid of 'Kabas' */
 	int     cntKabas = 0;                /* Counter of the number of Kabas (prisms) already processed */
 	int     n_mareg, n_ptmar, n_oranges, n_oranges_alloc = 0;
-	unsigned int *lcum_p = NULL, lcum = 0, ij, nx, ny;
+	unsigned int *lcum_p = NULL, ij, nx, ny;
 	unsigned int i_start, j_start, i_end, j_end, count_maregs_timeout = 0, count_time_maregs_timeout = 0;
-	size_t	start0 = 0, count0 = 1, len, start1_A[2] = {0,0}, count1_A[2];
+	size_t	start0 = 0, count0 = 1, start1_A[2] = {0,0}, count1_A[2];
 	size_t  start1_M[3] = {0,0,0}, count1_M[3], start_Mar[3] = {0,0,0}, count_Mar[2];
 	char   *bathy   = NULL;              /* Name pointer for bathymetry file */
 	char   	hcum[256]   = "";            /* Name of the cumulative hight file */
@@ -1166,21 +1166,20 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	char    txt[128];                    /* Auxiliary variable */
 
 	float  *work = NULL, *workMax = NULL, *vmax = NULL, *wmax = NULL, *time_p = NULL;
-	float   work_min = FLT_MAX, work_max = -FLT_MAX, *maregs_array = NULL, *maregs_array_t = NULL;
-	double *maregs_timeout = NULL, m_per_deg = 111317.1;
+	float   *maregs_array = NULL, *maregs_array_t = NULL;
+	double *maregs_timeout = NULL;
 	double *cum_p = NULL;
 	double  dfXmin = 0, dfYmin = 0, dfXmax = 0, dfYmax = 0, xMinOut, yMinOut;
 	double  kaba_xmin = 0, kaba_xmax = 0, kaba_ymin = 0, kaba_ymax = 0;
 	double  time_jump = 0, time0, time_for_anuga, prc;
 	double  dt = 0;                     /* Time step for Base level grid */
-	double  dx, dy, ds, dtCFL, etam, one_100, t;
+	double  dx, dy, ds, dtCFL, one_100, t;
 	double *eta_for_maregs, *vx_for_maregs, *vy_for_maregs, *htotal_for_maregs, *fluxm_for_maregs, *fluxn_for_maregs;
 	double *vx_for_oranges, *vy_for_oranges, *fluxm_for_oranges, *fluxn_for_oranges, *htotal_for_oranges;	/* For tracers */
 	double  f_dip, f_azim, f_rake, f_slip, f_length, f_width, f_topDepth, x_epic, y_epic;	/* For Okada initial condition */
 	double  add_const = 0, time_h = 0;
 	double  dxKb = 0, dyKb = 0;         /* Grid steps for when computing a grid of 'Kabas' */
 	double  z_offset = 0;	/* To apply to bathymetry to simulate a tide */
-	double  manning[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};	/* Manning coefficients */
 
 	double  actual_range[8] = {1e30, -1e30, 1e30, -1e30, 1e30, -1e30, 1e30, -1e30};
 	float	stage_range[2], xmom_range[2], ymom_range[2], *tmp_slice;
@@ -2017,7 +2016,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 		if (do_tracers && k > 0) {
 			int n;
-			unsigned int ix, jy, itmp, ij_c;
+			unsigned int ix, jy, ij_c;
 			double vx, vy, vx1, vx2, vy1, vy2, dx, dy;
 			double v_LLx, v_LLy, v_LRx, v_LRy, v_ULx, v_ULy, v_URx, v_URy;
 			for (n = 0; n < n_oranges; n++) {
@@ -2054,10 +2053,10 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 			}
 		}
 
-		/* ------------------------------------------------------------------------------------ */
-		/* -- This chunk deals with the cases where we compute something at every step
-		      but write only one grid at the end of all cycles
-		/* ------------------------------------------------------------------------------------ */
+		/* ------------------------------------------------------------------------------------
+		 *    This chunk deals with the cases where we compute something at every step
+		 *    but write only one grid at the end of all cycles
+		 * ------------------------------------------------------------------------------------ */
 		if (max_level)			/* Output max surface level. This is only executed when writing mother grid */
 			update_max(&nest);
 		else if (max_energy) {
@@ -2156,7 +2155,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 			if (out_momentum && !out_3D) {
 				if (stem[0] == 0)
-					sprintf(prenome,"%.5d\0", irint(time_h) );
+					sprintf(prenome, "%.5d", irint(time_h) );
 				else
 					sprintf(prenome, "%s%.5d", stem, irint(time_h) );
 
@@ -2295,8 +2294,8 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 	if (out_maregs_nc && cumpt) {    /* Write the maregs in a netCDF file */
 		if (do_Kaba) {
-			int    k, kp, km, nKabas, RC[2];
-			size_t strt, cnt, row, col;
+			int    k, kp, km, nKabas;
+			size_t strt, row, col;
 			double x1, x2, y1, y2, BB[8];
 
 			/* Need to change order from scanline to columnwise (one mareg, than next and so on) before saving to nc */
@@ -4166,7 +4165,7 @@ void moment_M(struct nestContainer *nest, int lev) {
 	int cp1, rp1;			/* next column (cp1 = col + 1) and row (rp1 = row + 1) */
 	int rm2, cp2;
 	double xp, xqe, xqq, ff = 0, dd, df, f_limit;
-	double advx, dtdx, dtdy, advy, rlat;
+	double advx, dtdx, dtdy, advy;
 	double dpa_ij, dpa_ij_rp1, dpa_ij_rm1, dpa_ij_cm1, dpa_ij_cp1;
 	double dt, manning, *bat, *htotal_a, *htotal_d, *etad, *fluxm_a, *fluxm_d, *fluxn_a, *fluxn_d, *vex, *r4m;
 	struct GMT_GRID_HEADER hdr;
@@ -4342,7 +4341,7 @@ void moment_N(struct nestContainer *nest, int lev) {
 	int cp1, rp1;			/* next column (cp1 = col + 1) and row (rp1 = row + 1) */
 	int cm2, rp2;
 	double xq, xpe, xpp, ff = 0, dd, df, f_limit;
-	double advx, dtdx, dtdy, advy, rlat;
+	double advx, dtdx, dtdy, advy;
 	double dqa_ij, dqa_ij_rp1, dqa_ij_rm1, dqa_ij_cm1, dqa_ij_cp1;
 	double dt, manning, *bat, *htotal_a, *htotal_d, *etad, *fluxm_a, *fluxm_d, *fluxn_a, *fluxn_d, *vey, *r4n;
 	struct GMT_GRID_HEADER hdr;
@@ -5149,9 +5148,9 @@ int intp_lin (void *API, double *x, double *y, int n, int m, double *u, double *
 	return (0);
 }
 
-/* ------------------------------------------------------------------------------------------- */
-/* upscale from doughter to parent level
-/* ------------------------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------
+ * upscale from doughter to parent level
+ * ------------------------------------------------------------------------------------------- */
 void upscale(struct nestContainer *nest, double *out, int lev, int i_tsr) {
 	/* Computes the mean of cells inside a square window
 	   lev   -> This grid level
@@ -5210,9 +5209,9 @@ void upscale(struct nestContainer *nest, double *out, int lev, int i_tsr) {
 		if (nest->bat[lev][ij] < 0) nest->etad[lev][ij] -= nest->bat[lev][ij];
 }
 
-/* --------------------------------------------------------------------- */
-/* upscale from doughter to parent level
-/* --------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------
+ * upscale from doughter to parent level
+ * --------------------------------------------------------------------- */
 void upscale_(struct nestContainer *nest, double *etad, int lev, int i_tsr) {
 	/* i_tst -> loop variable over the time step ration of the two grids */
 	int half, count, row, col, nrow, ncol, rim;
