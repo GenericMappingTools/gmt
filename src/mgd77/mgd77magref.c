@@ -51,6 +51,8 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 	} D;
 	struct MGD77MAGREF_F {	/* -F */
 		bool active;
+		bool band;	/* True if +l<low>/<high> was given */
+		int nlow, nhigh;	/* The IGRF harmonic degree band to use */
 	} F;
 	struct MGD77MAGREF_G {	/* -G */
 		bool active;
@@ -72,6 +74,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->do_CM4 = true;
+	C->F.nlow = 1;	C->F.nhigh = 0;	/* Zero means use all the degrees the IGRF model has */
 	return (C);
 }
 
@@ -88,7 +91,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A+a<alt>+t<date>+y] [-C<cm4file>] [-D<dstfile>] [-E<f107file>] "
-		"[-Frthxyzdi[/[0|9]1234567]] [-G] [-Lrtxyz[/1234]] [-Sc|l<low>/<high>] [%s] "
+		"[-Frthxyzdi[/[0|9]1234567][+l<low>/<high>]] [-G] [-Lrtxyz[/1234]] [-Sc|l<low>/<high>] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_o_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -118,7 +121,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Select an alternate file with monthly means of absolute F10.7 solar radio flux for CM4 [%s/F107_mon.plt], "
 		"OR a single solar radio flux to apply for all records.",
 		API->GMT->session.SHAREDIR);
-	GMT_Usage (API, 1, "\n-Frthxyzdi[/[0|9]1234567]");
+	GMT_Usage (API, 1, "\n-Frthxyzdi[/[0|9]1234567][+l<low>/<high>]");
 	GMT_Usage (API, -2, "Dataflags is a string made up of one or more of these codes:");
 	GMT_Usage (API, 3, "r: Output all input columns before adding the items below (all in nTesla).");
 	GMT_Usage (API, 3, "t: List total field.");
@@ -145,6 +148,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"-Fxyz/934 the same as above but output the field components. "
 		"The data are written out in the order specified "
 		"[Default is -Frthxyzdi/1].");
+	GMT_Usage(API, 3, "+l Limit the IGRF to the harmonic degrees in the <low>/<high> band [all degrees]. "
+		"Only available for the IGRF model, i.e., with -F.../0. Note: The IGRF only has degrees "
+		"up to 10 before 1995 and up to 13 from 1995 onwards.");
 	GMT_Usage (API, 1, "\n-G Specify that coordinates are geocentric [geodetic].");
 	GMT_Usage (API, 1, "\n-Lrtxyz[/1234]");
 	GMT_Usage (API, -2, "Compute J field vectors from certain external sources. "
@@ -181,7 +187,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
 	int j;
-	char p[GMT_BUFSIZ] = {""}, tfixed[GMT_LEN64] = {""};
+	char p[GMT_BUFSIZ] = {""}, tfixed[GMT_LEN64] = {""}, *c = NULL;
 	bool do_CM4core = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -258,6 +264,17 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->CM4->CM4_F.active = true;
 
+				if ((c = strstr(opt->arg, "+l"))) {	/* Want to limit the IGRF to a harmonic degree band */
+					if (sscanf(&c[2], "%d/%d", &Ctrl->F.nlow, &Ctrl->F.nhigh) != 2) {
+						GMT_Report(API, GMT_MSG_ERROR, "Option -F: The +l modifier usage is +l<low>/<high>\n");
+						Ctrl->F.nlow = 1;	Ctrl->F.nhigh = 0;
+						n_errors++;
+					}
+					else
+						Ctrl->F.band = true;
+					c[0] = '\0';	/* Chop off the modifier while we parse the rest */
+				}
+
 				pos_slash = 0;
 				for (j = 0; opt->arg[j]; j++) {
 					if (opt->arg[j] == '/') {
@@ -332,6 +349,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 					}
 					Ctrl->CM4->CM4_F.n_field_sources = (int)nfval;
 				}
+				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
@@ -419,6 +437,10 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 			"You cannot select both -F and -L options\n");
 	n_errors += gmt_M_check_condition (GMT, (do_CM4core && Ctrl->do_IGRF) || (do_CM4core && Ctrl->joint_IGRF_CM4),
 			"You cannot select both CM4 core (1) and IGRF as they are both core fields.\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->F.band && !Ctrl->do_IGRF,
+			"Option -F: The +l modifier is only available for the IGRF model, i.e., with -F.../0\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->F.band && (Ctrl->F.nlow < 1 || Ctrl->F.nhigh < Ctrl->F.nlow),
+			"Option -F: The +l modifier requires 1 <= <low> <= <high>\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -645,8 +667,8 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 					the_altitude = (Ctrl->A.fixed_alt) ? alt_array[0] : alt_array[i];
 					the_time = (Ctrl->A.fixed_time) ? time_array[0] : time_array[i];
 					if (type == 2) the_altitude += 6371.2;
-					MGD77_igrf10syn (GMT, 0, the_time, type, the_altitude, T->segment[s]->data[GMT_X][i],
-							T->segment[s]->data[GMT_Y][i], IGRF);
+					MGD77_igrf10syn_band(GMT, 0, the_time, type, the_altitude, T->segment[s]->data[GMT_X][i],
+							T->segment[s]->data[GMT_Y][i], Ctrl->F.nlow, Ctrl->F.nhigh, IGRF);
 					if (!Ctrl->joint_IGRF_CM4) {		/* IGRF only */
 						int jj;
 						for (jj = 0; jj < Ctrl->CM4->CM4_F.n_field_components; jj++)

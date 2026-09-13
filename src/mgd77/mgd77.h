@@ -565,6 +565,7 @@ EXTERN_MSC double MGD77_carter_correction (struct GMT_CTRL *GMT, double lon, dou
 /* User functions for direct use of IGRF corrections, theoretical gravity */
 
 EXTERN_MSC int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, double alt, double lon, double lat, double *out);
+EXTERN_MSC int MGD77_igrf10syn_band(struct GMT_CTRL *GMT, int isv, double date, int itype, double alt, double lon, double lat, int nlow, int nhigh, double *out);
 EXTERN_MSC double MGD77_Theoretical_Gravity (struct GMT_CTRL *GMT, double lon, double lat, int version);
 EXTERN_MSC void MGD77_IGF_text (struct GMTAPI_CTRL *API, int indent, int version);
 EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_IGRF (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date);

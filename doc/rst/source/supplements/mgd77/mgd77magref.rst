@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cm4file* ]
 [ |-D|\ *Dstfile* ]
 [ |-E|\ *f107file* ]
-[ |-F|\ *flags* ]
+[ |-F|\ *flags*\ [**+l**\ *low/high*] ]
 [ |-G| ]
 [ |-S|\ **c**\|\ **l**\ *low/high* ]
 [ |SYN_OPT-V| ]
@@ -116,7 +116,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *flags*
+**-F**\ *flags*\ [**+l**\ *low/high*]
     Selects output items; *flags* is a string made up of one or more of
     these characters:
 
@@ -166,6 +166,12 @@ Optional Arguments
     but output the field components. The data is written out in the
     order they appear in *flags* [Default is **-Frthxyzdi**/**1**]. **Note**:
     You can further select a subset of fields via **-o**.
+
+    Append **+l**\ *low/high* to limit the IGRF contribution to the spherical
+    harmonic degrees in the *low/high* band [all degrees]. This modifier is only
+    available for the IGRF model, that is, when **-F**...\ /**0** is used.
+    **Note**: The IGRF only has degrees up to 10 before 1995 and up to 13 from
+    1995 onwards, so a *high* beyond that limit is truncated.
 
 .. _-G:
 
