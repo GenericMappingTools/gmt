@@ -173,6 +173,14 @@ Optional Arguments
     **Note**: The IGRF only has degrees up to 10 before 1995 and up to 13 from
     1995 onwards, so a *high* beyond that limit is truncated.
 
+    **Note**: The **+l** modifier requires a version later than GMT 6.7.0. Earlier versions do
+    not know it and will read its digits as CM4 field source codes instead: most
+    bands then fail with a misleading message about selecting both the CM4 core
+    and the IGRF, but a band such as **+l5/2**, whose digits happen to be valid
+    source codes other than the core, is silently ignored and the complete IGRF
+    field is returned. Check with **gmt --version** before using **+l** in a
+    script that may run against an older installation.
+
 .. _-G:
 
 **-G**
