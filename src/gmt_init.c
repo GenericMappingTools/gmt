@@ -18784,7 +18784,16 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				if (GMT->current.gdal_read_in.hCT_inv) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
 				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, source, dest);
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, dest, source);
-				GMT->current.proj.projection = strstr(dest, "spilhaus") ? GMT_PROJ4_SPILHAUS : GMT_PROJ4_PROJS;	/* Special case for spilhaus */
+				if (strstr(dest, "spilhaus"))		/* Special case for spilhaus */
+					GMT->current.proj.projection = GMT_PROJ4_SPILHAUS;
+				else if (strstr(dest, "eqearth")) {	/* Special case for the Equal Earth projection */
+					GMT->current.proj.projection = GMT_PROJ4_EQEARTH;
+					/* gmtinit_parse_J_option does this for the projections GMT knows, but it is not called for
+					 * the PROJ-only ones, so a non-global -R would not be recognized as geographic */
+					gmt_set_geographic(GMT, GMT_IN);	/* This may be overridden by mapproject -I */
+				}
+				else
+					GMT->current.proj.projection = GMT_PROJ4_PROJS;
 				GMT->common.J.active = true;
 				if (GMT->current.gdal_read_in.hCT_fwd == NULL || GMT->current.gdal_read_in.hCT_inv == NULL)
 					error = 1;

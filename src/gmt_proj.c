@@ -2646,6 +2646,58 @@ double gmtproj_right_robinson (struct GMT_CTRL *GMT, double y) {
 }
 #endif
 
+/* -J+proj=eqearth EQUAL EARTH PROJECTION (and, in principle, any other PROJ pseudo-cylindrical projection)
+ *
+ * The projection itself is done by PROJ (via GDAL), so we have no analytical expressions here.  What GMT needs
+ * on top of the transforms are the left and right map boundaries as functions of the plot y-coordinate so that
+ * the frame, annotations, ticks and gridlines come out curved as they should (like the -Jn Robinson case) and
+ * not as a plain rectangle.  We get them by inverting (x = central meridian, y) to a latitude and then project
+ * the west/east boundary at that latitude.  Both steps go through the same PROJ transforms used for the data,
+ * so the border is by construction consistent with what is plotted.
+ */
+
+GMT_LOCAL void gmtproj_proj4_pcyl_fwd(struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* PROJ first normalizes the geographic longitude to [-180,180] and only then subtracts lon_0.  For a global
+	   map whose west and east boundaries are the same meridian (e.g., -Rg with +lon_0=180) both boundaries then
+	   collapse onto the western edge of the map.  We therefore wind the longitude relative to the central
+	   meridian ourselves (GMT keeps -180 and +180 apart) and pull the antimeridian a hair inside the domain. */
+	double dlon = lon;
+
+	gmt_M_wind_lon(GMT, dlon);	/* Now dlon is in [-180,180] relative to the central meridian */
+	if (dlon >= 180.0) dlon = 180.0 - GMT_PROJ_CONV_LIMIT;
+	else if (dlon <= -180.0) dlon = -180.0 + GMT_PROJ_CONV_LIMIT;
+	gmt_proj4_fwd(GMT, GMT->current.proj.central_meridian + dlon, lat, x, y);
+}
+
+GMT_LOCAL void gmtproj_proj4_pcyl_inv(struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* The inverse: PROJ hands us a longitude in [-180,180] so put it back in the map's own longitude range */
+	gmt_proj4_inv(GMT, lon, lat, x, y);
+	if (gmt_M_is_dnan(*lon) || gmt_M_is_dinf(*lon)) return;
+	while (*lon < GMT->current.proj.central_meridian - 180.0) *lon += 360.0;
+	while (*lon > GMT->current.proj.central_meridian + 180.0) *lon -= 360.0;
+}
+
+GMT_LOCAL double gmtproj_proj4_pcyl_edge(struct GMT_CTRL *GMT, double y, double lon) {
+	/* Return the plot x-coordinate of meridian lon at plot y-coordinate y */
+	double lon_c, lat, x, y_dummy;
+
+	/* proj.origin[GMT_X] is the plot x where the projected x is zero, i.e., the central meridian */
+	gmt_xy_to_geo (GMT, &lon_c, &lat, GMT->current.proj.origin[GMT_X], y);
+	if (gmt_M_is_dnan(lat) || gmt_M_is_dinf(lat)) return GMT->session.d_NaN;
+	if (lat >  90.0) lat =  90.0;	/* Round-off may place us just outside the domain */
+	if (lat < -90.0) lat = -90.0;
+	gmt_geo_to_xy(GMT, lon, lat, &x, &y_dummy);
+	return (x);
+}
+
+GMT_LOCAL double gmtproj_left_proj4_pcyl(struct GMT_CTRL *GMT, double y) {
+	return (gmtproj_proj4_pcyl_edge(GMT, y, GMT->common.R.wesn[XLO]));
+}
+
+GMT_LOCAL double gmtproj_right_proj4_pcyl(struct GMT_CTRL *GMT, double y) {
+	return (gmtproj_proj4_pcyl_edge(GMT, y, GMT->common.R.wesn[XHI]));
+}
+
 /* -JI SINUSOIDAL EQUAL AREA PROJECTION */
 
 GMT_LOCAL void gmtproj_vsinusoidal (struct GMT_CTRL *GMT, double lon0) {

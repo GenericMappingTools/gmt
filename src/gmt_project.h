@@ -123,6 +123,7 @@ enum gmt_enum_misc {GMT_MOLLWEIDE = 400,
 #define gmt_M_is_proj4(C) (C->current.proj.projection / 100 == 5)
 enum gmt_enum_allprojs {GMT_PROJ4_PROJS = 500,
 	GMT_PROJ4_SPILHAUS,
+	GMT_PROJ4_EQEARTH,
 };
 
 /*! The various GMT measurement units */

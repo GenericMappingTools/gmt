@@ -6,10 +6,17 @@
 Changelog
 =========
 
-New Features in GMT 6.7
-=======================
+New Features in GMT 6.7.1
+=========================
 
-GMT 6.7 brings two new programs (a tsunami modeling supplement and a stand-alone updater), several new
+* New Equal Earth map projection, selected with the **PROJ** syntax **-J+proj=eqearth**. GMT now draws the proper
+  pseudo-cylindrical frame, annotations, ticks and gridlines for it, as it does for the Robinson projection.
+  See :ref:`Equal Earth <-Jeqearth>`
+
+New Features in GMT 6.7.0
+=========================
+
+GMT 6.7.0 brings two new programs (a tsunami modeling supplement and a stand-alone updater), several new
 plotting capabilities built on smooth color gradients (Gouraud shading), Bezier curves in the custom symbol
 language, and a large number of bug fixes across the whole code base.
 
@@ -32,7 +39,7 @@ language, and a large number of bug fixes across the whole code base.
 * Change the default GMT data server to ``remotedata.generic-mapping-tools.org`` (`#9102 <https://github.com/GenericMappingTools/gmt/pull/9102>`_)
 * New documentation chapter on how to create custom supplement libraries (`#9029 <https://github.com/GenericMappingTools/gmt/pull/9029>`_)
 
-New Modules and Programs in GMT 6.7
+New Modules and Programs in GMT 6.7.0
 -----------------------------------
 
 * New supplement :doc:`/supplements/nswing/nswing`: a finite-differences tsunami (shallow-water) modeling
@@ -40,8 +47,8 @@ New Modules and Programs in GMT 6.7
 * New stand-alone program :doc:`gmt_update` that updates a GMT installation between release cycles.  It
   downloads and verifies (SHA-256) the new files.  Currently tested on Windows only (`#9032 <https://github.com/GenericMappingTools/gmt/pull/9032>`_)
 
-Enhancements in GMT 6.7
------------------------
+Enhancements in GMT 6.7.0
+-------------------------
 
 * :doc:`plot`, :doc:`plot3d`: Add **-G+g** for vertex-based color gradients (Gouraud shading) in polygons.
   Vertex colors may be given as *r g b*, as color names/hex/HSV/CMYK strings, or as *z* values mapped through
