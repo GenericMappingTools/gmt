@@ -236,7 +236,7 @@ To extract a vertical slice of the 3-D grid S362ANI_kmps.nc with seismic velocit
 through the Hawaii hotspot, selecting cube vs (Isotropic Shear Velocity) and letting the
 distances be longitude degrees along the parallel, try::
 
-    gmt grdinterpolate S362ANI_kmps.nc?vs -E180/20/220/20+i1d+g+p -T25/500/25 -Gslice.nc
+    gmt grdinterpolate @S362ANI_kmps.nc?vs -E180/20/220/20+i1d+g+p -T25/500/25 -Gslice.nc
 
 See Also
 --------

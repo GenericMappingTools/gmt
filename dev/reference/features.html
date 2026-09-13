@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3. General Features &mdash; GMT 6.7.0 documentation</title>
+  <title>3. General Features &mdash; GMT 6.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="../_static/documentation_options.js?v=2adddf63"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -62,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.7
+                6.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -726,7 +726,7 @@ projections is <strong>WESNZ</strong>. The default for non-perspective, non-Gnom
 non-polar plots using <strong>MAP_FRAME_AXES</strong>=<strong>auto</strong> is <strong>WrStZ</strong>.</p>
 <p>For <a class="reference internal" href="../gmt.conf.html#term-MAP_LABEL_OFFSET"><span class="xref std std-term">MAP_LABEL_OFFSET</span></a>, <strong>auto</strong> will scale the offset based on figure size if
 <a class="reference internal" href="../gmt.conf.html#term-MAP_LABEL_MODE"><span class="xref std std-term">MAP_LABEL_MODE</span></a> is set to <strong>annot</strong>, but will default to <strong>32p</strong> if
-:term:MAP_LABEL_MODE` is set to <strong>axis</strong>.</p>
+<a class="reference internal" href="../gmt.conf.html#term-MAP_LABEL_MODE"><span class="xref std std-term">MAP_LABEL_MODE</span></a> is set to <strong>axis</strong>.</p>
 <p>For <a class="reference internal" href="../gmt.conf.html#term-MAP_EMBELLISHMENT_MODE"><span class="xref std std-term">MAP_EMBELLISHMENT_MODE</span></a>, <strong>auto</strong> means we uses the given size of the
 embellishment to set relative sizes of ticks, texts and labels, and offsets.
 These are otherwise controlled by numerous default settings; see discussion
@@ -2279,49 +2279,56 @@ sequences that allow the user to temporarily switch to the symbol font,
 turn on sub- or superscript, etc., within words. These conditions are
 toggled on/off by the escape sequence &#64;<strong>x</strong>, where <strong>x</strong> can be one
 of several types. The escape sequences recognized in GMT are listed in
-Table <a class="reference internal" href="#tbl-escape"><span class="std std-ref">escape</span></a>. Only one level of sub- or superscript is supported.
+Table <a class="reference internal" href="../text.html#tbl-escape"><span class="std std-ref">escape</span></a>. Only one level of sub- or superscript is supported.
 Note that under Windows the percent symbol indicates a batch variable,
 hence you must use two percent-signs for each one required in the escape
 sequence for font switching. In bash scripts the brackets have special meaning, hence you must add double quotes.</p>
 <table class="docutils align-default" id="tbl-escape">
-<tbody>
-<tr class="row-odd"><td><p>&#64;~</p></td>
-<td><p>Turns symbol font on or off</p></td>
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Behavior</p></th>
 </tr>
-<tr class="row-even"><td><p>&#64;+</p></td>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>&#64;~</p></td>
+<td><p>Turns Symbol font on or off (see the <a class="reference internal" href="octal-codes.html#octal-codes-symbol-zap"><span class="std std-ref">Symbol font octal code table</span></a> for available Greek characters and other symbols)</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;+</p></td>
 <td><p>Turns superscript on or off</p></td>
 </tr>
-<tr class="row-odd"><td><p>&#64;-</p></td>
+<tr class="row-even"><td><p>&#64;-</p></td>
 <td><p>Turns subscript on or off</p></td>
 </tr>
-<tr class="row-even"><td><p>&#64;#</p></td>
+<tr class="row-odd"><td><p>&#64;#</p></td>
 <td><p>Turns small caps on or off</p></td>
 </tr>
-<tr class="row-odd"><td><p>&#64;_</p></td>
+<tr class="row-even"><td><p>&#64;_</p></td>
 <td><p>Turns underline on or off</p></td>
 </tr>
-<tr class="row-even"><td><p>&#64;%<em>fontno</em>%</p></td>
-<td><p>Switches to another font; &#64;%% resets to previous font</p></td>
+<tr class="row-odd"><td><p>&#64;%<em>font</em>%</p></td>
+<td><p>Switches to <em>font</em> where <em>font</em> can either be a font <em>number</em> or <em>name</em> (try <strong>text -L</strong> for a list); &#64;%% resets to previous font</p></td>
 </tr>
-<tr class="row-odd"><td><p>&#64;:<em>size</em>:</p></td>
+<tr class="row-even"><td><p>&#64;:<em>size</em>:</p></td>
 <td><p>Switches to another font size; &#64;:: resets to previous size</p></td>
 </tr>
-<tr class="row-even"><td><p>&#64;;<em>color</em>;</p></td>
+<tr class="row-odd"><td><p>&#64;;<em>color</em>;</p></td>
 <td><p>Switches to another font color; &#64;;; resets to previous color</p></td>
 </tr>
-<tr class="row-odd"><td><p>&#64;!</p></td>
-<td><p>Creates one composite character of the next two characters</p></td>
+<tr class="row-even"><td><p>&#64;!</p></td>
+<td><p>Creates one composite character (overstrike) of the next two characters (see <a class="reference internal" href="#escape-examples"><span class="std std-ref">examples</span></a>)</p></td>
 </tr>
-<tr class="row-even"><td><p>&#64;.</p></td>
+<tr class="row-odd"><td><p>&#64;.</p></td>
 <td><p>Prints the degree symbol</p></td>
 </tr>
-<tr class="row-odd"><td><p>&#64;&#64;</p></td>
+<tr class="row-even"><td><p>&#64;&#64;</p></td>
 <td><p>Prints the &#64; sign itself</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;[</p></td>
+<td><p>Turns LaTeX typesetting on or off (see Chapter <a class="reference internal" href="gmt-latex.html"><span class="doc">Using LaTeX Expressions in GMT</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
-<p>Shorthand notation for a few special European characters has also been added (for others
-you must use the full octal code):</p>
+<p>Shorthand notation for a few special European characters has also been added:</p>
 <table class="docutils align-default" id="tbl-shorthand">
 <thead>
 <tr class="row-odd"><th class="head"><p><em>Code</em></p></th>
@@ -2368,19 +2375,18 @@ you must use the full octal code):</p>
 </tr>
 </tbody>
 </table>
+<p>Several other European accented characters and many special characters are
+available by specifying their full octal code \xxx (see Chapter
+<a class="reference internal" href="octal-codes.html"><span class="doc">Chart of Octal Codes for Characters</span></a>). To use the extended character set
+<a class="reference internal" href="../gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> must be set to the respective encoding in your
+<a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>. Only the special characters belonging to that particular
+encoding will be accessible. Remember: Many characters not directly available
+by using a single octal codes may be constructed with the composite character
+mechanism &#64;!.</p>
 <p>However, if your input text contains UTF-8 code characters (e.g., ü, Î)
 and you select the ISOLatin1+ character encoding then GMT will substitute
 the correct PostScript octal codes for you automatically.</p>
-<p>PostScript fonts used in GMT may be re-encoded to include several
-accented characters used in many European languages. To access these,
-you must specify the full octal code \xxx allowed for
-your choice of character encodings determined by the
-<a class="reference internal" href="../gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> setting described in the
-<a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> man page. Only the special
-characters belonging to a particular encoding will be available. Many
-characters not directly available by using single octal codes may be
-constructed with the composite character mechanism &#64;!.</p>
-<p>Some examples of escape sequences and embedded octal codes in
+<p id="escape-examples">Some examples of escape sequences and embedded octal codes in
 GMT strings using the Standard+ encoding:</p>
 <div class="line-block">
 <div class="line"><code class="docutils literal notranslate"><span class="pre">2&#64;~p&#64;~r&#64;+2&#64;+h&#64;-0&#64;-</span> <span class="pre">E\363tv\363s</span></code> = 2<span class="math notranslate nohighlight">\(\pi r^2h_0\)</span> Eötvös</div>
@@ -3842,7 +3848,7 @@ off; see <a class="reference internal" href="../gmt.conf.html#term-PS_COMMENTS">
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 27, 2026.
+      <span class="lastupdated">Last updated on Sep 13, 2026.
       </span></p>
   </div>
 

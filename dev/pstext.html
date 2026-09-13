@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pstext &mdash; GMT 6.7.0 documentation</title>
+  <title>pstext &mdash; GMT 6.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="_static/documentation_options.js?v=2adddf63"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -62,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.7
+                6.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -200,11 +200,7 @@ draw and annotate the map boundaries.</p>
 <p>For a list of all fonts recognized by GMT see <a class="reference internal" href="reference/postscript-fonts.html"><span class="doc">PostScript Fonts Used by GMT</span></a>.
 Greek characters, subscript, superscript, and small
 caps are supported as follows:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 80.0%" />
-</colgroup>
+<table class="docutils align-default" id="tbl-escape">
 <thead>
 <tr class="row-odd"><th class="head"><p>Symbol</p></th>
 <th class="head"><p>Behavior</p></th>
@@ -212,51 +208,104 @@ caps are supported as follows:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>&#64;~</p></td>
-<td><p>Toggles between the selected font and Greek (Symbol)</p></td>
-</tr>
-<tr class="row-odd"><td><p>&#64;%<em>font</em>%</p></td>
-<td><p>Switches to <em>font</em> where <em>font</em> can either be a font <em>number</em> or <em>name</em> (see <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>) (&#64;%% resets it)</p></td>
-</tr>
-<tr class="row-even"><td><p>&#64;-</p></td>
-<td><p>Toggles subscripts on/off</p></td>
+<td><p>Turns Symbol font on or off (see the <a class="reference internal" href="reference/octal-codes.html#octal-codes-symbol-zap"><span class="std std-ref">Symbol font octal code table</span></a> for available Greek characters and other symbols)</p></td>
 </tr>
 <tr class="row-odd"><td><p>&#64;+</p></td>
-<td><p>Toggles superscript on/off</p></td>
+<td><p>Turns superscript on or off</p></td>
 </tr>
-<tr class="row-even"><td><p>&#64;#</p></td>
-<td><p>Toggles small caps on/off</p></td>
+<tr class="row-even"><td><p>&#64;-</p></td>
+<td><p>Turns subscript on or off</p></td>
 </tr>
-<tr class="row-odd"><td><p>&#64;;<em>color</em>;</p></td>
-<td><p>Changes the font color (&#64;;; resets it)</p></td>
+<tr class="row-odd"><td><p>&#64;#</p></td>
+<td><p>Turns small caps on or off</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;_</p></td>
+<td><p>Turns underline on or off</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;%<em>font</em>%</p></td>
+<td><p>Switches to <em>font</em> where <em>font</em> can either be a font <em>number</em> or <em>name</em> (try <strong>text -L</strong> for a list); &#64;%% resets to previous font</p></td>
 </tr>
 <tr class="row-even"><td><p>&#64;:<em>size</em>:</p></td>
-<td><p>Changes the font size (&#64;:: resets it)</p></td>
+<td><p>Switches to another font size; &#64;:: resets to previous size</p></td>
 </tr>
-<tr class="row-odd"><td><p>&#64;_</p></td>
-<td><p>Toggles underline on/off</p></td>
+<tr class="row-odd"><td><p>&#64;;<em>color</em>;</p></td>
+<td><p>Switches to another font color; &#64;;; resets to previous color</p></td>
 </tr>
-<tr class="row-even"><td><p>&#64;&#64;</p></td>
-<td><p>Prints the &#64; sign</p></td>
+<tr class="row-even"><td><p>&#64;!</p></td>
+<td><p>Creates one composite character (overstrike) of the next two characters (see <a class="reference internal" href="reference/features.html#escape-examples"><span class="std std-ref">examples</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>&#64;.</p></td>
 <td><p>Prints the degree symbol</p></td>
 </tr>
+<tr class="row-even"><td><p>&#64;&#64;</p></td>
+<td><p>Prints the &#64; sign itself</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;[</p></td>
+<td><p>Turns LaTeX typesetting on or off (see Chapter <a class="reference internal" href="reference/gmt-latex.html"><span class="doc">Using LaTeX Expressions in GMT</span></a>)</p></td>
+</tr>
 </tbody>
 </table>
-<p>&#64;a, &#64;c, &#64;e, &#64;i, &#64;n, &#64;o, &#64;s, &#64;u, &#64;A, &#64;C, &#64;E, &#64;N, &#64;O, and &#64;U give various accented European
-characters, as indicated in Table <a class="reference internal" href="reference/features.html#tbl-shorthand"><span class="std std-ref">escape</span></a>. Composite characters
-(overstrike) may be indicated with the &#64;!&lt;char1&gt;&lt;char2&gt; sequence, which will print the
-two characters on top of each other.</p>
-<p>To learn the octal codes for symbols not available on the
-keyboard and some accented European characters, see Section <a class="reference internal" href="reference/features.html#char-esc-seq"><span class="std std-ref">Character escape sequences</span></a> and
-Appendix <a class="reference internal" href="reference/octal-codes.html#chart-octal-codes-for-chars"><span class="std std-ref">Chart of Octal Codes for Characters</span></a> in the GMT Technical Reference. Note that
-<a class="reference internal" href="gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> must be set to an extended character set in your
-<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file in order to use the accented characters.</p>
+<p>Shorthand notation for a few special European characters has also been added:</p>
+<table class="docutils align-default" id="tbl-shorthand">
+<thead>
+<tr class="row-odd"><th class="head"><p><em>Code</em></p></th>
+<th class="head"><p><em>Effect</em></p></th>
+<th class="head"><p><em>Code</em></p></th>
+<th class="head"><p><em>Effect</em></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>&#64;E</p></td>
+<td><p>Æ</p></td>
+<td><p>&#64;e</p></td>
+<td><p>æ</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;O</p></td>
+<td><p>Ø</p></td>
+<td><p>&#64;o</p></td>
+<td><p>ø</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;A</p></td>
+<td><p>Å</p></td>
+<td><p>&#64;a</p></td>
+<td><p>å</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;C</p></td>
+<td><p>Ç</p></td>
+<td><p>&#64;c</p></td>
+<td><p>ç</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;N</p></td>
+<td><p>Ñ</p></td>
+<td><p>&#64;n</p></td>
+<td><p>ñ</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;U</p></td>
+<td><p>Ü</p></td>
+<td><p>&#64;u</p></td>
+<td><p>ü</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;s</p></td>
+<td><p>ß</p></td>
+<td><p>&#64;i</p></td>
+<td><p>í</p></td>
+</tr>
+</tbody>
+</table>
+<p>Several other European accented characters and many special characters are
+available by specifying their full octal code \xxx (see Chapter
+<a class="reference internal" href="reference/octal-codes.html"><span class="doc">Chart of Octal Codes for Characters</span></a>). To use the extended character set
+<a class="reference internal" href="gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> must be set to the respective encoding in your
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>. Only the special characters belonging to that particular
+encoding will be accessible. Remember: Many characters not directly available
+by using a single octal codes may be constructed with the composite character
+mechanism &#64;!.</p>
+<p>However, if your input text contains UTF-8 code characters (e.g., ü, Î)
+and you select the ISOLatin1+ character encoding then GMT will substitute
+the correct PostScript octal codes for you automatically.</p>
 <p>Using the <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> or <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
 characters, except in paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>)).</p>
-<p>Finally, you may typeset LaTeX expressions provided they are enclosed in &#64;[ … &#64;[ or &lt;math&gt; … &lt;/math&gt;;
-see Chapter <a class="reference internal" href="reference/gmt-latex.html"><span class="doc">Using LaTeX Expressions in GMT</span></a> for more details.</p>
 </section>
 <section id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
@@ -637,7 +686,7 @@ trailing text.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 27, 2026.
+      <span class="lastupdated">Last updated on Sep 13, 2026.
       </span></p>
   </div>
 

@@ -259,7 +259,7 @@ in centimeters. Given their range it looks like multiplying the magnitude by 0.1
 sizes in cm. Reformatting this file to comply with the `plot <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot>`_
 input format can be done in a number of ways. Here, we simply use the common column selection option **incol**
 and its :ref:`scaling/offset capabilities <-icols_full>`. To skip the first 3 header records and then select
-the 5th, 4rd, 6th, and 7th column and scale the 7th column by 0.1, we would use
+the 5th, 4th, 6th, and 7th column and scale the 7th column by 0.1, we would use
 
    ::
 

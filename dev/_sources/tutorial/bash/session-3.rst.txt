@@ -226,7 +226,7 @@ preprocessed to eliminate aliasing, hence we must ensure that
 this step is completed prior to gridding.  GMT comes with
 three preprocessors, called :doc:`/blockmean`, :doc:`/blockmedian`,
 and :doc:`/blockmode`.  The first averages values inside the
-grid-spacing boxes, the second returns median values, wile the
+grid-spacing boxes, the second returns median values, while the
 latter returns modal values.  As a rule of thumb, we use means for
 most smooth data (such as potential fields) and medians (or modes)
 for rough, non-Gaussian data (such as topography).  In addition

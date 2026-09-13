@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; GMT 6.7.0 documentation</title>
+  <title>Changelog &mdash; GMT 6.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="_static/documentation_options.js?v=2adddf63"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -62,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.7
+                6.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -91,9 +91,10 @@
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-7">New Features in GMT 6.7</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#new-modules-and-programs-in-gmt-6-7">New Modules and Programs in GMT 6.7</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#enhancements-in-gmt-6-7">Enhancements in GMT 6.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-7-1">New Features in GMT 6.7.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-7-0">New Features in GMT 6.7.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#new-modules-and-programs-in-gmt-6-7-0">New Modules and Programs in GMT 6.7.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enhancements-in-gmt-6-7-0">Enhancements in GMT 6.7.0</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bug-fixes-in-gmt-6-7">Bug fixes in GMT 6.7</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#maintenance-updates-in-gmt-6-7">Maintenance updates in GMT 6.7</a></li>
 </ul>
@@ -246,9 +247,17 @@
              
   <section id="changelog">
 <span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
-<section id="new-features-in-gmt-6-7">
-<h2>New Features in GMT 6.7<a class="headerlink" href="#new-features-in-gmt-6-7" title="Link to this heading"></a></h2>
-<p>GMT 6.7 brings two new programs (a tsunami modeling supplement and a stand-alone updater), several new
+<section id="new-features-in-gmt-6-7-1">
+<h2>New Features in GMT 6.7.1<a class="headerlink" href="#new-features-in-gmt-6-7-1" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>New Equal Earth map projection, selected with the <strong>PROJ</strong> syntax <strong>-J+proj=eqearth</strong>. GMT now draws the proper
+pseudo-cylindrical frame, annotations, ticks and gridlines for it, as it does for the Robinson projection.
+See <a class="reference internal" href="reference/map-projections.html#jeqearth"><span class="std std-ref">Equal Earth</span></a></p></li>
+</ul>
+</section>
+<section id="new-features-in-gmt-6-7-0">
+<h2>New Features in GMT 6.7.0<a class="headerlink" href="#new-features-in-gmt-6-7-0" title="Link to this heading"></a></h2>
+<p>GMT 6.7.0 brings two new programs (a tsunami modeling supplement and a stand-alone updater), several new
 plotting capabilities built on smooth color gradients (Gouraud shading), Bezier curves in the custom symbol
 language, and a large number of bug fixes across the whole code base.</p>
 <ul class="simple">
@@ -271,8 +280,8 @@ so that the <em>refpoint</em> argument may be omitted (<a class="reference exter
 <li><p>Change the default GMT data server to <code class="docutils literal notranslate"><span class="pre">remotedata.generic-mapping-tools.org</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9102">#9102</a>)</p></li>
 <li><p>New documentation chapter on how to create custom supplement libraries (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9029">#9029</a>)</p></li>
 </ul>
-<section id="new-modules-and-programs-in-gmt-6-7">
-<h3>New Modules and Programs in GMT 6.7<a class="headerlink" href="#new-modules-and-programs-in-gmt-6-7" title="Link to this heading"></a></h3>
+<section id="new-modules-and-programs-in-gmt-6-7-0">
+<h3>New Modules and Programs in GMT 6.7.0<a class="headerlink" href="#new-modules-and-programs-in-gmt-6-7-0" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>New supplement <a class="reference internal" href="supplements/nswing/nswing.html"><span class="doc">nswing</span></a>: a finite-differences tsunami (shallow-water) modeling
 module (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9093">#9093</a>)</p></li>
@@ -280,8 +289,8 @@ module (<a class="reference external" href="https://github.com/GenericMappingToo
 downloads and verifies (SHA-256) the new files.  Currently tested on Windows only (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9032">#9032</a>)</p></li>
 </ul>
 </section>
-<section id="enhancements-in-gmt-6-7">
-<h3>Enhancements in GMT 6.7<a class="headerlink" href="#enhancements-in-gmt-6-7" title="Link to this heading"></a></h3>
+<section id="enhancements-in-gmt-6-7-0">
+<h3>Enhancements in GMT 6.7.0<a class="headerlink" href="#enhancements-in-gmt-6-7-0" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>: Add <strong>-G+g</strong> for vertex-based color gradients (Gouraud shading) in polygons.
 Vertex colors may be given as <em>r g b</em>, as color names/hex/HSV/CMYK strings, or as <em>z</em> values mapped through
@@ -2101,7 +2110,7 @@ simply process their PostScript files via <a class="reference internal" href="ps
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 27, 2026.
+      <span class="lastupdated">Last updated on Sep 13, 2026.
       </span></p>
   </div>
 
