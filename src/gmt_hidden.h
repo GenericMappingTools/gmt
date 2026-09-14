@@ -148,6 +148,8 @@ struct GMT_MATRIX_HIDDEN {	/* Supporting information hidden from the API */
 	enum GMT_enum_alloc alloc_mode_text;	/* Allocation mode per text [GMT_ALLOC_INTERNALLY] */
 };
 
+struct GMT_GRID_GHOST;	/* Forward declaration; see gmt_ghost.h */
+
 struct GMT_GRID_HEADER_HIDDEN {
 	/* ---- Variables "hidden" from the API ----
 	 * This section is flexible.  It is not copied to any grid or image header
@@ -204,6 +206,8 @@ struct GMT_GRID_HEADER_HIDDEN {
 	double xy_unit_to_meter[2];	          /* Scale, given xy_unit, to convert xy from <unit> to meters */
                                           /* Pointer to index function (for images only) */
 	uint64_t (*index_function) (struct GMT_GRID_HEADER *, uint64_t, uint64_t, uint64_t);
+	struct GMT_GRID_GHOST *ghost;         /* Boundary halo held outside the data matrix, or NULL for the legacy padded layout */
+	unsigned int no_ghost;                /* 1 once a module has demanded a padded matrix, so we stop moving this grid to ghost cells */
 };
 
 struct GMT_GRID_HIDDEN {	/* Supporting information hidden from the API */

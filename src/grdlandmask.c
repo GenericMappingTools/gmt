@@ -245,9 +245,9 @@ GMT_LOCAL void grdlandmask_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	int row, col;
 	gmt_M_unused(GMT);
 	row = gmt_M_grd_y_to_row (GMT, y, C);
-	if (row < 0 || row > (int)C->n_rows) return;
+	if (row < 0 || row >= (int)C->n_rows) return;	/* Was row > n_rows, so a node one past the last row was accepted and written; that landed in the pad and was invisible, but lands on real data when there is no pad (issue #4358) */
 	col = gmt_M_grd_x_to_col (GMT, x, C);
-	if (col < 0 || col > (int)C->n_columns) return;
+	if (col < 0 || col >= (int)C->n_columns) return;	/* Likewise: col == n_columns wraps onto the first node of the next row */
 	*ij = gmt_M_ijp (G->header, row, col);
 	G->data[*ij] = f_level;
 }

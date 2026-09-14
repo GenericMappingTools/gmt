@@ -208,9 +208,12 @@ GMT_LOCAL void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, 
 }
 #endif
 
-GMT_LOCAL double grdview_get_intensity (struct GMT_GRID *I, uint64_t k) {
-	/* Returns the average intensity for this tile */
-	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
+GMT_LOCAL double grdview_get_intensity (struct GMT_GRID *I, int64_t row, int64_t col) {
+	/* Returns the average intensity for this tile.  The four nodes are addressed by (row,col) in
+	 * the intensity grid itself: it is a grid of its own and need not share the topography grid's
+	 * layout, and a tile on the north or east edge reaches into its halo (issue #4358). */
+	return (0.25 * (gmt_grd_get_node(I->header, I->data, row, col) + gmt_grd_get_node(I->header, I->data, row, col + 1) +
+	                gmt_grd_get_node(I->header, I->data, row - 1, col) + gmt_grd_get_node(I->header, I->data, row - 1, col + 1)));
 }
 
 GMT_LOCAL unsigned int grdview_pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, int64_t bin, int bin_inc[]) {
@@ -299,8 +302,8 @@ GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL 
 	/* Paint a single grid tile using vertex-based Gouraud shading
 	 * xmesh, ymesh: projected 2D coordinates of 4 tile corners [already projected]
 	 * Z_vert: z-values at 4 tile corners
-	 * ij: index of lower-left corner in grid
-	 * ij_inc: offsets to access 4 tile corners [0, 1, 1-mx, -mx]
+	 * row, col: the tile's lower-left corner in (row,col) terms
+	 * corner_row, corner_col: offsets to the 4 tile corners, matching ij_inc = [0, 1, 1-mx, -mx]
 	 * use_intensity: apply illumination from grid I
 	 * monochrome: convert to grayscale
 	 * diagonal: 0=0-2, 1=adaptive
@@ -318,7 +321,8 @@ GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL 
 			PH = gmt_get_C_hidden(P);
 
 		if (use_intensity) {
-			intens = I->data[ij + ij_inc[k]];  /* Actual vertex intensity */
+			intens = I->data[ij + ij_inc[k]];  /* Actual vertex intensity.  Not routed through the grid
+			 * accessors yet: doing so crashed -Qg, so the Gouraud path still assumes a pad (#4358) */
 			gmt_illuminate(GMT, intens, &rgb_vert[k*3]);
 		}
 
@@ -906,6 +910,8 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, n_max = 0;
 
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
+	static const int corner_row[4] = {0, 0, -1, -1}, corner_col[4] = {0, 1, 1, 0};	/* The 4 tile corners in (row,col), matching ij_inc = [0, 1, 1-mx, -mx] */
+	int64_t t_row = 0, t_col = 0;	/* Row,col of the current tile, for indexing grids that need not share Topo's layout */
 	int start[2], stop[2], inc[2];
 
 	uint64_t sw, se, nw, ne, n, pt, ij, bin;
@@ -1398,10 +1404,11 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 		int nx_i, ny_i, ip, jp, min_i, max_i, min_j, max_j, dist;
 		int done, layers, last_i, last_j;
 		int *top_jp = NULL, *bottom_jp = NULL, *ix = NULL, *iy = NULL;
-		uint64_t d_node, nm_i, node, kk, p;
+		uint64_t nm_i, node, kk, p;
 		double xp, yp, sum_w, w, sum_i, x_width, y_width, value;
 		double sum_r, sum_g, sum_b, intval = 0.0, *y_drape = NULL, *x_drape = NULL;
 		gmt_grdfloat *int_drape = NULL;
+		uint64_t mx_int = 0;	/* Row stride of int_drape, which carries a one-node margin of its own */
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Place image\n");
@@ -1426,7 +1433,11 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 			iy = gmt_M_memory (GMT, NULL, Z->header->nm, int);
 			x_drape = Z->x;
 			y_drape = Z->y;
-			if (use_intensity_grid) int_drape = gmt_M_memory (GMT, NULL, Z->header->mx*Z->header->my, gmt_grdfloat);
+			if (use_intensity_grid) {	/* Give the resampled intensities a zero-filled one-node margin of their own, so that a tile
+							 * on the north or east edge has something to read there whatever the layout is (#4358) */
+				mx_int = (uint64_t)Z->header->n_columns + 2;
+				int_drape = gmt_M_memory (GMT, NULL, mx_int * ((uint64_t)Z->header->n_rows + 2), gmt_grdfloat);
+			}
 			bin = 0;	/* bin cycles over a grid with no padding, hence bin++ is good enough */
 			gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				value = gmt_bcr_get_z (GMT, Topo, x_drape[col], y_drape[row]);	/* Relief value at drape coordinate */
@@ -1439,7 +1450,7 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
 				}
 				if (use_intensity_grid)	/* Get intensity value at drape coordinate */
-					int_drape[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Intens, x_drape[col], y_drape[row]);
+					int_drape[((uint64_t)(row + 1)) * mx_int + (uint64_t)(col + 1)] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Intens, x_drape[col], y_drape[row]);
 				if (ix[bin] < min_i) min_i = ix[bin];
 				if (ix[bin] > max_i) max_i = ix[bin];
 				if (iy[bin] < min_j) min_j = iy[bin];
@@ -1525,10 +1536,12 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 		for (j = start[0]; j != stop[0]; j += inc[0]) {
 			for (i = start[1]; i != stop[1]; i += inc[1]) {
 				if (id[0] == GMT_Y) {
+					t_row = j;	t_col = i;	/* Same tile corner in any co-registered grid */
 					bin = gmt_M_ij0 (Z->header, j, i);
 					ij = gmt_M_ijp (Z->header, j, i);
 				}
 				else {
+					t_row = i;	t_col = j;
 					bin = gmt_M_ij0 (Z->header, i, j);
 					ij = gmt_M_ijp (Z->header, i, j);
 				}
@@ -1557,34 +1570,44 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 						sum_r = sum_g = sum_b = sum_w = sum_i = 0.0;
 						done = false;
 						for (k = good = 0; !done && k < 4; k++) {	/* Loop over the 4 corners of the present tile */
+							/* Corner k in (row,col).  The drape, relief and intensity grids are grids of their own,
+							 * so each is addressed through its own header rather than with a node number computed
+							 * from another grid's; the resampled intensities live in int_drape, which carries its
+							 * own margin because it is a plain array with no halo (issue #4358) */
+							int64_t c_row = t_row + corner_row[k], c_col = t_col + corner_col[k];
+							gmt_grdfloat z_node = 0.0f, i_node = 0.0f;
 							node = bin + bin_inc[k];
-							d_node = ij + ij_inc[k];
 							if (Ctrl->G.image) {	/* Have 3 grids with R,G,B values */
 								for (kk = 0; kk < 3; kk++) {
-									rgb[kk] = gmt_M_is255 (Drape[kk]->data[d_node]);
+									rgb[kk] = gmt_M_is255 (gmt_grd_get_node(Drape[kk]->header, Drape[kk]->data, c_row, c_col));
 									if (rgb[kk] < 0.0) rgb[kk] = 0; else if (rgb[kk] > 1.0) rgb[kk] = 1.0;
 								}
 								if (Ctrl->C.active && gmt_M_same_rgb (rgb, P->bfn[GMT_NAN].rgb)) continue;	/* Skip NaN colors */
 							}
 							else {		/* Use lookup to get color from either relief or drape grid (Z points to it) */
-								gmt_get_rgb_from_z (GMT, P, Z->data[d_node], rgb);
-								if (gmt_M_is_fnan (Z->data[d_node])) continue;	/* Skip NaNs in the z-data*/
+								z_node = gmt_grd_get_node(Z->header, Z->data, c_row, c_col);
+								gmt_get_rgb_from_z (GMT, P, z_node, rgb);
+								if (gmt_M_is_fnan (z_node)) continue;	/* Skip NaNs in the z-data*/
 							}
-							if (use_intensity_grid && gmt_M_is_fnan (Intens->data[d_node])) continue;	/* Skip NaNs in the intensity data*/
+							if (use_intensity_grid) {
+								i_node = (int_drape) ? int_drape[((uint64_t)(c_row + 1)) * mx_int + (uint64_t)(c_col + 1)]
+								                     : gmt_grd_get_node(Intens->header, Intens->data, c_row, c_col);
+								if (gmt_M_is_fnan (i_node)) continue;	/* Skip NaNs in the intensity data*/
+							}
 							/* We don't want to blend in the (typically) gray NaN colors with the others. */
 
 							good++;
 							dist = grdview_quick_idist (ip, jp, ix[node], iy[node]);
 							if (dist == 0) {	/* Only need this node value */
 								done = true;
-								if (Ctrl->I.active) intval = (use_intensity_grid) ? Intens->data[d_node] : Ctrl->I.value;
+								if (Ctrl->I.active) intval = (use_intensity_grid) ? i_node : Ctrl->I.value;
 							}
 							else {	/* Crude weighted average based on 1/distance to the nearest node */
 								w = 1.0 / (double)dist;
 								sum_r += rgb[0] * w;
 								sum_g += rgb[1] * w;
 								sum_b += rgb[2] * w;
-								if (use_intensity_grid) sum_i += Intens->data[d_node] * w;
+								if (use_intensity_grid) sum_i += i_node * w;
 								sum_w += w;
 							}
 						}
@@ -1824,12 +1847,14 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 				if (id[0] == GMT_Y) {
 					y_bottom = yval[j];
 					x_left = xval[i];
+					t_row = j;	t_col = i;	/* Node of this tile in row,col terms, for grids other than Topo */
 					bin = gmt_M_ij0(Topo->header, j, i);
 					ij = gmt_M_ijp(Topo->header, j, i);
 				}
 				else {
 					y_bottom = yval[i];
 					x_left = xval[j];
+					t_row = i;	t_col = j;
 					bin = gmt_M_ij0 (Topo->header, i, j);
 					ij = gmt_M_ijp (Topo->header, i, j);
 				}
@@ -1848,7 +1873,7 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 
 				if (Ctrl->I.active) {
 					if (use_intensity_grid) {
-						this_intensity = grdview_get_intensity (Intens, ij);
+						this_intensity = grdview_get_intensity (Intens, t_row, t_col);
 						if (gmt_M_is_dnan (this_intensity)) continue;
 					}
 					else

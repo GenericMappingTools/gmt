@@ -1400,37 +1400,40 @@ void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double
 	 * 	3. G->header->wesn is not 360 in longitude
 	 */
 	unsigned int pad[4], k, n_pad = 0;
-	double old_wesn[4], new_wesn[4], old_z_min, old_z_max;
+	openmp_int row, col, row_lo, row_hi, col_lo, col_hi;
+	double z, z_min, z_max;
 	if (GMT->common.R.oblique) return;	/* Do nothing for oblique maps */
 	if (!GMT->common.R.active[RSET]) return;	/* Do nothing if -R was not set */
 	if (gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI])) return;	/* Do nothing for 360 grids */
 	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) return;	/* Do nothing for global maps */
 	/* OK, may try to do a bit of work */
-	gmt_M_memcpy (old_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
-	gmt_M_memcpy (new_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
-	old_z_min = G->header->z_min;	old_z_max = G->header->z_max;
 	pad[XLO] = (G->header->wesn[XLO] < GMT->common.R.wesn[XLO]) ? irint (floor ((GMT->common.R.wesn[XLO] - G->header->wesn[XLO] + GMT_CONV12_LIMIT) / G->header->inc[GMT_X])) : 0;
 	pad[XHI] = (G->header->wesn[XHI] > GMT->common.R.wesn[XHI]) ? irint (floor ((G->header->wesn[XHI] - GMT->common.R.wesn[XHI] + GMT_CONV12_LIMIT) / G->header->inc[GMT_X])) : 0;
 	pad[YLO] = (G->header->wesn[YLO] < GMT->common.R.wesn[YLO]) ? irint (floor ((GMT->common.R.wesn[YLO] - G->header->wesn[YLO] + GMT_CONV12_LIMIT) / G->header->inc[GMT_Y])) : 0;
 	pad[YHI] = (G->header->wesn[YHI] > GMT->common.R.wesn[YHI]) ? irint (floor ((G->header->wesn[YHI] - GMT->common.R.wesn[YHI] + GMT_CONV12_LIMIT) / G->header->inc[GMT_Y])) : 0;
-	for (k = 0; k < 4; k++) if (pad[k]) {
-		new_wesn[k] = GMT->common.R.wesn[k];	/* Snap back to -R */
-		n_pad++;	/* Number of nonzero pads */
-	}
+	for (k = 0; k < 4; k++) if (pad[k]) n_pad++;	/* Number of nonzero pads */
 	if (n_pad == 0) return;	/* No change */
-	gmt_M_memcpy (G->header->wesn, new_wesn, 4, double);	/* Temporarily update the header */
-	for (k = 0; k < 4; k++) G->header->pad[k] += pad[k];	/* Temporarily change the pad */
-	gmt_set_grddim (GMT, G->header);	/* Change header items */
-	if (G->header->nm) {	/* Still a grid left to examine after moving to actual -R */
-		gmt_grd_zminmax (GMT, G->header, G->data);		/* Recompute the min/max */
-		*zmin = G->header->z_min;	*zmax = G->header->z_max;	/* These are then passed out */
+	/* Take the range over just the nodes that fall inside -R.  This used to be done by temporarily
+	 * inflating the grid's pad, which only works when the data matrix has a pad to inflate; walking
+	 * the window works whatever the layout is (issue #4358). */
+	row_lo = (openmp_int)pad[YHI];	row_hi = (openmp_int)(G->header->n_rows - pad[YLO]);
+	col_lo = (openmp_int)pad[XLO];	col_hi = (openmp_int)(G->header->n_columns - pad[XHI]);
+	if (row_hi <= row_lo || col_hi <= col_lo) {	/* No nodes actually inside the chosen region */
+		GMT_Report(GMT->parent, GMT_MSG_WARNING, "No grid nodes inside selected region\n");
+		return;
 	}
-	else	/* No nodes actually inside the chosen region */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "No grid nodes inside selected region\n");
-	gmt_M_memcpy (G->header->wesn, old_wesn, 4, double);	/* Reset the header */
-	for (k = 0; k < 4; k++) G->header->pad[k] -= pad[k];	/* Reset the pad */
-	gmt_set_grddim (GMT, G->header);	/* Reset header items */
-	G->header->z_min = old_z_min;	G->header->z_max = old_z_max;	/* Restore original min/max */
+	z_min = DBL_MAX;	z_max = -DBL_MAX;
+	for (row = row_lo; row < row_hi; row++) {
+		for (col = col_lo; col < col_hi; col++) {
+			z = G->data[gmt_M_ijp(G->header, row, col)];
+			if (gmt_M_is_dnan(z)) continue;
+			if (z < z_min) z_min = z;
+			if (z > z_max) z_max = z;
+		}
+	}
+	if (z_min <= z_max) {	/* Found at least one non-NaN node */
+		*zmin = z_min;	*zmax = z_max;	/* These are then passed out */
+	}
 }
 
 EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);

@@ -1419,11 +1419,12 @@ EXTERN_MSC int GMT_grdfilter (void *V_API, int mode, void *args) {
 			if ((Gout = GMT_Read_VirtualFile (API, out_string)) == NULL) {	/* Load in the resampled grid */
 				Return (API->error);
 			}
-			gmt_M_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
+			/* Gin and Gout are co-registered but need not share a pad, so index each with its own header (#4358) */
+			gmt_M_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[gmt_M_ijp (Gin->header, row_out, col_out)] - Gout->data[ij_out];
 			gmt_grd_init (GMT, Gout->header, options, true);	/* Update command history only */
 		}
 		else	/* Coregistered; no need to resample */
-			gmt_M_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
+			gmt_M_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[gmt_M_ijp (Gin->header, row_out, col_out)] - Gout->data[ij_out];
 		GMT_Report (API, GMT_MSG_INFORMATION, "Subtracting lowpass-filtered data from input grid to obtain high-pass filtered data.\n");
 	}
 
@@ -1547,8 +1548,8 @@ GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 			if (Ctrl->A.active && col_out != Ctrl->A.COL) continue;	/* Not at our selected column for testing */
 #endif
 			ij_out = gmt_M_ijp (Gout->header, row_out, col_out);	/* Node of current output point */
-			if (Ctrl->N.mode == NAN_REPLACE && gmt_M_is_fnan (Gin->data[ij_out])) {
-				/* [Here we know ij_out == ij_in]. Since output will be NaN we bypass the filter loop */
+			if (Ctrl->N.mode == NAN_REPLACE && gmt_M_is_fnan (Gin->data[gmt_M_ijp (Gin->header, row_out, col_out)])) {
+				/* Same node in the input grid, but Gin need not share Gout's pad, so index it with its own header */
 				Gout->data[ij_out] = GMT->session.f_NaN;
 				n_nan++;
 				continue;	/* Done with this node */
@@ -1556,7 +1557,10 @@ GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 
 			if (effort_level == 3) { /* Update weights for this location */
 				double xxx = (fast_way) ? x_fix : x_shift[col_out];
-				set_weight_matrix (GMT, &F, weight, y_out, par, xxx, y_shift, ij_out, F.varwidth);
+				/* The width grid is co-registered with Gout but need not share its pad, so give
+				 * set_weight_matrix a node number computed from the width grid's own header (#4358) */
+				set_weight_matrix (GMT, &F, weight, y_out, par, xxx, y_shift,
+					(F.varwidth) ? gmt_M_ijp (Ctrl->F.W->header, row_out, col_out) : ij_out, F.varwidth);
 			}
 			wt_sum = value = 0.0;	n_in_median = 0;	go_on = true;	/* Reset all counters */
 #ifdef DEBUG
