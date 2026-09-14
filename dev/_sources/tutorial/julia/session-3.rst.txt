@@ -204,7 +204,7 @@ hence we must ensure that this step is completed prior to gridding. GMT comes wi
 `blockmean <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/blockmean>`_,
 `blockmedian <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/blockmedian>`_, and
 `blockmode <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/blockmode>`_. The first averages values inside the
-grid-spacing boxes, the second returns median values, wile the latter returns modal values. As a rule of thumb,
+grid-spacing boxes, the second returns median values, while the latter returns modal values. As a rule of thumb,
 we use means for most smooth data (such as potential fields) and medians (or modes) for rough, non-Gaussian data
 (such as topography). In addition to the required **region** and **inc** switches, these preprocessors all take
 the same options shown below:

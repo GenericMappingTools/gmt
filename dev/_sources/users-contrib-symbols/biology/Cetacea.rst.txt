@@ -33,7 +33,7 @@ If you want to create a 2D map (most common situation) you need :doc:`plot </plo
 map you should use :doc:`plot3d </plot3d>` instead. Think also in how many different symbols you want to
 show in each individual map. You should have at least a different .xy file for each
 species that you want to show. You could want also to show separately males and females
-or adults/youngs/calfs. In this case, you will either need to give a different size to each
+or adults/youngs/calves. In this case, you will either need to give a different size to each
 group or place the data for each group in a different .xy (or .xyz) file and provide different symbols.
 
 A valid input datafile.xy is simply a text file containing several lines like this:

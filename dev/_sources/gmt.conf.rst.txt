@@ -1091,8 +1091,13 @@ PostScript Parameters
         with standard fonts.
 
     **PS_COLOR_MODEL**
-        Determines whether PostScript output should use **RGB**, **HSV**, **CMYK**,
-        or **GRAY** when specifying color [default is **rgb**]. Note if **HSV**
+        Determines whether PostScript output should use **RGB**, **RGBnoQUANT**,
+        **HSV**, **CMYK**, or **GRAY** when specifying color [default is **rgb**].
+        **RGBnoQUANT** uses
+        normal RGB colors but forces direct RGB raster output instead of indexed
+        images. This may increase file size and is intended for compatibility with
+        third-party PostScript/PDF editors that have problems with indexed images.
+        Note if **HSV**
         is selected it does not apply to images which in that case uses **RGB**.
         When selecting **GRAY**, all colors will be converted to gray scale using
         YIQ (television) conversion.

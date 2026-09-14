@@ -1103,7 +1103,8 @@ Miscellaneous projections
 GMT supports eight common projections for global presentation of data or models. These are the :ref:`Hammer <-Jh>`,
 :ref:`Mollweide <-Jw>`, :ref:`Winkel Tripel <-Jr>`, :ref:`Robinson <-Jn>`, :ref:`Eckert IV and VI <-Jk>`,
 :ref:`Sinusoidal <-Ji>`, and :ref:`Van der Grinten <-Jv>` projections. Due to the small scale used for global maps these
-projections all use the spherical approximation rather than more elaborate elliptical formulae.
+projections all use the spherical approximation rather than more elaborate elliptical formulae. In addition, the
+:ref:`Equal Earth <-Jeqearth>` projection is available through the **PROJ** string syntax of **-J**.
 
 In all cases, the specification of the central meridian can be skipped. The default is the middle of the longitude
 range of the plot, specified by the (**-R**) option.
@@ -1388,6 +1389,42 @@ Centered on the Dateline, the example below was created by this command:
    :align: center
 
    World map using the Van der Grinten projection.
+
+.. _-Jeqearth:
+
+Equal Earth projection (**-J+proj=eqearth**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Syntax**
+
+    **-J+proj=eqearth**\ [**+lon_0=**\ *lon0*]\ **+width=**\ *width*\|\ **+scale=**\ *scale*
+
+**Parameters**
+
+- The central meridian (*lon0*) [0].
+- The map *width* or *scale* in :ref:`plot-units <plt-units>`.
+
+**Description**
+
+The Equal Earth projection, presented by Bojan Šavrič, Tom Patterson and Bernhard Jenny in 2018, is an equal-area
+pseudo-cylindrical projection whose overall look was designed to resemble the (not equal-area) Robinson projection.
+Parallels are straight lines, the central meridian is a straight line half as long as the Equator, and all other
+meridians are curved. It has no GMT 1-letter code: it is done by `PROJ <https://proj.org/en/stable/operations/projections/eqearth.html>`_
+and is selected with the **PROJ** string syntax of the **-J** option. Because **PROJ** does the projection, the
+parameters are the **PROJ** ones (e.g., **+lon_0**, **+ellps**), to which GMT adds **+width** or **+scale** to set
+the map dimension. Note that the whole string must be quoted if you separate the **+**\ *keys* with spaces.
+
+**Example**
+
+Centered on Greenwich, the example below was created by this command:
+
+.. literalinclude:: /_verbatim/GMT_eqearth.txt
+
+.. figure:: /_images/GMT_eqearth.*
+   :width: 500 px
+   :align: center
+
+   World map using the Equal Earth projection.
 
 Footnotes
 ---------

@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mgd77magref &mdash; GMT 6.7.0 documentation</title>
+  <title>mgd77magref &mdash; GMT 6.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="../../_static/documentation_options.js?v=2adddf63"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.7
+                6.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -164,7 +164,7 @@
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cm4file</em> ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>Dstfile</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>f107file</em> ]
-[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>flags</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>flags</em>[<strong>+l</strong><em>low/high</em>] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><strong>c</strong>|<strong>l</strong><em>low/high</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -254,7 +254,7 @@ single flux to apply for all records.</p>
 </dd>
 </dl>
 <dl id="f">
-<dt><strong>-F</strong><em>flags</em></dt><dd><p>Selects output items; <em>flags</em> is a string made up of one or more of
+<dt><strong>-F</strong><em>flags</em>[<strong>+l</strong><em>low/high</em>]</dt><dd><p>Selects output items; <em>flags</em> is a string made up of one or more of
 these characters:</p>
 <p><strong>r</strong> means output all input columns before adding the items below</p>
 <p><strong>t</strong> means list total field (nT).</p>
@@ -284,6 +284,18 @@ from CM4 (but you can add others). <strong>-Ft</strong>/<strong>934</strong> the
 but output the field components. The data is written out in the
 order they appear in <em>flags</em> [Default is <strong>-Frthxyzdi</strong>/<strong>1</strong>]. <strong>Note</strong>:
 You can further select a subset of fields via <strong>-o</strong>.</p>
+<p>Append <strong>+l</strong><em>low/high</em> to limit the IGRF contribution to the spherical
+harmonic degrees in the <em>low/high</em> band [all degrees]. This modifier is only
+available for the IGRF model, that is, when <strong>-F</strong>…/<strong>0</strong> is used.
+<strong>Note</strong>: The IGRF only has degrees up to 10 before 1995 and up to 13 from
+1995 onwards, so a <em>high</em> beyond that limit is truncated.</p>
+<p><strong>Note</strong>: The <strong>+l</strong> modifier requires a version later than GMT 6.7.0. Earlier versions do
+not know it and will read its digits as CM4 field source codes instead: most
+bands then fail with a misleading message about selecting both the CM4 core
+and the IGRF, but a band such as <strong>+l5/2</strong>, whose digits happen to be valid
+source codes other than the core, is silently ignored and the complete IGRF
+field is returned. Check with <strong>gmt --version</strong> before using <strong>+l</strong> in a
+script that may run against an older installation.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
@@ -397,7 +409,7 @@ lithospheric and toroidal field at a one point location and decimal time
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 27, 2026.
+      <span class="lastupdated">Last updated on Sep 14, 2026.
       </span></p>
   </div>
 

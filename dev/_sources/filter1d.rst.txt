@@ -17,7 +17,7 @@ Synopsis
 [ |-D|\ *increment* ]
 [ |-E| ]
 [ |-L|\ *lack\_width* ]
-[ |-N|\ *t\_col* ]
+[ |-N|\ *t\_col*\ [**+e**\ *cols*] ]
 [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+e**\|\ **i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
@@ -133,9 +133,14 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *t_col*
+**-N**\ *t_col*\ [**+e**\ *cols*]
     Indicates which column contains the independent variable (time). The
     left-most column is 0, while the right-most is (*n_cols* - 1) [Default is 0].
+    Append **+e** and a comma-separated list of extra column(s) or column
+    ranges (e.g., 1,3-5) to pass through unfiltered, in addition to *t_col*.
+    By default, every column except *t_col* is filtered; use this modifier
+    to protect specific columns (e.g., coordinates) from being altered.
+    Requires output at the input abscissae, i.e., cannot be combined with |-T|.
 
 .. _-Q:
 
@@ -231,6 +236,16 @@ and not shorten the track, and add the distances every 2km to the file, use
 ::
 
   gmt filter1d track.txt -T2k+a -E -Fg200 > smooth_track.txt
+
+Given a profile with columns X, Y, Distance, and Elevation, filtering
+normally applies to every column except the independent one, which would
+also smooth X and Y. To smooth only the Elevation (column 3) as a function
+of Distance (column 2) while leaving X and Y untouched, exclude them with
+**+e**:
+
+::
+
+  gmt filter1d profile.txt -Fb100 -N2+e0,1 -E > profile_filt.txt
 
 See Also
 --------

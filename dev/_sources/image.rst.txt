@@ -78,7 +78,7 @@ Optional Arguments
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Specify image size in one of two ways:
-    
+
     - **+n** - Append \ *nx*\ [/*ny*] to replicate the (scaled) image *nx* times horizontally and
       *ny* times vertically. If *ny* is omitted, it will be identical to *nx* [Default is 1/1].
     - **+r** - Specify *dpi* to set the dpi of the image in dots per inch, or append **c**
@@ -111,7 +111,9 @@ Optional Arguments
     - **+f** - For 1-bit images you can specify an alternate *color* for the foreground pixels.
       Give no color to make those pixels transparent.
     - **+t** - For color images you can select a single *color* that should be made transparent
-      instead. This option may be repeated with different settings.
+      instead.
+
+    This option may be repeated with different settings.
 
 .. _-I:
 
