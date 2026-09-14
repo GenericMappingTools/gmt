@@ -6,6 +6,14 @@
 Changelog
 =========
 
+New Features in GMT 6.8.0
+=========================
+
+* :doc:`/supplements/mgd77/mgd77magref`: Add the **-F**...\ /**0+l**\ *low/high* modifier that limits the IGRF
+  evaluation to a band of spherical harmonic degrees, in the same spirit as **-S** does for the CM4 core and
+  lithospheric fields.  It is only accepted for the IGRF model (**-F**...\ /**0**) and is not available in
+  GMT 6.7.1 or earlier.
+
 New Features in GMT 6.7.1
 =========================
 

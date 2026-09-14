@@ -4965,7 +4965,7 @@ double MGD77_carter_correction (struct GMT_CTRL *GMT, double lon, double lat, do
   *
 *--------------------------------------------------------------------*/
 
-int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, double alt, double elong, double lat, double *out) {
+int MGD77_igrf10syn_band (struct GMT_CTRL *GMT, int isv, double date, int itype, double alt, double elong, double lat, int nlow, int nhigh, double *out) {
  /*     This is a synthesis routine for the 10th generation IGRF as agreed
   *     in December 2004 by IAGA Working Group V-MOD. It is valid 1900.0 to
   *     2010.0 inclusive. Values for dates from 1945.0 to 2000.0 inclusive are
@@ -4982,6 +4982,9 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
   *           = distance from centre of Earth in km if itype = 2 (>3485 km)
   *     lat   = latitude (90-90)
   *     elong = east-longitude (0-360) -- it works also in [-180;+180]
+  *     nlow  = lowest spherical harmonic degree to include in the synthesis [1]
+  *     nhigh = highest spherical harmonic degree to include in the synthesis
+  *             Pass nlow = 1 and nhigh = 0 (or 13) to get the complete field.
   *   OUTPUT
   *     out[0] F  = total intensity (nT) if isv = 0, rubbish if isv = 1
   *     out[1] H  = horizontal intensity (nT)
@@ -5534,6 +5537,7 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 	 };
 
 	int i, j, k, l, m, n, ll, lm, kmx, nmx, nc;
+	bool in_band;
 	double cd, cl[13], tc, ct, sd, fn = 0.0, gn = 0.0, fm, sl[13];
 	double rr, st, one, gmm, rho, two, three, ratio;
 	double p[105], q[105], r, t, a2, b2;
@@ -5579,6 +5583,18 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 		nc = nmx * (nmx + 2);
 		kmx = (nmx + 1) * (nmx + 2) / 2;
 	}
+	/* Check the requested harmonic degree band against what this particular model actually has */
+	if (nlow < 1) nlow = 1;
+	if (nhigh < 1) nhigh = nmx;	/* Not set, so use all the degrees available */
+	if (nhigh > nmx) {
+		GMT_Report(GMT->parent, GMT_MSG_WARNING, "The IGRF model for %g only has harmonic degrees up to %d, so resetting the upper degree from %d to %d\n", date, nmx, nhigh, nmx);
+		nhigh = nmx;
+	}
+	if (nlow > nhigh) {
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "The lower harmonic degree (%d) exceeds the upper degree (%d)\n", nlow, nhigh);
+		return MGD77_BAD_IGRFDATE;
+	}
+
 	r = alt;
 	sincosd (90.0 - lat, &st, &ct);
 	sincosd (elong, &(sl[0]), &(cl[0]));
@@ -5644,20 +5660,25 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 
 		lm = ll + l;
 		one = (tc * gh[lm-1] + t * gh[lm+nc-1]) * rr;
+		in_band = (n >= nlow && n <= nhigh);	/* Only degrees inside the band contribute, but p, q and l must be advanced regardless */
 		if (m == 0) {
-			X += one * q[k-1];
-			Z -= (fn + 1.) * one * p[k-1];
+			if (in_band) {
+				X += one * q[k-1];
+				Z -= (fn + 1.) * one * p[k-1];
+			}
 			l++;
 		}
 		else {
 			two = (tc * gh[lm] + t * gh[lm+nc]) * rr;
 			three = one * cl[m-1] + two * sl[m - 1];
-			X += three * q[k-1];
-			Z -= (fn + 1.) * three * p[k-1];
-			if (st != 0.)
-				Y += (one * sl[m-1] - two * cl[m-1]) * fm * p[k-1] / st;
-			else
-				Y += (one * sl[m-1] - two * cl[m-1]) * q[k-1] * ct;
+			if (in_band) {
+				X += three * q[k-1];
+				Z -= (fn + 1.) * three * p[k-1];
+				if (st != 0.)
+					Y += (one * sl[m-1] - two * cl[m-1]) * fm * p[k-1] / st;
+				else
+					Y += (one * sl[m-1] - two * cl[m-1]) * q[k-1] * ct;
+			}
 			l += 2;
 		}
 		m++;
@@ -5676,6 +5697,11 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 	out[5] = dec;		out[6] = dip;
 
 	return (MGD77_NO_ERROR);
+}
+
+int MGD77_igrf10syn(struct GMT_CTRL *GMT, int isv, double date, int itype, double alt, double elong, double lat, double *out) {
+	/* Evaluate the complete IGRF field, i.e., using all the harmonic degrees available */
+	return (MGD77_igrf10syn_band (GMT, isv, date, itype, alt, elong, lat, 1, 0, out));
 }
 
 void MGD77_IGF_text (struct GMTAPI_CTRL *API, int indent, int version) {
