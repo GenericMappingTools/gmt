@@ -4086,8 +4086,12 @@ int PSL_plotline_clipped_by_textbox(struct PSL_CTRL *PSL, double x0, double y0, 
 	PSL_defunits(PSL, "PSL_dx", offset[0]);
 	PSL_defunits(PSL, "PSL_dy", offset[1]);
 
-	/* Build even-odd clip path: huge outer rectangle + textbox rectangle (the hole) */
-	PSL_command(PSL, "N -10000000 -10000000 M 20000000 0 D 0 20000000 D -20000000 0 D P\n");
+	/* Build even-odd clip path: outer rectangle + textbox rectangle (the hole). The outer
+	 * rectangle just needs to comfortably enclose both the textbox hole and the full line;
+	 * an astronomically large placeholder standing for "infinity" makes some PDF converters
+	 * (e.g., Ghostscript's pdfwrite) miscompute the clip and drop the entire line (#9209). */
+	PSL_command(PSL, "/PSL_obx PSL_dim_w PSL_dim_h add PSL_dx add PSL_dy add %d add def\n", abs(ixl) + abs(iyl) + 100);
+	PSL_command(PSL, "N PSL_obx neg PSL_obx neg M PSL_obx 2 mul 0 D 0 PSL_obx 2 mul D PSL_obx 2 mul neg 0 D P\n");
 	PSL_command(PSL, "%s PSL_dim_x0 add PSL_dx sub %s PSL_dim_d add PSL_dy sub M ",
 	            jx[x_just], jy[y_just]);
 	PSL_command(PSL, "PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 0 D ");
