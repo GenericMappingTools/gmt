@@ -207,3 +207,23 @@ jobs:
         with:
           fail_ci_if_error: false
         if: always()
+
+  # See build.yml's build-skip job for why this twin exists: "test" above
+  # is skipped via job-level if:, which prevents matrix expansion and posts
+  # a single bogus "matrix.name" status instead of one per leg, so the
+  # required "Linux"/"macOS"/"Windows" contexts never get a status on
+  # documentation-only PRs.
+  test-skip:
+    name: ${{ matrix.name }}
+    needs: changes
+    if: needs.changes.outputs.relevant != 'true' && github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: Linux
+          - name: macOS
+          - name: Windows
+    steps:
+      - name: No-op (no relevant changes)
+        run: echo "Skipping - no changes relevant to this workflow"
