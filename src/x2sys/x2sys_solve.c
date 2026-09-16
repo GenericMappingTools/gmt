@@ -279,11 +279,12 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 						n_errors++;
 						break;
 				}
+				if (gmt_validate_modifiers (GMT, opt->arg, 'E', "r", GMT_MSG_ERROR)) n_errors++;
 				{	/* Optional +r[<K>] modifier */
-					char *mod = strstr (opt->arg, "+r");
-					if (mod) {
+					char txt[GMT_LEN64] = {""};
+					if (gmt_get_modifier (opt->arg, 'r', txt)) {
 						Ctrl->E.regularize = true;
-						if (mod[2]) Ctrl->E.K = atof (&mod[2]);
+						if (txt[0]) Ctrl->E.K = atof (txt);
 					}
 				}
 				break;
@@ -878,7 +879,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	sprintf (frmt_name, "%%-%ds", max_len+2);
 
 	for (p = 0; p < n_tracks; p++) {
-		if (normalize) a[col_off[p]+1] /= range;	/* Unnormalize slopes */
+		if (normalize && R[p] > 1) a[col_off[p]+1] /= range;	/* Unnormalize slopes; a track short of crossings has no slope, and +1 would be the next track's offset */
 		(GMT->common.b.active[GMT_IN]) ? sprintf (line, "%" PRIu64, p) : sprintf (line, frmt_name, trk_list[p]);
 		strcat (line, "\t");
 		strcat (line, Ctrl->C.col);
