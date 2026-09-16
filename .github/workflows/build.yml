@@ -149,15 +149,8 @@ jobs:
         run: call ci/simple-gmt-tests.bat
         if: runner.os == 'Windows'
 
-  # "build" above is skipped via job-level if: when there are no relevant
-  # changes. GitHub can only report one check per matrix leg (e.g. "Linux",
-  # "Linux (without optional dependencies)") when the matrix is actually
-  # expanded, which only happens once the job's own if: is true - a job
-  # skipped by if: posts a single status literally named "matrix.name"
-  # instead. Branch protection requires the real per-leg names, so without
-  # this twin job they never get a status and stay pending forever on
-  # documentation-only PRs. This job covers the same matrix under the
-  # opposite condition so the required contexts always get a real status.
+  # A job skipped by if: never expands its matrix, so it can't report the
+  # per-leg check names branch protection requires; this twin runs instead.
   build-skip:
     name: ${{ matrix.name }}
     needs: changes
