@@ -1,0 +1,65 @@
+
+ROCKMAG Supplemental Package
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
+
+------------------------------------------------------
+Status:		Prototype / work in progress.
+------------------------------------------------------
+
+This directory contains:
+
+	README.rockmag	This document
+	rmagcurie.c	rmagcurie C program code
+	rmaghyst.c	rmaghyst C program code
+	rockmag.c	Code shared between modules of this supplement
+	rockmag.h	Declarations for rockmag.c
+	test/		Example/test data and scripts
+
+This package is intended to grow into a small toolkit for processing
+and visualizing rock-magnetic data, complementing (not overlapping)
+the "paleomag" supplement: paleomag handles directional (Dec/Inc)
+demagnetization data, while rockmag handles field/temperature-versus-
+moment data (hysteresis loops, IRM/backfield acquisition curves,
+thermomagnetic M-T or kappa-T curves).
+
+	rmagcurie	Estimate Curie temperature from a thermomagnetic
+			heating/cooling curve. Each input segment (one
+			run) is automatically split into monotonic
+			heating/cooling branches, and each branch is
+			analyzed for up to three candidate Curie-point
+			estimates: the temperature of peak signal, the
+			Curie-Weiss (1/chi vs T) intercept of Petrovsky
+			& Kapicka (2006) - recommended for susceptibility
+			data - and, for comparison, the classic two-tangent
+			method of Gromme et al. (1969).
+
+	rmaghyst	Hysteresis loop parameters. Fits the two high-field
+			wings separately to separate the para-/diamagnetic
+			slope chi from the saturation magnetization Ms, then
+			reports Ms, the remanence Mrs, the coercivity Hc and
+			Mrs/Ms, together with both wing fits so the quality
+			of the correction is visible. Warns when Mrs/Ms > 1,
+			which is physically impossible and means the loop
+			never saturated within the measured field range.
+
+Planned additions (not yet implemented):
+
+	- IRM/backfield acquisition curves: coercivity of remanence Hcr,
+	  coercivity spectra, and cumulative log-Gaussian (Robertson &
+	  France, 1994; Kruiver et al., 2001) component unmixing.
+	- The Day (1977)/Dunlop (2002) plot, which needs Mrs/Ms from
+	  rmaghyst and Hcr from a backfield curve. Note this requires
+	  loops that actually saturate: a VSM limited to ~900 Oe does not
+	  saturate many rock samples, and then Ms - and any Day plot built
+	  on it - is not recoverable from the measurement.
+
+Input to rmagcurie is a simple 2-column table (temperature, magnetic
+parameter), one thermomagnetic run per segment (">" header). See
+test/rmagcurie_example.sh for a worked example (synthetic, exact-
+recovery sanity check for both the Curie-Weiss and two-tangent
+methods), and:
+
+Petrovsky, E., and A. Kapicka (2006), On determination of the Curie
+point from thermomagnetic curves, J. Geophys. Res., 111, B12S27,
+doi:10.1029/2006JB004507.
