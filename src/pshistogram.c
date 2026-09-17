@@ -342,21 +342,22 @@ GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOG
 			for (i = 0; i < 4; i++) x[i] += Ctrl->E.off;
 		}
 	}
-	/* Now convert locations to plot coordinates */
+	/* Now convert locations to plot coordinates.  Note x[] ends up with the bin-axis plot coordinate
+	 * either way (px == x normally, py == x under -A), so adjust x[] below and not px[] */
 	for (i = 0; i < 4; i++) {
 		gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
 		px[i] = xx;	py[i] = yy;
 	}
-	dx = px[1] - px[0];	/* Update bar width, now in plot units */
+	dx = x[1] - x[0];	/* Update bar width, now in plot units */
 	if (Ctrl->E.active) {	/* Adjust histogram plot width and possibly shift position if they are given in plot units (c|i|p)*/
-		if (Ctrl->E.w_is_dim) {	/* Must adjust this bins x-coords to have this x-width instead */
+		if (Ctrl->E.w_is_dim) {	/* Must adjust this bins bin-axis coords to have this width instead */
 			/* dx is current width in plot-units, shift/center to use the new width */
 			off = (dx - Ctrl->E.width) / 2.0;	/* Adjustment to center the new narrower bin */
-			px[0] += off;	px[3] += off;
-			px[1] -= off;	px[2] -= off;
+			x[0] += off;	x[3] += off;
+			x[1] -= off;	x[2] -= off;
 		}
-		if (Ctrl->E.do_offset && Ctrl->E.o_is_dim) {	/* Must adjust this bins x-coords for this shift */
-			for (i = 0; i < 4; i++) px[i] += Ctrl->E.off;
+		if (Ctrl->E.do_offset && Ctrl->E.o_is_dim) {	/* Must adjust this bins bin-axis coords for this shift */
+			for (i = 0; i < 4; i++) x[i] += Ctrl->E.off;
 		}
 	}
 	return (zval);
