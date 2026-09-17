@@ -806,15 +806,25 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 	return Curl;	/* Happily return the Curl pointer */
 }
 
-GMT_LOCAL struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
-	/* Creates filename for lock and activates the lock */
-	struct LOCFILE_FP *P = gmt_M_memory (GMT, NULL, 1, struct LOCFILE_FP);
+#define GMT_LOCK_N_TRIES	20	/* How many times we try to open a contended lock file */
+#define GMT_LOCK_WAIT		50000	/* Microseconds to wait between those attempts */
+
+GMT_LOCAL struct LOCFILE_FP *gmtremote_lock_on(struct GMT_CTRL *GMT, char *file) {
+	/* Creates filename for lock and activates the lock.  Returns NULL if we could not obtain the
+	 * lock; callers must treat that as "proceed without a lock", never as a fatal error. */
+	unsigned int n_try;
+	struct LOCFILE_FP *P = gmt_M_memory(GMT, NULL, 1, struct LOCFILE_FP);
 	if (P == NULL) return NULL;
 	P->file = gmtremote_lockfile (GMT, file);
-	if ((P->fp = fopen (P->file, "w")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create lock file %s\n", P->file);
-		gmt_M_str_free (P->file);
-		gmt_M_free (GMT, P);
+	/* Open for appending, not writing: the content is irrelevant since the file is just a lock token,
+	 * and truncating it will fail while another process holds a lock on it (Windows especially).
+	 * Under heavy contention even the open can fail, so give it a few tries before giving up. */
+	for (n_try = 0; n_try < GMT_LOCK_N_TRIES && (P->fp = fopen (P->file, "a")) == NULL; n_try++)
+		gmt_sleep (GMT_LOCK_WAIT);
+	if (P->fp == NULL) {
+		GMT_Report(GMT->parent, GMT_MSG_DEBUG, "Failed to create lock file %s - proceeding without a lock\n", P->file);
+		gmt_M_str_free(P->file);
+		gmt_M_free(GMT, P);
 		return NULL;
 	}
 	gmtlib_file_lock (GMT, fileno(P->fp));	/* Attempt exclusive lock */
@@ -825,9 +835,13 @@ GMT_LOCAL void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) 
 	/* Deactivates the lock on the file */
 	gmtlib_file_unlock (GMT, fileno((*P)->fp));
 	fclose ((*P)->fp);
-	gmt_remove_file (GMT, (*P)->file);
-	gmt_M_str_free ((*P)->file);
-	gmt_M_free (GMT, *P);
+	/* Removing the lock file may fail while other processes are queued up on the same lock and still
+	 * hold it open (Windows).  That is harmless - the next one in line simply reuses it - so do not
+	 * go through gmt_remove_file, which would issue a scary warning. */
+	if (!access((*P)->file, F_OK) && remove((*P)->file))
+		GMT_Report(GMT->parent, GMT_MSG_DEBUG, "Could not remove lock file %s (still in use?)\n", (*P)->file);
+	gmt_M_str_free((*P)->file);
+	gmt_M_free(GMT, *P);
 }
 
 /* Deal with hash values of cache/data files */
@@ -848,14 +862,13 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	}
 	if (GMT->current.io.internet_error) return 1;   			/* Not able to use remote copying in this session */
 
-	/* Make a lock */
-	if (do_lock && (LF = gmtremote_lock_on (GMT, file)) == NULL)
-		return 1;
+	/* Make a lock.  Failing to get one is not fatal - we then simply download without it */
+	if (do_lock) LF = gmtremote_lock_on(GMT, file);
 
 	/* If file locking held us up as another process was downloading the same file,
 	 * then that file should now be available.  So we check again if it is before proceeding */
 
-	if (do_lock && !access (file, F_OK))
+	if (LF && !access(file, F_OK))
 		goto unlocking1;	/* Yes it was, unlock and return no error */
 
 	/* Initialize the curl session */
@@ -895,7 +908,7 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 unlocking1:
 
 	/* Remove lock file after successful download */
-	if (do_lock) gmtremote_lock_off (GMT, &LF);
+	if (LF) gmtremote_lock_off(GMT, &LF);
 
 	if (turn_ctrl_C_off) gmtremote_turn_off_ctrl_C_check ();
 
@@ -973,6 +986,15 @@ GMT_LOCAL void gmtremote_init_paths (struct GMTAPI_CTRL *API) {
 	GMT_Report (API, GMT_MSG_DEBUG, "USERDIR is now %s and CACHEDIR is now %s\n", GMT->session.USERDIR, GMT->session.CACHEDIR);
 }
 
+GMT_LOCAL time_t gmtremote_mod_time(struct stat *buf) {
+	/* Return the modification (creation) time of a stat'ed file */
+#ifdef __APPLE__
+	return (buf->st_mtimespec.tv_sec);	/* Apple even has tv_nsec for nano-seconds... */
+#else
+	return (buf->st_mtime);
+#endif
+}
+
 GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	/* This function is called every time we are about to access a @remotefile.
 	 * It is called twice: Once for the hash table and once for the info table.
@@ -1015,8 +1037,9 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		snprintf (url, PATH_MAX, "%s/%s", gmt_dataserver_url (API), index_file);
 		GMT_Report (API, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtremote_get_url (GMT, url, indexpath, NULL, index, true)) {
-			GMT_Report (API, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
-			if (!access (indexpath, F_OK)) gmt_remove_file (GMT, indexpath);	/* Remove index file just in case it got corrupted or zero size */
+			GMT_Report(API, GMT_MSG_WARNING, "Failed to get remote file %s\n", url);
+			if (!access(indexpath, F_OK)) gmt_remove_file(GMT, indexpath);	/* Remove index file just in case it got corrupted or zero size */
+			GMT_Report(API, GMT_MSG_WARNING, "Disabling remote file download for the rest of this session since the server index file could not be obtained\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
 			GMT->current.io.internet_error = true;		/* No point trying again */
 			return 1;
@@ -1036,11 +1059,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		return 1;
 	}
 	/*  Get its modification (creation) time */
-#ifdef __APPLE__
-	mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nano-seconds... */
-#else
-	mod_time = buf.st_mtime;
-#endif
+	mod_time = gmtremote_mod_time(&buf);
 
 	if ((right_now - mod_time) > (GMT_DAY2SEC_I * GMT->current.setting.refresh_time)) {	/* Older than selected number of days; Time to get a new index file */
 		GMT_Report (API, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", indexpath);
@@ -1052,36 +1071,42 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 
 		/* Here we will try to download a file */
 
-		/* Make a lock on the file */
-		if ((LF = gmtremote_lock_on (GMT, (char *)new_indexpath)) == NULL)
-			return 1;
+		/* Make a lock on the index file itself.  Note we must lock indexpath and not new_indexpath:
+		 * the lock has to exclude any other process that downloads, reads or renames this same index
+		 * file, and the first-time branch above (via gmtremote_get_url with do_lock = true) locks
+		 * indexpath.  Locking new_indexpath here would let these two paths run concurrently and a
+		 * reader could then open indexpath in the window where we rename it to *.old. */
+		LF = gmtremote_lock_on (GMT, (char *)indexpath);	/* If we cannot lock we still go ahead, unprotected */
 
-		/* If file locking held us up as another process was downloading the same file,
-		 * then that file should now be available.  So we check again if it is before proceeding */
+		/* If file locking held us up as another process was refreshing the same file, then that
+		 * file is now up to date.  So we check its age again before proceeding */
 
-		if (!access (new_indexpath, F_OK)) {	/* Yes it was! Undo lock and return no error */
-			gmtremote_lock_off (GMT, &LF);	/* Remove lock file after successful download (unless query) */
+		if (stat(indexpath, &buf) == 0 && (time (NULL) - gmtremote_mod_time(&buf)) <= (GMT_DAY2SEC_I * GMT->current.setting.refresh_time)) {
+			GMT_Report(API, GMT_MSG_DEBUG, "File %s was refreshed by another process while we waited for the lock\n", indexpath);
+			if (LF) gmtremote_lock_off(GMT, &LF);	/* Remove lock file */
 			return GMT_NOERROR;
 		}
+		if (!access(new_indexpath, F_OK))	/* Leftover from an aborted refresh; get rid of it */
+			gmt_remove_file(GMT, new_indexpath);
 
 		if (gmtremote_get_url (GMT, url, new_indexpath, indexpath, index, false)) {	/* Get the new index file from server */
-			GMT_Report (API, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
-			if (!access (new_indexpath, F_OK)) gmt_remove_file (GMT, new_indexpath);	/* Remove index file just in case it got corrupted or zero size */
-			gmtremote_lock_off (GMT, &LF);
+			GMT_Report(API, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
+			if (!access(new_indexpath, F_OK)) gmt_remove_file(GMT, new_indexpath);	/* Remove index file just in case it got corrupted or zero size */
+			if (LF) gmtremote_lock_off(GMT, &LF);
 			return 1;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
 		if (!access (old_indexpath, F_OK))
 			remove (old_indexpath);	/* Remove old index file if it exists */
 		GMT_Report (API, GMT_MSG_DEBUG, "Rename %s to %s\n", indexpath, old_indexpath);
-		if (gmt_rename_file (GMT, indexpath, old_indexpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", indexpath, old_indexpath);
-			gmtremote_lock_off (GMT, &LF);
+		if (gmt_rename_file(GMT, indexpath, old_indexpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
+			GMT_Report(API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", indexpath, old_indexpath);
+			if (LF) gmtremote_lock_off(GMT, &LF);
 			return 1;
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Rename %s to %s\n", new_indexpath, indexpath);
-		if (gmt_rename_file (GMT, new_indexpath, indexpath, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", new_indexpath, indexpath);
-			gmtremote_lock_off (GMT, &LF);
+		GMT_Report(API, GMT_MSG_DEBUG, "Rename %s to %s\n", new_indexpath, indexpath);
+		if (gmt_rename_file(GMT, new_indexpath, indexpath, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
+			GMT_Report(API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", new_indexpath, indexpath);
+			if (LF) gmtremote_lock_off(GMT, &LF);
 			return 1;
 		}
 
@@ -1090,9 +1115,9 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 			int nO, nN, n, o;
 			struct GMT_DATA_HASH *O = NULL, *N = NULL;
 
-			if ((N = gmtremote_hash_load (GMT, indexpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
-				gmt_remove_file (GMT, indexpath);	/* Remove corrupted index file */
-				gmtremote_lock_off (GMT, &LF);
+			if ((N = gmtremote_hash_load(GMT, indexpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
+				gmt_remove_file(GMT, indexpath);	/* Remove corrupted index file */
+				if (LF) gmtremote_lock_off(GMT, &LF);
 				return 1;
 			}
 
@@ -1137,7 +1162,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		else
 			GMT->current.io.new_data_list = true;	/* Flag that we wish to delete datasets older than entries in this file */
 		/* Remove lock file after successful download */
-		gmtremote_lock_off (GMT, &LF);
+		if (LF) gmtremote_lock_off(GMT, &LF);
 	}
 	else
 		GMT_Report (API, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", indexpath);
@@ -1157,19 +1182,28 @@ void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 	int err1 = GMT_NOERROR, err2 = GMT_NOERROR;
 
 	if ((err1 = gmtremote_refresh (API, GMT_INFO_INDEX)))	/* Watch out for changes on the server info once a day */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote information file %s\n", GMT_INFO_SERVER_FILE);
+		GMT_Report(API, GMT_MSG_WARNING, "Unable to obtain remote information file %s\n", GMT_INFO_SERVER_FILE);
 	else if (API->remote_info == NULL) {	/* Get server file attribution info if not yet loaded */
-		if ((API->remote_info = gmtremote_data_load (API, &API->n_remote_info)) == NULL) {	/* Failed to load the info file */
+		/* Read it under the same lock used when refreshing it, or a concurrent refresh may rename
+		 * the file away from under us and we would wrongly conclude the server is unusable */
+		char infopath[PATH_MAX] = {""};
+		struct LOCFILE_FP *LF = NULL;
+		snprintf(infopath, PATH_MAX, "%s/%s", API->GMT->session.USERDIR, GMT_INFO_SERVER_FILE);
+		LF = gmtremote_lock_on(API->GMT, infopath);	/* If we fail to lock we still go ahead and read */
+		API->remote_info = gmtremote_data_load(API, &API->n_remote_info);
+		if (LF) gmtremote_lock_off(API->GMT, &LF);
+		if (API->remote_info == NULL) {	/* Failed to load the info file */
 			err1 = GMT_RUNTIME_ERROR;
-			GMT_Report (API, GMT_MSG_INFORMATION, "Unable to read server information file\n");
+			GMT_Report(API, GMT_MSG_WARNING, "Unable to read server information file %s\n", infopath);
 		}
 	}
 
 	if ((err2 = gmtremote_refresh (API, GMT_HASH_INDEX))) {	/* Watch out for changes on the server hash once a day */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
+		GMT_Report(API, GMT_MSG_WARNING, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
 	}
 
 	if (err1 || err2) {	/* Screwed, might as well turn off */
+		GMT_Report(API, GMT_MSG_WARNING, "Disabling remote file download for the rest of this session since the server index files could not be obtained or read\n");
 		API->GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
 		API->GMT->current.io.internet_error = true;		/* No point trying again */
 	}
@@ -1545,16 +1579,14 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 
 	/* Here we will try to download a file */
 
-	/* Only make a lock if not a query */
-	if (!query && (LF = gmtremote_lock_on (GMT, (char *)name)) == NULL)
-		return 1;
+	/* Only make a lock if not a query.  A failure to lock is not fatal - we then download unprotected */
+	if (!query) LF = gmtremote_lock_on(GMT, (char *)name);
 
 	/* If file locking held us up as another process was downloading the same file,
 	 * then that file should now be available.  So we check again if it is before proceeding */
 
-	if (!access (localfile, F_OK)) {	/* Yes it was! Undo lock and return no error */
-		if (!query)	/* Remove lock file after successful download (unless query) */
-			gmtremote_lock_off (GMT, &LF);
+	if (!access(localfile, F_OK)) {	/* Yes it was! Undo lock and return no error */
+		if (LF) gmtremote_lock_off(GMT, &LF);	/* Remove lock file */
 		return GMT_NOERROR;
 	}
 
@@ -1589,7 +1621,7 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 
 unlocking2:
 
-	if (!query)	/* Remove lock file after successful download (unless query) */
+	if (LF)	/* Remove lock file after successful download (unless query) */
 		gmtremote_lock_off (GMT, &LF);
 
 	if (turn_ctrl_C_off) gmtremote_turn_off_ctrl_C_check ();
