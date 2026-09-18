@@ -5332,7 +5332,13 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 			GMT->current.map.n_lon_nodes = 360;	GMT->current.map.n_lat_nodes = 180;
 			if (GMT->current.proj.projection == GMT_PROJ4_EQEARTH) {	/* Need the central meridian and world status as for the GMT pseudo-cylindricals */
 				char *pch = strstr(GMT->common.J.proj4string, "+lon_0=");
-				GMT->current.proj.central_meridian = (pch) ? atof(&pch[7]) : 0.0;
+				GMT->current.proj.proj4_lon0 = (pch) ? atof(&pch[7]) : 0.0;
+				/* If no +lon_0 was given we center the map on the middle of the -R, as GMT does for its own
+				 * pseudo-cylindricals.  PROJ still projects about proj4_lon0, but since x only depends on
+				 * (lon - lon_0) the wrappers below simply shift the longitudes into the PROJ frame. Without
+				 * this, -Rg (or any -R not centered on +lon_0) collapsed both map edges onto the same x. */
+				GMT->current.proj.central_meridian = (pch) ? GMT->current.proj.proj4_lon0 :
+				                                     0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 				GMT->current.map.is_world = gmt_M_360_range(GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 				/* Must be in place before the xy search below since those wrap the GDAL transforms to honor the central meridian */
 				GMT->current.proj.fwd = &gmtproj_proj4_pcyl_fwd;

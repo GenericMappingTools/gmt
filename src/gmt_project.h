@@ -443,6 +443,7 @@ struct GMT_PROJ {
 
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;
+	double proj4_lon0;	/* The +lon_0 given in the PROJ string [0]; may differ from central_meridian */
 	bool is_proj4;
 	bool proj4_is_cart[2];	/* Fist is for origin ref sys and second (if requested) for destiny */
 };
