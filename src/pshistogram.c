@@ -654,7 +654,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	unsigned int n_errors = 0, mode = 0, pos = 0;
 	int sval;
 	size_t L;
-	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""}, align = '\0';
+	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""}, *align = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -708,14 +708,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				break;
 			case 'E':	/* Alternative histogram bar width */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				align = '\0';
+				align = NULL;
 				if ((c = strstr (opt->arg, "+o"))) {	/* Asking for offset or alignment */
 					Ctrl->E.do_offset = true;
 					L = strlen (c);
 					if (!strcmp (&c[2], "c"))	/* Centered [Default] */
 						Ctrl->E.off = 0.0;
 					else if (!strcmp (&c[2], "l") || !strcmp (&c[2], "r"))	/* Needs the width, so resolve below */
-						align = c[2];
+						align = &c[2];
 					else if (strchr (GMT_DIM_UNITS, c[L-1])) {	/* In plot-dimension unit */
 						Ctrl->E.off = gmt_M_to_inch (GMT, &c[2]);
 						Ctrl->E.o_is_dim = true;
@@ -738,7 +738,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Directives +ol and +or require an explicit <width>\n");
 						n_errors++;
 					}
-					Ctrl->E.off = (align == 'l') ? -0.5 * Ctrl->E.width : 0.5 * Ctrl->E.width;
+					Ctrl->E.off = (*align == 'l') ? -0.5 * Ctrl->E.width : 0.5 * Ctrl->E.width;
 					Ctrl->E.o_is_dim = Ctrl->E.w_is_dim;
 				}
 				if (c) c[0] = '+';	/* Restore the modifier */
