@@ -58,7 +58,7 @@ struct PSHISTOGRAM_CTRL {
 		struct GMT_FONT font;
 		double offset;
 	} D;
-	struct PSHISTOGRAM_E {	/* -E<width>[u][+o<off>[u]] */
+	struct PSHISTOGRAM_E {	/* -E<width>[u][+o<off>[u]|l|c|r] */
 		bool active;
 		bool do_offset, w_is_dim, o_is_dim;
 		double width;
@@ -595,11 +595,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+f Sets the label <font> [FONT_ANNOT_PRIMARY].");
 	GMT_Usage (API, 3, "+o Sets the offset <off> between bar and label [6p].");
 	GMT_Usage (API, 3, "+r Rotate the label to be vertical [horizontal].");
-	GMT_Usage (API, 1, "\n-E<width>[+o<offset>]");
-	GMT_Usage (API, -2, "Use custom bar <width> and optionally <offset>. "
-		"By default, the bar width is implicitly set via -T and the offset is zero. "
+	GMT_Usage (API, 1, "\n-E<width>[+o<offset>|l|c|r]");
+	GMT_Usage (API, -2, "Use custom bar <width> and optionally shift or align it within the bin. "
+		"By default, the bar width is implicitly set via -T and the bar is centered on the bin. "
 		"Append desired bar width in data units, or append a valid unit (%s) for a fixed width.", GMT_DIM_UNITS_DISPLAY);
-	GMT_Usage (API, 3, "+o Add an offset in data units, or append a valid unit (%s) for a fixed offset [0].", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "+o Shift the bar by <offset>, or place it relative to the bin center via a directive:");
+	GMT_Usage (API, 4, "c: Center the bar on the bin [Default].");
+	GMT_Usage (API, 4, "l: Place the bar just left of the bin center (shorthand for +o-<width>/2).");
+	GMT_Usage (API, 4, "r: Place the bar just right of the bin center (shorthand for +o+<width>/2).");
+	GMT_Usage (API, 4, "<offset>: Shift the bar by <offset> in data units, or append a valid unit (%s) for a fixed offset [0].", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Note: Set <width> to half the bin width so that l|r align the bars with the bin edges (grouped bars).");
 	GMT_Usage (API, 1, "\n-F The bin boundaries given should be considered bin centers instead.");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Select color/pattern for columns.");
 	GMT_Usage (API, 1, "\n-I[o|O]");
@@ -649,7 +654,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	unsigned int n_errors = 0, mode = 0, pos = 0;
 	int sval;
 	size_t L;
-	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""};
+	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""}, *align = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -703,16 +708,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				break;
 			case 'E':	/* Alternative histogram bar width */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				if ((c = strstr (opt->arg, "+o"))) {	/* Asking for offset */
+				align = NULL;
+				if ((c = strstr (opt->arg, "+o"))) {	/* Asking for offset or alignment */
 					Ctrl->E.do_offset = true;
 					L = strlen (c);
-					if (strchr (GMT_DIM_UNITS, c[L-1])) {	/* In plot-dimension unit */
+					if (!strcmp (&c[2], "c"))	/* Centered [Default] */
+						Ctrl->E.off = 0.0;
+					else if (!strcmp (&c[2], "l") || !strcmp (&c[2], "r"))	/* Needs the width, so resolve below */
+						align = &c[2];
+					else if (strchr (GMT_DIM_UNITS, c[L-1])) {	/* In plot-dimension unit */
 						Ctrl->E.off = gmt_M_to_inch (GMT, &c[2]);
 						Ctrl->E.o_is_dim = true;
 					}
 					else
 						Ctrl->E.off = atof (&c[2]);	/* In data units */
-					c[0] = '\0';	/* Chop off the modifier */
+					c[0] = '\0';	/* Chop off the modifier to parse the width */
 				}
 				if (opt->arg[0]) {	/* Gave a different bar width */
 					L = strlen (opt->arg);
@@ -722,6 +732,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 					}
 					else
 						Ctrl->E.width = atof (opt->arg);	/* In data units */
+				}
+				if (align) {	/* Now the width is known, so resolve +ol|+or */
+					if (gmt_M_is_zero (Ctrl->E.width)) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Directives +ol and +or require an explicit <width>\n");
+						n_errors++;
+					}
+					Ctrl->E.off = (*align == 'l') ? -0.5 * Ctrl->E.width : 0.5 * Ctrl->E.width;
+					Ctrl->E.o_is_dim = Ctrl->E.w_is_dim;
 				}
 				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
