@@ -76,6 +76,12 @@ enum psstereonet_dumps {
 	PSSTEREONET_DUMP_TRACE,	/* -Mc: the cyclographic traces (great circles) */
 	PSSTEREONET_DUMP_POINT};	/* -Mp: the poles, or the lines if -Tl */
 
+/* Which density estimator -D uses */
+enum psstereonet_density {
+	PSSTEREONET_EXPKAMB = 0,	/* -De: Vollmer's [1995] exponentially-smoothed Kamb method [Default] */
+	PSSTEREONET_KAMB,	/* -Dk: Kamb's [1959] original step-function counting circle */
+	PSSTEREONET_SCHMIDT};	/* -Ds: the traditional fixed 1%-area counting circle */
+
 #define PSSTEREONET_N_TRACE	181	/* Points used to draw one great circle (i.e., 1 degree steps) */
 #define PSSTEREONET_DEF_WIDTH	15.0	/* Default width (diameter) of the net, in cm */
 #define PSSTEREONET_DEF_ANNOT	30.0	/* Default azimuth annotation interval */
@@ -83,6 +89,10 @@ enum psstereonet_dumps {
 #define PSSTEREONET_DEF_SYMBOL	"c0.15c"	/* Default symbol for the poles and lines */
 #define PSSTEREONET_DEF_PEN	"default"	/* Default pen for traces and symbol outlines */
 #define PSSTEREONET_DEF_FRAME	2		/* Number of default -B options we may add */
+#define PSSTEREONET_DEF_SIGMA	3.0	/* Kamb's [1959] own choice of expected count, E = 3 sigma */
+#define PSSTEREONET_DEF_CI_SIGMA	2.0	/* Default contour interval for -Dk|e, in sigma */
+#define PSSTEREONET_DEF_CI_PERCENT	2.0	/* Default contour interval for -Ds, in percent */
+#define PSSTEREONET_MIN_COUNT	30	/* Below this many points a density estimate is not worth much */
 
 struct PSSTEREONET_CTRL {
 	struct PSSTEREONET_Out {	/* -> */
@@ -98,6 +108,15 @@ struct PSSTEREONET_CTRL {
 		bool active;
 		char *string;	/* Since we will simply pass this on to plot */
 	} C;
+	struct PSSTEREONET_D {	/* -D[e|k|s][+c[<cpt>]][+i<interval>][+p<pen>][+s<sigma>] */
+		bool active;
+		bool fill;	/* True if +c was given */
+		unsigned int method;
+		double sigma;
+		double interval;	/* 0 means "use the method's own default" */
+		char *pen;	/* Contour line pen, or NULL for grdcontour's own default */
+		char *cpt;	/* Fill CPT; independent of Ctrl->C, which colors symbols/traces by a different quantity */
+	} D;
 	struct PSSTEREONET_G {	/* -G<fill> */
 		bool active;
 		char *string;	/* Since we will simply pass this on to plot */
@@ -138,6 +157,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->A.draw = false;	/* Only annotate the azimuth ring if -A was actually given */
 	C->A.annot = PSSTEREONET_DEF_ANNOT;
 	C->A.tick  = PSSTEREONET_DEF_TICK;
+	C->D.method = PSSTEREONET_EXPKAMB;
+	C->D.sigma = PSSTEREONET_DEF_SIGMA;
 
 	return (C);
 }
@@ -146,6 +167,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.string);
+	gmt_M_str_free (C->D.pen);
+	gmt_M_str_free (C->D.cpt);
 	gmt_M_str_free (C->G.string);
 	gmt_M_str_free (C->L.string);
 	gmt_M_str_free (C->S.string);
@@ -161,6 +184,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S<width>] [-A[<annot>[/<tick>]]] [%s] "
+		"[-D[e|k|s][+c[<cpt>]][+i<interval>][+p<pen>][+s<sigma>]] "
 		"[-G<fill>] %s[-L<pen>] %s%s[-S<symbol>[<size>]] [-T[d|l|p][+u]] [%s] [%s] "
 		"[-W<pen>] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
@@ -198,6 +222,28 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"drawn, not even the perimeter of the net; give a bare -B for the classic two-level mesh "
 		"[-Bpg10 -Bsg30]. A -B that only carries frame settings, such as a -B+t<title>, gets that same "
 		"mesh, so you can title a default net without spelling out the intervals.");
+	GMT_Usage (API, 1, "\n-D[e|k|s][+c[<cpt>]][+i<interval>][+p<pen>][+s<sigma>]");
+	GMT_Usage (API, -2, "Contour the density of the plotted poles (or lines, if -Tl) using one of three "
+		"statistical estimators of clustering on a hemisphere:");
+	GMT_Usage (API, 3, "e: Exponentially-smoothed Kamb method [Vollmer, 1995; Default]. Every point "
+		"contributes to every node with a smooth Gaussian-like falloff, avoiding the blocky artifacts "
+		"of a hard counting circle.");
+	GMT_Usage (API, 3, "k: Kamb's [1959] original method: a point counts only if it falls within a "
+		"counting circle sized so that <sigma> controls how large a departure from a uniform "
+		"distribution the contours represent.");
+	GMT_Usage (API, 3, "s: The traditional Schmidt method: a fixed counting circle covering 1%% of the "
+		"net's area; contours are then in percent of the total point count rather than standard "
+		"deviations.");
+	GMT_Usage (API, -2, "Optionally, append modifiers:");
+	GMT_Usage (API, 3, "+c Shade between contours using a CPT; give no <cpt> to build one automatically "
+		"from the density range. This CPT is independent of -C, which colors symbols and traces by a "
+		"different, user-supplied quantity.");
+	GMT_Usage (API, 3, "+i Set the contour interval [%g sigma for -De|k, %g%% for -Ds].",
+		PSSTEREONET_DEF_CI_SIGMA, PSSTEREONET_DEF_CI_PERCENT);
+	GMT_Usage (API, 3, "+p Set the pen used to draw the contours [Default pen used by grdcontour].");
+	GMT_Usage (API, 3, "+s Set the expected count for a uniform distribution, in standard deviations "
+		"[%g, Kamb's own choice]. Ignored by -Ds, whose counting circle is always 1%% of the net.",
+		PSSTEREONET_DEF_SIGMA);
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fill for the symbols.");
 	GMT_Usage (API, 1, "\n-L<pen>");
 	GMT_Usage (API, -2, "Set the pen used to outline the symbols [%s].", PSSTEREONET_DEF_PEN);
@@ -271,6 +317,30 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				gmt_M_str_free (Ctrl->C.string);
 				if (opt->arg[0]) Ctrl->C.string = strdup (opt->arg);
+				break;
+			case 'D':	/* Contour the density of the plotted poles or lines */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				if ((c = gmt_first_modifier (GMT, opt->arg, "cips"))) {	/* Got one or more of +c, +i, +p, +s */
+					char token[GMT_LEN256] = {""};
+					if (gmt_get_modifier (c, 'c', token)) {
+						Ctrl->D.fill = true;
+						if (token[0]) Ctrl->D.cpt = strdup (token);
+					}
+					if (gmt_get_modifier (c, 'i', token)) Ctrl->D.interval = atof (token);
+					if (gmt_get_modifier (c, 'p', token)) Ctrl->D.pen = strdup (token);
+					if (gmt_get_modifier (c, 's', token)) Ctrl->D.sigma = atof (token);
+					c[0] = '\0';	/* Temporarily chop off the modifiers */
+				}
+				switch (opt->arg[0]) {
+					case '\0': case 'e': Ctrl->D.method = PSSTEREONET_EXPKAMB; break;
+					case 'k': Ctrl->D.method = PSSTEREONET_KAMB;    break;
+					case 's': Ctrl->D.method = PSSTEREONET_SCHMIDT; break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -D: Unrecognized directive %c\n", opt->arg[0]);
+						n_errors++;
+						break;
+				}
+				if (c) c[0] = '+';	/* Restore the modifiers */
 				break;
 			case 'G':	/* Symbol fill */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
@@ -358,6 +428,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.string == NULL, "Option -S: Must specify a symbol\n");
+	if (Ctrl->D.active) {
+		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active, "Option -D: Cannot be used with -M since dump mode never plots\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.sigma <= 0.0, "Option -D+s: The expected count must be a positive number of standard deviations\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.interval < 0.0, "Option -D+i: The contour interval cannot be negative\n");
+		if (Ctrl->D.method == PSSTEREONET_SCHMIDT && !gmt_M_eq (Ctrl->D.sigma, PSSTEREONET_DEF_SIGMA))
+			GMT_Report (API, GMT_MSG_WARNING, "Option -D+s: The Schmidt method's counting circle is always 1%% of the net; +s is ignored\n");
+	}
 
 	n_errors += gmt_check_binary_io (GMT, 2);
 
@@ -577,6 +654,240 @@ GMT_LOCAL int psstereonet_convert (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL int psstereonet_grd_interpolate (double lon1, double lat1, double z1, double lon2, double lat2, double z2,
+                                            double level, double *lon, double *lat) {
+	/* If level lies between z1 and z2, linearly interpolate the (lon,lat) where the edge (1)-(2) crosses it.
+	 * Ported from Vollmer [1995]'s Interpolate() -- the level is the value being searched for, not returned. */
+	double dz1 = level - z1, dz2 = level - z2, dz, t;
+	if (dz1 == 0.0) { *lon = lon1; *lat = lat1; return 1; }
+	if (dz2 == 0.0) { *lon = lon2; *lat = lat2; return 1; }
+	if ((dz1 > 0.0 && dz2 > 0.0) || (dz1 < 0.0 && dz2 < 0.0)) return 0;	/* Level is outside [z1,z2] */
+	dz = z2 - z1;
+	t = dz1 / dz;
+	*lon = lon1 + (lon2 - lon1) * t;
+	*lat = lat1 + (lat2 - lat1) * t;
+	return 1;
+}
+
+GMT_LOCAL unsigned int psstereonet_grd_cell_segments (double lon[4], double lat[4], double z[4], double level, double sx[2][2], double sy[2][2]) {
+	/* Corners 0,1,2,3 go around one grid cell.  Find where (if at all) the contour at level crosses each of
+	 * the 4 edges, then connect them into 0, 1, or 2 line segments -- basic marching squares, ported from
+	 * Vollmer [1995]'s ContourGrid(), including his tie-breaker for the ambiguous 4-crossing saddle case. */
+	double cx[4], cy[4];
+	unsigned int found = 0, n_seg = 0;
+	if (psstereonet_grd_interpolate (lon[0], lat[0], z[0], lon[1], lat[1], z[1], level, &cx[0], &cy[0])) found |= 1;
+	if (psstereonet_grd_interpolate (lon[1], lat[1], z[1], lon[2], lat[2], z[2], level, &cx[1], &cy[1])) found |= 2;
+	if (psstereonet_grd_interpolate (lon[2], lat[2], z[2], lon[3], lat[3], z[3], level, &cx[2], &cy[2])) found |= 4;
+	if (psstereonet_grd_interpolate (lon[3], lat[3], z[3], lon[0], lat[0], z[0], level, &cx[3], &cy[3])) found |= 8;
+	switch (found) {
+		case 3:  sx[0][0]=cx[0]; sy[0][0]=cy[0]; sx[0][1]=cx[1]; sy[0][1]=cy[1]; n_seg = 1; break;
+		case 5:  sx[0][0]=cx[0]; sy[0][0]=cy[0]; sx[0][1]=cx[2]; sy[0][1]=cy[2]; n_seg = 1; break;
+		case 9:  sx[0][0]=cx[0]; sy[0][0]=cy[0]; sx[0][1]=cx[3]; sy[0][1]=cy[3]; n_seg = 1; break;
+		case 6:  sx[0][0]=cx[1]; sy[0][0]=cy[1]; sx[0][1]=cx[2]; sy[0][1]=cy[2]; n_seg = 1; break;
+		case 10: sx[0][0]=cx[1]; sy[0][0]=cy[1]; sx[0][1]=cx[3]; sy[0][1]=cy[3]; n_seg = 1; break;
+		case 12: sx[0][0]=cx[2]; sy[0][0]=cy[2]; sx[0][1]=cx[3]; sy[0][1]=cy[3]; n_seg = 1; break;
+		case 15: {	/* Saddle: 4 crossings, connect whichever pairing gives the shorter total diagonal */
+			double d02 = hypot (cx[0]-cx[1], cy[0]-cy[1]) + hypot (cx[2]-cx[3], cy[2]-cy[3]);
+			double d13 = hypot (cx[1]-cx[2], cy[1]-cy[2]) + hypot (cx[3]-cx[0], cy[3]-cy[0]);
+			if (d02 < d13) {
+				sx[0][0]=cx[0]; sy[0][0]=cy[0]; sx[0][1]=cx[1]; sy[0][1]=cy[1];
+				sx[1][0]=cx[2]; sy[1][0]=cy[2]; sx[1][1]=cx[3]; sy[1][1]=cy[3];
+			}
+			else {
+				sx[0][0]=cx[1]; sy[0][0]=cy[1]; sx[0][1]=cx[2]; sy[0][1]=cy[2];
+				sx[1][0]=cx[3]; sy[1][0]=cy[3]; sx[1][1]=cx[0]; sy[1][1]=cy[0];
+			}
+			n_seg = 2;
+			break;
+		}
+		default: n_seg = 0;	/* 0 or 1 crossing: no contour piece in this cell */
+	}
+	return n_seg;
+}
+
+GMT_LOCAL int psstereonet_density_contour (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GMT_DATASET *Point) {
+	/* Contour the density of the poles (or lines, if -Tl) in Point using the Kamb [1959] / Vollmer [1995]
+	 * family of estimators for clustering on a hemisphere.  We build a grid covering the whole sphere (not
+	 * just the visible hemisphere: a grid confined to lon -90/90 would straddle the -Rg seam that
+	 * psstereonet_prep_options already put in place) and mask out the invisible half with NaN.
+	 *
+	 * The obvious way to draw the result would be to hand the grid to grdcontour, the way -S and -W already
+	 * hand a dataset to psxy.  That combination -- a grid, an azimuthal projection, and a nested -O -K call
+	 * from inside an already-open plot -- turned out to trigger a reproducible mis-scaling in grdcontour
+	 * that no combination of -R/-X/-Y could work around (confirmed with a synthetic cluster: the resulting
+	 * contours land squeezed into a small, wrongly-placed corner of the net, both via a virtual grid and via
+	 * a real one, with or without -O).  Rather than ship that, we trace the contours ourselves with a small
+	 * marching-squares pass over the grid (below), producing plain line segments that go through the exact
+	 * same psxy/virtual-dataset path already proven correct by -S and -W. */
+	uint64_t k, n, n_seg, n_pieces, row, col, node, dim[4] = {1, 0, 0, 2};
+	unsigned int n_rows, n_columns, pass;
+	double *px = NULL, *py = NULL, *pz = NULL;
+	double lon, lat, sin_lat, cos_lat, sin_lon, cos_lon, nx, ny, nz, d, sum, value;
+	double sigma2, a_kamb, alpha_kamb, radius, inc[2], wesn[4] = {0.0, 360.0, -90.0, 90.0};
+	double a = 0.0, alpha = 0.0, f = 0.0, unit = 1.0, interval, zmax, level;
+	double corner_lon[4], corner_lat[4], z4[4], sx[2][2], sy[2][2];
+	int error;
+	char cmd[GMT_LEN1024] = {""}, vfile[GMT_VF_LEN] = {""};
+	struct GMT_GRID *G = NULL;
+	struct GMT_DATASET *Cont = NULL;
+	struct GMT_DATASEGMENT *S = Point->table[0]->segment[0];
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	n = Point->n_records;
+	if (n < PSSTEREONET_MIN_COUNT)
+		GMT_Report (API, GMT_MSG_WARNING, "Option -D: Only %" PRIu64 " points; a density estimate below %d points is not very meaningful\n",
+			n, PSSTEREONET_MIN_COUNT);
+
+	/* Direction cosines of the data points, computed once and reused for every grid node below */
+	px = gmt_M_memory (GMT, NULL, n, double);
+	py = gmt_M_memory (GMT, NULL, n, double);
+	pz = gmt_M_memory (GMT, NULL, n, double);
+	for (k = 0; k < n; k++) {
+		sincosd (S->data[GMT_Y][k], &sin_lat, &cos_lat);
+		sincosd (S->data[GMT_X][k], &sin_lon, &cos_lon);
+		px[k] = cos_lat * cos_lon;	py[k] = cos_lat * sin_lon;	pz[k] = sin_lat;
+	}
+
+	/* Fractional area a, cosine threshold alpha, and normalizing unit, per Vollmer [1995] eq. 6-9 & 14 */
+	sigma2 = Ctrl->D.sigma * Ctrl->D.sigma;
+	a_kamb = sigma2 / (n + sigma2);	/* Used for grid sizing below regardless of method */
+	alpha_kamb = 1.0 - a_kamb;
+	switch (Ctrl->D.method) {
+		case PSSTEREONET_SCHMIDT:
+			a = 0.01;	alpha = 1.0 - a;	unit = n * 0.01;
+			break;
+		case PSSTEREONET_KAMB:
+			a = a_kamb;	alpha = alpha_kamb;	unit = sqrt (n * a * (1.0 - a));
+			break;
+		default:	/* PSSTEREONET_EXPKAMB: no threshold, every point contributes via the exponential below */
+			f = 2.0 * (1.0 + n / sigma2);	unit = sqrt (n * (f / 2.0 - 1.0) / (f * f));
+			break;
+	}
+
+	/* Auto-size the grid to the counting radius (it shrinks as ~1/sqrt(n)) rather than using a fixed
+	 * spacing that would undersample a tightly-clustered, large-n data set; clamp so a tiny sigma or huge
+	 * n cannot blow up the grid without bound. */
+	radius = d_acosd (alpha_kamb);
+	inc[GMT_X] = inc[GMT_Y] = MIN (2.0, MAX (0.1, radius / 3.0));
+
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) {
+		gmt_M_free (GMT, px);	gmt_M_free (GMT, py);	gmt_M_free (GMT, pz);
+		return (API->error);
+	}
+
+	n_rows = G->header->n_rows;	n_columns = G->header->n_columns;
+	for (row = 0; row < n_rows; row++) {
+		lat = gmt_M_grd_row_to_y (GMT, row, G->header);
+		sincosd (lat, &sin_lat, &cos_lat);
+		for (col = 0; col < n_columns; col++) {
+			lon = gmt_M_grd_col_to_x (GMT, col, G->header);
+			node = gmt_M_ijp (G->header, row, col);
+			if (cosd (lon) < 0.0) {	/* Outside the hemisphere this -JA|S can ever show; see file header for why lon in [-90,90] is the visible half */
+				G->data[node] = GMT->session.f_NaN;
+				continue;
+			}
+			sincosd (lon, &sin_lon, &cos_lon);
+			nx = cos_lat * cos_lon;	ny = cos_lat * sin_lon;	nz = sin_lat;
+			sum = 0.0;
+			for (k = 0; k < n; k++) {
+				/* fabs(): a grid node and a data point can be up to 180 degrees apart in our direction
+				 * cosines even though both sit in the single visible hemisphere -- e.g. a horizontal
+				 * E-W line recorded as trend 090 and as trend 270 are the same axis but land at lon=+90
+				 * and lon=-90.  Without fabs() the density would be biased low near the rim and would be
+				 * discontinuous across it; this is not a simplification, every reference implementation
+				 * (Vollmer 1995, mplstereonet) takes the absolute value here. */
+				d = fabs (nx * px[k] + ny * py[k] + nz * pz[k]);
+				if (Ctrl->D.method == PSSTEREONET_EXPKAMB)
+					sum += exp (f * (d - 1.0));
+				else if (d >= alpha)
+					sum += 1.0;
+			}
+			/* The -0.5 continuity correction centers the discrete count between integer contour levels
+			 * (Vollmer 1995); Schmidt's raw percentage needs no such correction (mplstereonet agrees). */
+			value = (Ctrl->D.method == PSSTEREONET_SCHMIDT) ? (sum / unit) : ((sum - 0.5) / unit);
+			G->data[node] = (gmt_grdfloat)value;
+		}
+	}
+	gmt_M_free (GMT, px);	gmt_M_free (GMT, py);	gmt_M_free (GMT, pz);
+
+	if (Ctrl->D.fill) {	/* +c would need proper polygon extraction between contours, not just lines; not yet implemented */
+		GMT_Report (API, GMT_MSG_ERROR, "Option -D+c: Shading between contours is not implemented yet; drop +c and use +p for the contour lines\n");
+		GMT_Destroy_Data (API, &G);
+		return (GMT_NOT_A_VALID_PARAMETER);
+	}
+
+	interval = (Ctrl->D.interval > 0.0) ? Ctrl->D.interval :
+		((Ctrl->D.method == PSSTEREONET_SCHMIDT) ? PSSTEREONET_DEF_CI_PERCENT : PSSTEREONET_DEF_CI_SIGMA);
+
+	zmax = -1e30;
+	for (row = 0; row < n_rows; row++) for (col = 0; col < n_columns; col++) {
+		node = gmt_M_ijp (G->header, row, col);
+		if (!gmt_M_is_fnan (G->data[node]) && G->data[node] > zmax) zmax = G->data[node];
+	}
+
+	/* Trace every level twice: once to count how many 2-point pieces marching squares will produce (so we
+	 * can size the dataset up front), once to actually fill them in. */
+	for (pass = 0; pass < 2; pass++) {
+		n_pieces = 0;
+		for (level = interval; level <= zmax; level += interval) {	/* -Lp equivalent: positive levels only */
+			for (row = 0; row + 1 < n_rows; row++) {
+				for (col = 0; col + 1 < n_columns; col++) {
+					corner_lon[0] = gmt_M_grd_col_to_x (GMT, col, G->header);
+					corner_lon[1] = corner_lon[0];
+					corner_lon[2] = gmt_M_grd_col_to_x (GMT, col+1, G->header);
+					corner_lon[3] = corner_lon[2];
+					corner_lat[0] = gmt_M_grd_row_to_y (GMT, row+1, G->header);
+					corner_lat[1] = gmt_M_grd_row_to_y (GMT, row, G->header);
+					corner_lat[2] = corner_lat[1];
+					corner_lat[3] = corner_lat[0];
+					z4[0] = G->data[gmt_M_ijp (G->header, row+1, col)];
+					z4[1] = G->data[gmt_M_ijp (G->header, row, col)];
+					z4[2] = G->data[gmt_M_ijp (G->header, row, col+1)];
+					z4[3] = G->data[gmt_M_ijp (G->header, row+1, col+1)];
+					if (gmt_M_is_fnan (z4[0]) || gmt_M_is_fnan (z4[1]) || gmt_M_is_fnan (z4[2]) || gmt_M_is_fnan (z4[3]))
+						continue;	/* A cell touching the invisible hemisphere has no contour to trace */
+					n_seg = psstereonet_grd_cell_segments (corner_lon, corner_lat, z4, level, sx, sy);
+					if (pass == 0) { n_pieces += n_seg; continue; }
+					for (k = 0; k < n_seg; k++, n_pieces++) {
+						struct GMT_DATASEGMENT *Seg = Cont->table[0]->segment[n_pieces];
+						Seg->data[GMT_X][0] = sx[k][0];	Seg->data[GMT_Y][0] = sy[k][0];
+						Seg->data[GMT_X][1] = sx[k][1];	Seg->data[GMT_Y][1] = sy[k][1];
+					}
+				}
+			}
+		}
+		if (pass == 0) {	/* Now that we know the count, allocate the dataset that pass 1 will fill in */
+			if (n_pieces == 0) {
+				GMT_Report (API, GMT_MSG_WARNING, "Option -D: No contour levels fall within the density range; nothing drawn\n");
+				GMT_Destroy_Data (API, &G);
+				return (GMT_NOERROR);
+			}
+			dim[GMT_SEG] = n_pieces;	dim[GMT_ROW] = 2;
+			if ((Cont = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Destroy_Data (API, &G);
+				return (API->error);
+			}
+		}
+	}
+	gmt_set_dataset_minmax (GMT, Cont);
+	GMT_Destroy_Data (API, &G);
+
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, Cont, vfile) == GMT_NOTSET) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create a virtual data set for the density contours\n");
+		return (API->error);
+	}
+	snprintf (cmd, GMT_LEN1024, "-R%s -J%s -O -K %s", GMT->common.R.string, GMT->common.J.string, vfile);
+	psstereonet_add_option (cmd, GMT_LEN1024, 'W', Ctrl->D.pen ? Ctrl->D.pen : PSSTEREONET_DEF_PEN);
+	if ((error = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd))) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to plot the density contours\n");
+		return (error);
+	}
+	if (GMT_Close_VirtualFile (API, vfile) != GMT_NOERROR)
+		return (API->error);
+
+	return (GMT_NOERROR);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -671,6 +982,13 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 	gmt_plotcanvas (GMT);		/* Fill canvas if requested */
 	gmt_map_basemap (GMT);		/* Lay down the net itself, i.e., the gridlines */
+
+	if (Ctrl->D.active && Point) {	/* Contour (and maybe shade) the density of the poles or lines before anything else goes on top */
+		if ((error = psstereonet_density_contour (GMT, Ctrl, Point)))
+			Return (error);
+	}
+	else if (Ctrl->D.active)
+		GMT_Report (API, GMT_MSG_WARNING, "Option -D: No data to contour\n");
 
 	if (do_trace && Trace) {	/* Draw the cyclographic trace (great circle) of each plane */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, Trace, vfile) == GMT_NOTSET) {

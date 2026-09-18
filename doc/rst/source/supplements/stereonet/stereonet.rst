@@ -19,6 +19,7 @@ Synopsis
 [ |-J|\ **A**\|\ **S**\ *width* ]
 [ |-A|\ [*annot*\ [/*tick*]] ]
 [ |SYN_OPT-B| ]
+[ |-D|\ [**e**\|\ **k**\|\ **s**][**+c**\ [*cpt*]][**+i**\ *interval*][**+p**\ *pen*][**+s**\ *sigma*] ]
 [ |-G|\ *fill* ]
 [ |-L|\ *pen* ]
 [ |-S|\ *symbol*\ [*size*] ]
@@ -107,6 +108,30 @@ A |-B| that only carries frame settings, such as a **-B+t**\ *title*, gets that 
 so you can title a default net without spelling out the intervals.
 Add, e.g., ``--MAP_GRID_PEN_PRIMARY=0.25p,gray`` to make the fine mesh recede into the
 background.
+
+.. _-D:
+
+**-D**\ [**e**\|\ **k**\|\ **s**][**+c**\ [*cpt*]][**+i**\ *interval*][**+p**\ *pen*][**+s**\ *sigma*]
+    Contour the density of the plotted poles (or lines, if **-Tl**) using one of three
+    statistical estimators of clustering on a hemisphere:
+
+    - **e** - The exponentially-smoothed Kamb method [Vollmer, 1995; Default].  Every point
+      contributes to every grid node with a smooth, Gaussian-like falloff, avoiding the
+      blocky look of a hard counting circle.
+    - **k** - Kamb's [1959] original method: a point counts only if it falls within a
+      counting circle whose size is set by *sigma*.
+    - **s** - The traditional Schmidt method: a fixed counting circle covering 1% of the
+      net's area; contours are then in percent of the total point count rather than
+      standard deviations.
+
+    Optionally, append modifiers:
+
+    - **+c** - Not implemented yet; reserved for shading between contours with a CPT.
+    - **+i** - Set the contour interval [2 sigma for **-De**\|\ **k**, 2% for **-Ds**].
+    - **+p** - Set the pen used to draw the contours [Default pen used by :doc:`plot </plot>`].
+    - **+s** - Set the expected count for a uniform distribution, in standard deviations
+      [3, Kamb's own choice].  Ignored by **-Ds**, whose counting circle is always 1% of
+      the net.
 
 .. _-G:
 
@@ -260,11 +285,24 @@ Wulff net without the azimuth ring, try::
       gmt stereonet bedding.txt -JS10c -B -Tl -A0 -Sc0.2c -Gred
     gmt end show
 
+To contour the density of a set of poles to joints, in 2-sigma steps of the exponential
+Kamb method, with the individual poles shown as small dots on top, try::
+
+    gmt begin joints
+      gmt stereonet joints.txt -JA12c -B -De+p0.5p -Sc0.05c -Gblack
+    gmt end show
+
 References
 ----------
 
+Kamb, W. B., 1959, Ice petrofabric observations from Blue Glacier, Washington, in relation
+to theory and experiment, *Journal of Geophysical Research*, 64(11), 1891-1909.
+
 Lisle, R. J., and P. R. Leyshon, 2004, *Stereographic Projection Techniques for Geologists
 and Civil Engineers*, 2nd edition, Cambridge University Press.
+
+Vollmer, F. W., 1995, C program for automatic contouring of spherical orientation data
+using a modified Kamb method, *Computers & Geosciences*, 21(1), 31-49.
 
 See Also
 --------
