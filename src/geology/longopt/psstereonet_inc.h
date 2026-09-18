@@ -27,6 +27,10 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  transproc_mask */
 	{ 0, 'A', "azimuth",           "", "", "", "", GMT_TP_STANDARD },
 	GMT_C_CPT_KW,
+	{ 0, 'D', "density",
+	          "e,k,s",             "exponential|exponential_kamb,kamb,schmidt",
+	          "c,i,p,s",           "cpt,interval,pen,sigma",
+		  GMT_TP_STANDARD },
 	{ 0, 'G', "fill",
 	          "p,P",               "bit,bitreverse",
 	          "b,f,r",             "bg|background,fg|foreground,dpi",
