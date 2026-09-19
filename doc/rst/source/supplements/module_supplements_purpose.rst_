@@ -8,6 +8,10 @@
 
 .. |psvelo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
+.. |stereonet_purpose| replace:: Plot structural geology data on a stereonet
+
+.. |psstereonet_purpose| replace:: Plot structural geology data on a stereonet
+
 .. |fzanalyzer_purpose| replace:: Analysis of fracture zones using crossing profiles
 
 .. |fzblender_purpose| replace:: Produce a smooth blended FZ trace

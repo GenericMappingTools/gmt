@@ -1,0 +1,42 @@
+GEOLOGY Supplemental Package
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
+
+------------------------------------------------------
+Author:		Federico Esteban
+Date:		August 22, 2026
+Version:	6 (for GMT 6 release).
+------------------------------------------------------
+
+This directory contains:
+
+	README.geology			This document
+	psstereonet.c			psstereonet C program code
+	longopt/psstereonet_inc.h	long-option translation table
+
+This package contains programs that may be useful for
+structural geologists.  Currently there is one program:
+
+	stereonet	Plot structural geology data on a stereonet
+
+A stereonet (also called a stereographic projection, a Schmidt net
+when equal-area or a Wulff net when equal-angle) is the standard way
+to display the orientation of planes and lines measured in the field.
+The module converts the strike and dip of planes, or the trend and
+plunge of lines, into the longitudes and latitudes expected by the GMT
+azimuthal projections, and then draws the cyclographic traces (great
+circles) of the planes and/or the points where the poles and lines
+pierce the hemisphere.
+
+Documentation via RST files produce HTML and MAN pages that
+give full description of the program interfaces.
+
+
+* Acknowledgement
+
+The module implements the recipe that Rom1, Joaquim Luis and Federico
+Esteban worked out in the GMT forum thread
+
+	https://forum.generic-mapping-tools.org/t/plot-a-schmidt-stereonet/6067
+
+which in turn is the basis for the stereonet function in GMT.jl.

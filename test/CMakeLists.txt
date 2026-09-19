@@ -27,6 +27,7 @@ if (DO_TESTS)
 
 	if (NOT DO_SUPPLEMENT_TESTS)
 		list (REMOVE_ITEM GMT_TEST_DIRS geodesy)
+		list (REMOVE_ITEM GMT_TEST_DIRS geology)
 		list (REMOVE_ITEM GMT_TEST_DIRS gmtmex)
 		list (REMOVE_ITEM GMT_TEST_DIRS gshhg)
 		list (REMOVE_ITEM GMT_TEST_DIRS img)
