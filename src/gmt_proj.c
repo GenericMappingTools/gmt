@@ -2666,13 +2666,16 @@ GMT_LOCAL void gmtproj_proj4_pcyl_fwd(struct GMT_CTRL *GMT, double lon, double l
 	gmt_M_wind_lon(GMT, dlon);	/* Now dlon is in [-180,180] relative to the central meridian */
 	if (dlon >= 180.0) dlon = 180.0 - GMT_PROJ_CONV_LIMIT;
 	else if (dlon <= -180.0) dlon = -180.0 + GMT_PROJ_CONV_LIMIT;
-	gmt_proj4_fwd(GMT, GMT->current.proj.central_meridian + dlon, lat, x, y);
+	/* x only depends on (lon - lon_0), so a map centered on central_meridian is obtained by handing PROJ the
+	   same offset measured from its own +lon_0 (the two differ when no +lon_0 was given and -R is not centered on 0) */
+	gmt_proj4_fwd(GMT, GMT->current.proj.proj4_lon0 + dlon, lat, x, y);
 }
 
 GMT_LOCAL void gmtproj_proj4_pcyl_inv(struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* The inverse: PROJ hands us a longitude in [-180,180] so put it back in the map's own longitude range */
 	gmt_proj4_inv(GMT, lon, lat, x, y);
 	if (gmt_M_is_dnan(*lon) || gmt_M_is_dinf(*lon)) return;
+	*lon += GMT->current.proj.central_meridian - GMT->current.proj.proj4_lon0;	/* Undo the shift done in the forward */
 	while (*lon < GMT->current.proj.central_meridian - 180.0) *lon += 360.0;
 	while (*lon > GMT->current.proj.central_meridian + 180.0) *lon -= 360.0;
 }
