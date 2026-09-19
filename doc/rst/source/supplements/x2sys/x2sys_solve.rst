@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **s**\|\ **y**\|\ **z**
+**gmt x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **s**\|\ **t**\|\ **z**\ [**+r**\ [*K*]]
 [ *COE_list.txt* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+u**] ]
@@ -53,7 +53,7 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **s**\|\ **y**\|\ **z**
+**-E**\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **s**\|\ **t**\|\ **z**\ [**+r**\ [*K*]]
     The correction type you wish to model. Choose among the following
     functions f(**p**) , where **p** are the *m*
     parameters per track that we will fit simultaneously using a least
@@ -82,6 +82,14 @@ Required Arguments
 
     **z** will fit f(**p**) = *a* + *b* \* z (an offset plus a unit scale
     correction); *z* is the data value at the crossover; records must contain z1, z2, ID1, ID2.
+
+    Append **+r**\ [*K*] to **d** or **t** to ridge-regularize the solve
+    (see the Warning further below): this pulls a poorly-constrained
+    track's offset back towards a plain, well-behaved correction instead
+    of letting it blow up, while leaving well-constrained tracks nearly
+    unaffected. *K* is a trust multiplier: the prior belief is that
+    |offset| should not need to exceed roughly *K* times the
+    pre-correction crossover-error standard deviation [10].
 
 
 Optional Arguments
@@ -125,6 +133,26 @@ determine the number of clusters and automatically add the required
 constraint equations.  If you need a particular reference track to have
 a particular offset (e.g., 0) then you can subtract the offset you
 found from every track correction and add in the desired offset.
+
+**Warning**: Models that solve for more than one parameter per track
+(**d**, **t**, **h**, **g**, **z**) need each track to have not just
+at least as many crossings as parameters, but *enough of them, well
+distributed along the track*, to separate the parameters reliably. A
+track whose crossings are few and/or clustered together leaves its
+part of the normal-equation system poorly conditioned. Because that
+system is not exactly singular no error is raised, and the
+least-squares solution can come back with an offset many times larger
+than the crossover errors it was supposed to remove -- silently
+corrupting that track instead of correcting it, even though the fit
+still looks fine (crossover residuals stay small). **x2sys_solve**
+flags such tracks with a warning naming the track, the ratio of its
+solved offset to the pre-correction crossover-error scale, and how
+many crossings back it. If you see this warning, inspect the flagged
+track's connectivity (:doc:`x2sys_report` reports crossings per
+track); try appending **+r** to **-Ed** or **-Et** to regularize the
+solve (see |-E| above), or fall back to **-Ec** if your survey does
+not have enough well-spread crossings per track to support a reliable
+drift (or other multi-parameter) estimate.
 
 Input Format
 ------------

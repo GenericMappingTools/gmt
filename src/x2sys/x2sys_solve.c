@@ -67,6 +67,10 @@
 #define F_IS_DRIFT_T	6	/* Subtract a trend with time from each track */
 #define F_IS_SCALE_OFF	7	/* Apply a scale and offset to the observations for each track */
 
+/* Few or clustered crossings leave a track's offset poorly constrained: the fit still closes but the
+ * offset can come back orders of magnitude too large, and the matrix is not singular so nothing errors */
+#define X2SYS_SOLVE_UNSTABLE_RATIO	20.0	/* Offsets exceeding this many old_stdev's are suspect */
+
 struct X2SYS_SOLVE_CTRL {
 	struct X2SYS_SOLVE_In {
 		bool active;
@@ -76,9 +80,11 @@ struct X2SYS_SOLVE_CTRL {
 		bool active;
 		char *col;
 	} C;
-	struct X2SYS_SOLVE_E {	/* -E */
+	struct X2SYS_SOLVE_E {	/* -E[+r[<K>]] */
 		bool active;
 		int mode;
+		bool regularize;	/* Ridge-regularize the d|t solve */
+		double K;		/* Trust multiplier: |offset| not expected to exceed K * COE st.dev. */
 	} E;
 	struct X2SYS_SOLVE_T {	/* -T */
 		bool active;
@@ -162,6 +168,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->E.K = 10.0;	/* Default +r trust multiplier */
+
 	return (C);
 }
 
@@ -176,7 +184,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<COEdbase>] -C<column> -Ec|d|g|h|s|t|z -T<TAG> [%s] [-W[+u]] [%s] [%s]%s[%s]\n",
+	GMT_Usage (API, 0, "usage: %s [<COEdbase>] -C<column> -Ec|d|g|h|s|t|z[+r[<K>]] -T<TAG> [%s] [-W[+u]] [%s] [%s]%s[%s]\n",
 		name, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -185,7 +193,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [standard input].");
 	GMT_Usage (API, 1, "\n-C<column>");
 	GMT_Usage (API, -2, "Specify the column name to process (e.g., faa, mag).");
-	GMT_Usage (API, 1, "\n-Ec|d|g|h|s|t|z");
+	GMT_Usage (API, 1, "\n-Ec|d|g|h|s|t|z[+r[<K>]]");
 	GMT_Usage (API, -2, "Equation to fit: specify <flag> to indicate model to fit per track:");
 	GMT_Usage (API, 3, "c: Constant offset... Determine offset [Default].");
 	GMT_Usage (API, 3, "d: Drift by distance. Determine offset and drift-vs-distance rate.");
@@ -194,6 +202,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "s: Data scale........ Determine scaling factor.");
 	GMT_Usage (API, 3, "t: Drift over time... Determine offset and drift-vs-time rate.");
 	GMT_Usage (API, 3, "z: Data scale/offset. Determine offset and scaling factor.");
+	GMT_Usage (API, -2, "Note: d|t|g|h|z solve for more than one parameter per track and need each "
+		"track to have enough well-distributed crossings to separate them reliably; too few or "
+		"clustered crossings can give an unstable, oversized offset (a warning is issued when this happens). "
+		"For d|t, append +r to ridge-regularize the solve against this instability: this pulls poorly-"
+		"constrained tracks back towards a plain offset (small effect on well-constrained tracks) by "
+		"assuming |offset| is not expected to exceed about <K> times the pre-correction crossover-error "
+		"scale [10].");
 	GMT_Usage (API, 1, "\n-T<TAG>");
 	GMT_Usage (API, -2, "Set the system tag for this compilation.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
@@ -264,6 +279,14 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 						n_errors++;
 						break;
 				}
+				if (gmt_validate_modifiers (GMT, opt->arg, 'E', "r", GMT_MSG_ERROR)) n_errors++;
+				{	/* Optional +r[<K>] modifier */
+					char txt[GMT_LEN64] = {""};
+					if (gmt_get_modifier (opt->arg, 'r', txt)) {
+						Ctrl->E.regularize = true;
+						if (txt[0]) Ctrl->E.K = atof (txt);
+					}
+				}
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
@@ -283,6 +306,11 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode < 0, "Option -E: Choose among c, d, g, h, s, t and z\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.regularize && Ctrl->E.K <= 0.0, "Option -E: The +r<K> trust multiplier must be positive\n");
+	if (Ctrl->E.regularize && Ctrl->E.mode != F_IS_DRIFT_D && Ctrl->E.mode != F_IS_DRIFT_T) {
+		GMT_Report (API, GMT_MSG_WARNING, "Option -E: +r is only implemented for the d and t models; ignored for this model\n");
+		Ctrl->E.regularize = false;
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -306,7 +334,7 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	int min_ID, max_ID;
 	unsigned int rec_mode;
 	uint64_t n_par = 0, n_in = 0, n, m, n_tracks = 0, n_active, n_constraints = 0;
-	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, w_col, id_col, bin_expect, *R = NULL, *col_off = NULL, *cluster = NULL;
+	uint64_t i, p, j, k, r, s, row_off, row, n_COE = 0, w_col, id_col, bin_expect, *R = NULL, *col_off = NULL, *cluster = NULL, *n_cross = NULL;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC, n_alloc_t = GMT_CHUNK;
 
 	double *N = NULL, *a = NULL, *b = NULL, *in = NULL, *data[N_COE_PARS], sgn, old_mean, new_mean, sw2, C_i, C_j;
@@ -645,6 +673,8 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		R[i]++;		/* Increase COE count for track i */
 		R[j]++;		/* Increase COE count for track j */
 	}
+	n_cross = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);	/* Raw crossing count, before R[] is capped */
+	for (p = 0; p < n_tracks; p++) n_cross[p] = R[p];
 	for (p = n = 0; p < n_tracks; p++) {	/* For each track, determine R[track], total number of parameters, and the column offsets */
 		(GMT->common.b.active[GMT_IN]) ? sprintf (trk[0], "%" PRIu64, p) : sprintf (trk[0], "%s", trk_list[p]);
 		if (R[p] < n_par)	/* Came up short */
@@ -778,6 +808,17 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (Ctrl->E.regularize && n > 0) {
+		/* Only the real unknowns get lambda; the Lagrange rows must stay exact equality constraints.
+		 * Scaling lambda to the mean diagonal keeps it invariant to the COE and weight units in use */
+		double mean_diag = 0.0, lambda;
+		for (i = 0; i < n; i++) mean_diag += N[i*m+i];
+		mean_diag /= n;
+		lambda = mean_diag / (Ctrl->E.K * Ctrl->E.K);
+		for (i = 0; i < n; i++) N[i*m+i] += lambda;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Ridge-regularizing the solve: mean diagonal = %g, K = %g, lambda = %g\n", mean_diag, Ctrl->E.K, lambda);
+	}
+
 	/* Get LS solution */
 
 	if ((error = gmt_gaussjordan (GMT, N, (unsigned int)m, b)) != 0) {
@@ -838,12 +879,24 @@ EXTERN_MSC int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	sprintf (frmt_name, "%%-%ds", max_len+2);
 
 	for (p = 0; p < n_tracks; p++) {
-		if (normalize) a[col_off[p]+1] /= range;	/* Unnormalize slopes */
+		if (normalize && R[p] > 1) a[col_off[p]+1] /= range;	/* Unnormalize slopes; a track short of crossings has no slope, and +1 would be the next track's offset */
 		(GMT->common.b.active[GMT_IN]) ? sprintf (line, "%" PRIu64, p) : sprintf (line, frmt_name, trk_list[p]);
 		strcat (line, "\t");
 		strcat (line, Ctrl->C.col);
 		gmt_M_memset (var, N_BASIS, double);	/* Reset all parameters to zero */
 		for (r = 0; r < R[p]; r++) var[r] = a[col_off[p]+r];	/* Just get the first R(p) items; the rest are set to 0 */
+		if (Ctrl->E.mode != F_IS_SCALE && old_stdev > 0.0 && fabs (var[0]) > X2SYS_SOLVE_UNSTABLE_RATIO * old_stdev) {
+			(GMT->common.b.active[GMT_IN]) ? sprintf (trk[0], "%" PRIu64, p) : sprintf (trk[0], "%s", trk_list[p]);
+			GMT_Report (API, GMT_MSG_WARNING,
+				"Track %s: solved offset %.4g is %.0fx the pre-correction COE st.dev. (%.4g), backed by only %" PRIu64 " crossing(s) -- "
+				"likely unstable/unreliable, not a real systematic offset. %s\n",
+				trk[0], var[0], fabs (var[0]) / old_stdev, old_stdev, n_cross[p],
+				Ctrl->E.regularize ?
+					"Still unstable even with +r; try a smaller K, or fall back to -Ec." :
+					((Ctrl->E.mode == F_IS_DRIFT_D || Ctrl->E.mode == F_IS_DRIFT_T) ?
+						"Try appending +r to this -E option, or fall back to -Ec." :
+						"Consider -Ec instead, or improve this track's crossover coverage."));
+		}
 		switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 			case F_IS_CONSTANT:
 				sprintf (text, "\t%g", var[0]);
@@ -883,6 +936,7 @@ END:
 	gmt_M_free (GMT, b);
 	gmt_M_free (GMT, R);
 	gmt_M_free (GMT, col_off);
+	gmt_M_free (GMT, n_cross);
 	if (!GMT->common.b.active[GMT_IN]) x2sys_free_list (GMT, trk_list, n_tracks);
 	gmt_M_free (GMT, Out);
 
