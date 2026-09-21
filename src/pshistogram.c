@@ -395,14 +395,14 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	if (!cpt)	/* Just set fill once since constant for all bars */
 		gmt_setfill (GMT, fill, draw_outline);
 
+	if (F->cumulative) area = F->sum_w;	/* Cumulative curves span the entire sum, either direction */
+
 	/* First lay down the bars or curve */
 	for (ibox = 0; ibox < F->n_boxes; ibox++) {
 		if (stairs || F->boxh[ibox]) {
 			bin_width = F->T->array[ibox+1] - F->T->array[ibox];
 			xval = 0.5 * (F->T->array[ibox] + F->T->array[ibox+1]);
-			if (F->cumulative)
-				area = F->boxh[ibox];	/* Just pick up the final bin as it has the entire sum */
-			else	/* Add up as we go along */
+			if (!F->cumulative)	/* Add up as we go along */
 				area += bin_width * F->boxh[ibox];
 			zval = pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
 
@@ -1402,7 +1402,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 					yp[k] = f * gmt_vonmises_pdf (GMT, stats[6] * xp[k], stats[0], stats[3]);
 				else if (Ctrl->Q.active) {	/* Want a cumulative curve */
 					yp[k] = f * (1.0 + erf (z / M_SQRT2));
-					if (Ctrl->Q.mode == -1) yp[k] = f - yp[k];
+					if (Ctrl->Q.mode == -1) yp[k] = 2.0 * f - yp[k];	/* f is only half the total sum */
 				}
 				else
 					yp[k] = f * exp (-0.5 * z * z);
