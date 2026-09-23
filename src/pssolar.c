@@ -109,7 +109,7 @@ GMT_LOCAL unsigned int pssolar_parse_date_tz(struct GMT_CTRL *GMT, char *date_tz
 			case 'd': date[0] = strdup(&p[1]);	break;
 			case 'z':	/* Time zone as [-]hh[:mm[:ss]] or decimal hours */
 				if (gmt_scanf_arg (GMT, &p[1], GMT_IS_GEO, false, TZ) == GMT_IS_NAN) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse time zone +z%s, expected [-]hh[:mm[:ss]]\n", &p[1]);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse time zone +z%s, expected [-]hh[:mm]\n", &p[1]);
 					n_errors++;
 				}
 				break;
@@ -141,7 +141,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Sunrise, Sunset, Noon and length of the day for that location.");
 	GMT_Usage (API, 3, "+d Append <date> in ISO format, e.g, +d2000-04-25, to compute sun parameters "
 		"for this date [today].");
-	GMT_Usage (API, 3, "+z Append time zone <TZ> as [-]hh[:mm[:ss]] offset from UTC, if necessary.");
+	GMT_Usage (API, 3, "+z Append time zone <TZ> as [-]hh[:mm] offset from UTC, if necessary.");
 	GMT_Option (API, "J-,K");
 	GMT_Usage (API, 1, "\n-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) polygons to standard output. No plotting occurs.");
 	GMT_Usage (API, 1, "\n-N Use the outside of the polygons and the map boundary as clip paths.");
@@ -155,7 +155,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Two optional modifiers are available:");
 	GMT_Usage (API, 3, "+d Append <date> in ISO format, e.g, +d2000-04-25, to compute terminators "
 		"for this date [today].");
-	GMT_Usage (API, 3, "+z Append time zone <TZ> as [-]hh[:mm[:ss]] offset from UTC, if necessary.");
+	GMT_Usage (API, 3, "+z Append time zone <TZ> as [-]hh[:mm] offset from UTC, if necessary.");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", NULL, 0);
 	GMT_Option (API, "X,b,c,o,p");
