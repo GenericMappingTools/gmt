@@ -59,7 +59,7 @@ struct PSSOLAR_CTRL {
 	struct PSSOLAR_I {		/* -I info about solar stuff */
 		bool   active;
 		bool   position;
-		int    TZ;			/* Time Zone */
+		double TZ;			/* Time Zone */
 		double lon, lat;
 		struct GMT_GCAL calendar;
 	} I;
@@ -74,7 +74,7 @@ struct PSSOLAR_CTRL {
 		bool   night, civil, nautical, astronomical;
 		unsigned int n_terminators;
 		int    which;		/* 0 = night, ... 3 = astronomical */
-		int    TZ;			/* Time Zone */
+		double TZ;			/* Time Zone */
 		double radius[4];
 		struct GMT_GCAL calendar;
 	} T;
@@ -99,7 +99,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *C) {	/* Deallo
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void pssolar_parse_date_tz(char *date_tz, char **date, int *TZ) {
+GMT_LOCAL void pssolar_parse_date_tz(char *date_tz, char **date, double *TZ) {
 	unsigned int pos = 0;
 	char *p;
 
@@ -107,7 +107,13 @@ GMT_LOCAL void pssolar_parse_date_tz(char *date_tz, char **date, int *TZ) {
 	while ((gmt_strtok (date_tz, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'd': date[0] = strdup(&p[1]);	break;
-			case 'z': *TZ     = atoi(&p[1]);	break;
+			case 'z': {	/* Time zone as [-]hh[:mm], e.g., 08, -08, 08:30, -08:30 */
+				char *arg = &p[1], *colon = strchr (arg, ':');
+				int sign = (arg[0] == '-') ? -1 : 1;
+				double hh = fabs (atof (arg)), mm = colon ? fabs (atof (colon + 1)) : 0.0;
+				*TZ = sign * (hh + mm / 60.0);
+				break;
+			}
 		}
 	}
 	free(p);
@@ -164,9 +170,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 	 * Any GMT common options will override values set previously by other commands.
 	 */
 
-	int    j, TZ = 0, n_files = 0, n_errors = 0;
+	int    j, n_files = 0, n_errors = 0;
 	char  *pch = NULL, *date = NULL;
-	double t;
+	double t, TZ = 0.0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -299,14 +305,14 @@ GMT_LOCAL int pssolar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun)
 	/* http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html */
 	/* Compute the day-night terminator and the civil, nautical and astronomical twilights
 	   as well as several other solar parameters such sunrise, sunset, Sun position, etc... */
-	int    TZ, year, month, day, hour, min;
+	int    year, month, day, hour, min;
 	struct tm *UTC;
 	time_t right_now = time (NULL);
 	double sec, JC, JD, UT, L, M, C, var_y, r, sz, theta, lambda, obliqCorr, meanObliqEclipt;
-	double EEO, HA_Sunrise, TrueSolarTime, SolarDec, radius;
+	double EEO, HA_Sunrise, TrueSolarTime, SolarDec, radius, TZ;
 
 	radius = Ctrl->T.radius[Ctrl->T.which];
-	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->T.TZ : 0);
+	TZ = (Ctrl->I.TZ != 0.0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0.0) ? Ctrl->T.TZ : 0.0);
 
 	/*  Date info may be in either of I or T options. If not, use current time. */
 	if (Ctrl->I.calendar.year != 0) {
