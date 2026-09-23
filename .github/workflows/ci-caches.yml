@@ -33,7 +33,7 @@ concurrency:
 jobs:
   data_cache:
     name: Cache GMT data
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     if: github.event_name != 'push'
     defaults:
       run:
@@ -48,8 +48,7 @@ jobs:
             channels:
               - conda-forge
               - nodefaults
-          create-args: >-
-            gmt=6.5.0
+          create-args: gmt
 
       - name: Download remote data
         run: |
