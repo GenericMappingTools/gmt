@@ -234,6 +234,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 					pch[0] = '\0';	/* Chop off date setting */
 				}
 				if (opt->arg[0]) {
+					n_errors += gmt_M_check_condition (GMT, strspn (opt->arg, "dcna") != strlen (opt->arg),
+					                                    "Option -T: Unrecognized argument - did you forget +d before the date?\n");
 					for (j = 0; j < (int)strlen(opt->arg); j++) {
 						if (opt->arg[j] == 'd')				/* Day-night terminator */
 							{Ctrl->T.night = true;          Ctrl->T.radius[0] = 90.833;}
