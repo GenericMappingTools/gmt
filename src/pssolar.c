@@ -107,11 +107,13 @@ GMT_LOCAL void pssolar_parse_date_tz(char *date_tz, char **date, double *TZ) {
 	while ((gmt_strtok (date_tz, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'd': date[0] = strdup(&p[1]);	break;
-			case 'z': {	/* Time zone as [-]hh[:mm], e.g., 08, -08, 08:30, -08:30 */
-				char *arg = &p[1], *colon = strchr (arg, ':');
+			case 'z': {	/* Time zone as [-]hh[:mm[:ss]], e.g., 08, -08, 08:30, -08:30:15 */
+				char *arg = &p[1], *colon1 = strchr (arg, ':'), *colon2 = colon1 ? strchr (colon1 + 1, ':') : NULL;
 				int sign = (arg[0] == '-') ? -1 : 1;
-				double hh = fabs (atof (arg)), mm = colon ? fabs (atof (colon + 1)) : 0.0;
-				*TZ = sign * (hh + mm / 60.0);
+				double hh = fabs (atof (arg));
+				double mm = colon1 ? fabs (atof (colon1 + 1)) : 0.0;
+				double ss = colon2 ? fabs (atof (colon2 + 1)) : 0.0;
+				*TZ = sign * (hh + mm / 60.0 + ss / 3600.0);
 				break;
 			}
 		}
