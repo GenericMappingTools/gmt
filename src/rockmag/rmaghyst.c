@@ -105,6 +105,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"positive wing fit; (9,10,11) the same for the negative wing; (12) number of points in "
 		"the loop. Mrs is the only one of these that does not depend on chi (the correction "
 		"vanishes at H = 0), so it survives even when the loop did not saturate.");
+	GMT_Usage (API, -2, "Note: a common manual practice is to read Ms directly off the raw curve "
+		"near the edge of the measured range, with no slope correction. Column 3 is not that "
+		"number: the two agree only where chi is negligible or the wings have already leveled "
+		"off, and can disagree substantially otherwise -- which is part of what Mrs/Ms > 1 is "
+		"warning about.");
 	GMT_Option (API, "V,bi,di,e,f,g,h,i,q,.");
 
 	return (GMT_MODULE_USAGE);
