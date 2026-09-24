@@ -105,6 +105,10 @@ struct GRDIMAGE_CTRL {
 		double rgb[4];		/* Pixel value for transparency in images */
 		double value;		/* If +z is used this z-value will give us the r/g/b via CPT */
 	} Q;
+	struct GRDIMAGE_F {	/* -F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+		bool active;
+		struct GMT_PBR P;	/* Physically based shading settings (gmt_support.c) */
+	} F;
 	struct GRDIMAGE_T {	/* -T[s][o[<pen>]] */
 		bool active;
 		bool skip;
@@ -154,6 +158,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->I.azimuth = strdup ("-45.0");	/* Default azimuth for shading when -I+d is used */
 	C->I.method  = strdup ("t1");		/* Default normalization for shading when -I+d is used */
 	C->I.ambient = strdup ("0");		/* Default ambient light for shading when -I+d is used */
+	gmt_pbr_defaults(&C->F.P);	/* Physically based shading defaults (-F, or -I+f) */
 	C->Q.value = GMT->session.f_NaN;	/* If -Q is used with a grid then NaNs are made transparent by default. */
 	C->Q.rgb[0] = C->Q.rgb[1] = C->Q.rgb[2] = 1.0;	/* White transparent pixel is default if -Q is given without a color */
 	return (C);
@@ -178,6 +183,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *extra[2] = {A, " [-A]"};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s %s%s [%s] [-C%s] [-D[r]] [-Ei|<dpi>] "
+		"[-F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]] "
 		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>][+i][+z<value>]] "
 		"[%s] [-T[+o[<pen>]][+s]] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s[%s]\n",
 		name, GMT_INGRID, GMT_J_OPT, extra[API->external], GMT_B_OPT, CPT_OPT_ARGS, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT,
@@ -215,6 +221,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set dpi for the projected grid which must be constructed [100] "
 		"if -J implies a nonlinear graticule [Default gives same size as input grid]. "
 		"Alternatively, append i to do the interpolation in PostScript at device resolution (invalid with -Q).");
+	gmt_pbr_syntax(API, 'F');	/* Replaces -I */
 	gmt_rgb_syntax (API->GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images. ");
 	GMT_Usage (API, 3, "+b Set background color.");
 	GMT_Usage (API, 3, "+f Set foreground color [Default].");
@@ -226,7 +233,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+n Set the <method> and <scale> to use [t1].");
 	GMT_Usage (API, 3, "+m Set <ambient> light to add [0].");
 	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
-		"To derive intensities from another grid than <grid>, give the alternative data grid with suitable modifiers.");
+		"To derive intensities from another grid than <grid>, give the alternative data grid with suitable modifiers. "
+		"Use -I+f to shade physically based (see -F) with its default settings, i.e., -F315/45+o+t.");
 	GMT_Option (API, "J-");
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-M Force a monochrome (gray-scale) image.");
@@ -359,6 +367,10 @@ static int parse(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OP
 				else
 					Ctrl->E.dpi = atoi (opt->arg);
 				break;
+			case 'F':	/* Physically based shading -F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+				n_errors += gmt_M_repeated_module_option(API, Ctrl->F.active);
+				n_errors += gmt_pbr_parse(GMT, 'F', opt->arg, &Ctrl->F.P);
+				break;
 			case 'G':	/* -G<color>[+b|f] 1-bit fore- or background color for transparent masks (was -G[f|b]<color>) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if ((c = strstr (opt->arg, "+b"))) {	/* Background color */
@@ -385,6 +397,12 @@ static int parse(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				if (!strcmp(opt->arg, "+f")) {	/* -I+f: physically based shading (-F) with its default settings */
+					n_errors += gmt_M_repeated_module_option(API, Ctrl->F.active);
+					Ctrl->F.P.occlusion = Ctrl->F.P.tone = true;
+					Ctrl->I.active = false;	/* No intensities: -F replaces -I */
+					break;
+				}
 				if ((c = strstr (opt->arg, "+d"))) {	/* Gave +d, so derive intensities from the input grid using default settings */
 					Ctrl->I.derive = true;
 					c[0] = '\0';	/* Chop off modifier */
@@ -542,6 +560,10 @@ static int parse(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OP
 								       "Option -A: Cannot draw base frame (-B) when creating just a raster image\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.transp_color && Ctrl->Q.z_given,
 								       "Option Q: Cannot both specify a r/g/b and a grid z-value\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->F.active && Ctrl->I.active, "Option -F: Cannot be combined with -I\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->F.active && (Ctrl->T.active || Ctrl->D.active || n_files == 3),
+	                                  "Option -F: Requires a single grid and cannot be used with -T\n");
+	if (Ctrl->F.active) n_errors += gmt_pbr_check(GMT, 'F', &Ctrl->F.P);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -1949,6 +1971,15 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */
 			for (node = 0; !has_content && node < Grid_orig->header->size; node++)
 				if (!gmt_M_is_dnan (Grid_orig->data[node])) has_content = true;
+		}
+		if (Ctrl->F.active) {	/* Physically based shading: from here on the grid, shaded through its CPT, is an image input */
+			GMT_Report(API, GMT_MSG_INFORMATION, "Physically based shading of the grid into an image\n");
+			if ((I = gmt_pbr_image(GMT, &Ctrl->F.P, Grid_orig, P)) == NULL) Return (API->error);
+			got_z_grid = gray_only = false;
+			Ctrl->D.active = true;	/* So it is projected as an image */
+			grid_registration = I->header->registration;
+			Conf->n_columns = I->header->n_columns;
+			Conf->n_rows    = I->header->n_rows;
 		}
 	}
 

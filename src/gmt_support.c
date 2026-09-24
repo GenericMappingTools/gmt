@@ -10126,6 +10126,329 @@ void gmt_illuminate (struct GMT_CTRL *GMT, double intensity, double rgb[]) {
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * Physically based (PBR) shading of a grid through its CPT, used by grdimage -S and grdview.
+ * Each node's CPT color is the albedo of a microfacet material lit by the sun and a headlight fill,
+ * seen from straight above. The maths is VTK's PBR fragment shader (vtkOpenGLPolyDataMapper.cxx,
+ * vtkPBRFunctions.glsl) and its NeutralPBR tone mapping pass (vtkToneMappingPass.cxx), evaluated
+ * on the CPU: Cook-Torrance specular with the GGX distribution (Walter et al., 2007), the
+ * height-correlated Smith visibility (Heitz, 2014) and Schlick's (1994) Fresnel, plus the
+ * Lambertian diffuse. The relief is shaded as a 3-D view draws it: x and y at one scale (x shrunk
+ * by cos(mid-latitude) for geographic grids) and the z range drawn as 0.1 of the larger horizontal
+ * side, times the vertical exaggeration. Occlusion and cast shadows are measured on that relief.
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+void gmt_pbr_defaults(struct GMT_PBR *P) {
+	/* The settings when nothing is given */
+	gmt_M_memset(P, 1, struct GMT_PBR);
+	P->azimuth = 315.0;	P->elevation = 45.0;
+	P->light = 1.0;	P->fill = 0.35;
+	P->roughness = 0.3;	P->metallic = 0.0;	P->ior = 1.5;
+	P->radius = 0.1;	P->ve = 1.0;
+}
+
+unsigned int gmt_pbr_parse(struct GMT_CTRL *GMT, char option, char *arg, struct GMT_PBR *P) {
+	/* Parse <azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+	unsigned int n_errors = 0, pos = 0;
+	char p[GMT_BUFSIZ] = {""}, *c = NULL;
+
+	if ((c = gmt_first_modifier(GMT, arg, "filmorstv"))) {	/* Process any modifiers */
+		while (gmt_getmodopt(GMT, option, c, "filmorstv", &pos, p, &n_errors) && n_errors == 0) {
+			switch (p[0]) {
+				case 'f': P->fill      = atof(&p[1]); break;
+				case 'i': P->ior       = atof(&p[1]); break;
+				case 'l': P->light     = atof(&p[1]); break;
+				case 'm': P->metallic  = atof(&p[1]); break;
+				case 'o': P->occlusion = true; if (p[1]) P->radius = atof(&p[1]); break;
+				case 'r': P->roughness = atof(&p[1]); break;
+				case 's': P->shadow    = true; break;
+				case 't': P->tone      = true; break;
+				case 'v': P->ve        = atof(&p[1]); break;
+				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		c[0] = '\0';	/* Chop off all modifiers so azimuth/elevation can be determined */
+	}
+	if (sscanf(arg, "%lf/%lf", &P->azimuth, &P->elevation) != 2) {
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -%c: Must give azimuth and elevation\n", option);
+		n_errors++;
+	}
+	if (c) c[0] = '+';	/* Restore modifiers */
+	return (n_errors);
+}
+
+unsigned int gmt_pbr_check(struct GMT_CTRL *GMT, char option, struct GMT_PBR *P) {
+	/* Check the settings against their bounds */
+	unsigned int n_errors = 0;
+	char msg[GMT_LEN128] = {""};
+	if (P->elevation < 0.0 || P->elevation > 90.0) { sprintf(msg, "Use 0-90 degree range for elevation"); n_errors++; }
+	else if (P->roughness < 0.0 || P->roughness > 1.0) { sprintf(msg, "Roughness must be in the 0-1 range"); n_errors++; }
+	else if (P->metallic < 0.0 || P->metallic > 1.0) { sprintf(msg, "Metallic must be in the 0-1 range"); n_errors++; }
+	else if (P->ior < 1.0) { sprintf(msg, "Index of refraction must be >= 1"); n_errors++; }
+	else if (P->light < 0.0 || P->fill < 0.0) { sprintf(msg, "Light intensities must be >= 0"); n_errors++; }
+	else if (P->occlusion && P->radius <= 0.0) { sprintf(msg, "Occlusion radius must be > 0"); n_errors++; }
+	else if (P->ve <= 0.0) { sprintf(msg, "Vertical exaggeration must be > 0"); n_errors++; }
+	if (n_errors) GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -%c: %s\n", option, msg);
+	return (n_errors);
+}
+
+void gmt_pbr_syntax(struct GMTAPI_CTRL *API, char option) {
+	/* The usage lines shared by every option that takes the PBR settings */
+	GMT_Usage(API, 1, "\n-%c<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]", option);
+	GMT_Usage(API, -2, "Shade the grid with physically based (PBR) lighting: each node's CPT color is lit as a microfacet "
+		"material by the sun at <azim> (0-360) and <elev> (0-90) and by a headlight fill, seen from above. The relief is lit "
+		"as a 3-D view draws it: x and y at one scale and the z range drawn as 0.1 of the larger horizontal side. Modifiers:");
+	GMT_Usage(API, 3, "+f Set the <fill> (headlight) intensity (>= 0) [0.35].");
+	GMT_Usage(API, 3, "+i Set the index of refraction <ior> of the surface (>= 1) [1.5].");
+	GMT_Usage(API, 3, "+l Set the <light> (sun) intensity (>= 0) [1].");
+	GMT_Usage(API, 3, "+m Set the <metallic> value (0-1) [0].");
+	GMT_Usage(API, 3, "+o Add ambient occlusion; optionally append the sampling <radius> as a fraction of the "
+		"diagonal of the relief as drawn (> 0) [0.1].");
+	GMT_Usage(API, 3, "+r Set the <roughness> (0-1) [0.3].");
+	GMT_Usage(API, 3, "+s Cast shadows along the sun's azimuth and elevation.");
+	GMT_Usage(API, 3, "+t Apply the Khronos PBR Neutral tone mapping.");
+	GMT_Usage(API, 3, "+v Set the vertical exaggeration <ve> of the relief (> 0) [1].");
+}
+
+GMT_LOCAL double gmtsupport_pbr_z(struct GMT_GRID *G, int ix, int iy) {	/* z at column ix and row iy counted from the south */
+	return (G->data[gmt_M_ijp(G->header, G->header->n_rows - 1 - iy, ix)]);
+}
+
+GMT_LOCAL void gmtsupport_pbr_drawn(struct GMT_PBR *P, double *nv, double *o) {
+	/* The data-space unit normal nv turned into the normal of the relief as drawn */
+	double len;
+	o[0] = nv[0] * P->fx;
+	o[1] = nv[1];
+	o[2] = nv[2] * P->fz;
+	len = sqrt(o[0] * o[0] + o[1] * o[1] + o[2] * o[2]);
+	if (len > 0.0) { o[0] /= len; o[1] /= len; o[2] /= len; }
+}
+
+GMT_LOCAL void gmtsupport_pbr_light(struct GMT_PBR *P, double NdH, double NdL, double NdV, double HdL, double radiance, double *alb, double *F0, double *F90, double *Lo) {
+	/* Add one light's reflected radiance to Lo[3] */
+	unsigned int k;
+	double d, D, gv, gl, V, fw, F;
+	if (!(radiance > 0.0)) return;
+	d  = (NdH * P->a2 - NdH) * NdH + 1.0;
+	D  = P->a2 / (M_PI * d * d);
+	gv = NdL * sqrt(P->a + NdV * (NdV - P->a * NdV));
+	gl = NdV * sqrt(P->a + NdL * (NdL - P->a * NdL));
+	V  = 0.5 / (gv + gl);
+	fw = pow(1.0 - HdL, 5.0);
+	for (k = 0; k < 3; k++) {
+		F = F0[k] + (F90[k] - F0[k]) * fw;
+		Lo[k] += radiance * (D * V * F + (1.0 - P->metallic) * (1.0 - F) * alb[k] * (1.0 / M_PI)) * NdL;
+	}
+}
+
+GMT_LOCAL void gmtsupport_pbr_shade(struct GMT_PBR *P, double *nv, double ao, double sun, double *rgb) {
+	/* rgb[0-2] is the albedo (0-1) on input and the shaded, gamma encoded color on output. nv is the
+	 * data-space unit normal, ao the occlusion factor (1 = open) and sun 0 if the sun is blocked */
+	unsigned int k;
+	double N[3], alb[3], F0[3], F90[3], Lo[3] = {0.0, 0.0, 0.0}, t[3];
+	double NdV, NdL, NdH, f90, x, offset, peak, d, new_peak, g, a;
+
+	gmtsupport_pbr_drawn(P, nv, N);
+	NdV = MAX(1.0e-5, MIN(1.0, N[2]));	/* The viewer is straight above: V = +z */
+	for (k = 0; k < 3; k++) {
+		alb[k] = MAX(0.0, MIN(1.0, rgb[k]));
+		F0[k]  = P->f0 + (alb[k] - P->f0) * P->metallic;	/* A metal reflects its own color */
+	}
+	f90 = MAX(0.0, MIN(1.0, (F0[0] + F0[1] + F0[2]) * (50.0 * 0.33)));	/* Specular occlusion of a very low F0 */
+	for (k = 0; k < 3; k++) F90[k] = f90 + (1.0 - f90) * P->metallic;
+	NdL = MAX(1.0e-5, MIN(1.0, N[0] * P->L[0] + N[1] * P->L[1] + N[2] * P->L[2]));
+	NdH = MAX(1.0e-5, MIN(1.0, N[0] * P->H[0] + N[1] * P->H[1] + N[2] * P->H[2]));
+	gmtsupport_pbr_light(P, NdH, NdL, NdV, P->HdL, P->light * sun, alb, F0, F90, Lo);	/* The sun */
+	gmtsupport_pbr_light(P, NdV, NdV, NdV, 1.0, P->fill, alb, F0, F90, Lo);	/* The headlight: L = H = V */
+	ao = MAX(0.0, MIN(1.0, ao));
+	if (!P->tone) {	/* Encode, then occlude */
+		for (k = 0; k < 3; k++) rgb[k] = MAX(0.0, MIN(1.0, pow(MAX(0.0, MIN(1.0, Lo[k])), 1.0 / 2.2) * ao));
+		return;
+	}
+	if (ao < 1.0) {	/* Occlusion acts before the tone mapping linearises the frame again */
+		a = pow(ao, 2.2);
+		for (k = 0; k < 3; k++) Lo[k] *= a;
+	}
+	x = MIN(Lo[0], MIN(Lo[1], Lo[2]));	/* Khronos PBR Neutral tone mapping */
+	offset = (x < 0.08) ? x - 6.25 * x * x : 0.04;
+	for (k = 0; k < 3; k++) t[k] = Lo[k] - offset;
+	peak = MAX(t[0], MAX(t[1], t[2]));
+	if (peak >= 0.8 - 0.04) {
+		d = 1.0 - (0.8 - 0.04);
+		new_peak = 1.0 - d * d / (peak + d - (0.8 - 0.04));
+		g = 1.0 - 1.0 / (0.15 * (peak - new_peak) + 1.0);
+		for (k = 0; k < 3; k++) {
+			t[k] *= new_peak / peak;
+			t[k] = t[k] + (new_peak - t[k]) * g;
+		}
+	}
+	for (k = 0; k < 3; k++) rgb[k] = pow(MAX(0.0, MIN(1.0, t[k])), 1.0 / 2.2);
+}
+
+GMT_LOCAL double gmtsupport_pbr_height(struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_PBR *P, double fx, double fy) {
+	/* Bilinear drawn height at fractional column fx and row fy (from the south); NaN off the grid */
+	int nx = (int)G->header->n_columns, ny = (int)G->header->n_rows, x0, y0, x1, y1;
+	double tx, ty, a, b, c, d;
+	if (!(fx >= 0.0 && fy >= 0.0 && fx <= nx - 1 && fy <= ny - 1)) return (GMT->session.d_NaN);
+	x0 = (int)fx;	y0 = (int)fy;
+	x1 = MIN(x0 + 1, nx - 1);	y1 = MIN(y0 + 1, ny - 1);
+	tx = fx - x0;	ty = fy - y0;
+	a = gmtsupport_pbr_z(G, x0, y0);	b = gmtsupport_pbr_z(G, x1, y0);
+	c = gmtsupport_pbr_z(G, x0, y1);	d = gmtsupport_pbr_z(G, x1, y1);
+	return (((a * (1.0 - tx) + b * tx) * (1.0 - ty) + (c * (1.0 - tx) + d * tx) * ty) / P->fz);
+}
+
+GMT_LOCAL void gmtsupport_pbr_occlusion(struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_PBR *P, int ix, int iy, double *nv, double *ao, double *sun) {
+	/* Ambient occlusion and cast shadow at node (ix,iy), measured on the relief as drawn.
+	 * Shadow: march toward the sun, one cell at first and growing slowly, until the ray is above the
+	 * highest point of the relief or leaves the grid; the sun is blocked if the terrain rises above it.
+	 * Occlusion: horizon based, 8 directions x 6 samples within the radius. Each direction contributes
+	 * how far the terrain rises above the node's tangent plane (sine of the horizon angle minus sine of
+	 * the tangent angle), weighted down toward the radius; ao = 1 - the mean over the directions. */
+	int nx = (int)G->header->n_columns, ny = (int)G->header->n_rows, k, d, j;
+	double dx = G->header->inc[GMT_X], dy = G->header->inc[GMT_Y], z0, h0, kx, ky, cell, hl, ux, uy, tan_el, bias;
+	double t, ray, fx, fy, h, N[3], ang, cx, cy, tan_t, sin_t, best, r, dh, sin_h, w, occ = 0.0;
+
+	*ao = *sun = 1.0;
+	if ((!P->occlusion && !P->shadow) || nx < 2 || ny < 2) return;
+	z0 = gmtsupport_pbr_z(G, ix, iy);
+	if (gmt_M_is_dnan(z0)) return;
+	h0 = z0 / P->fz;
+	kx = P->fx / dx;	ky = 1.0 / dy;	/* Drawn distance -> grid index */
+	cell = MIN(fabs(dx) / P->fx, fabs(dy));
+	if (P->shadow && P->L[2] > 0.0) {
+		hl = sqrt(P->L[0] * P->L[0] + P->L[1] * P->L[1]);
+		if (hl > 1.0e-6) {
+			ux = P->L[0] / hl;	uy = P->L[1] / hl;	tan_el = P->L[2] / hl;
+			bias = 0.25 * cell * tan_el;	/* Keeps a lit slope from shadowing itself */
+			for (k = 0, t = cell; k < 512; k++) {
+				ray = h0 + t * tan_el;
+				if (ray > P->h_top) break;
+				fx = ix + ux * t * kx;	fy = iy + uy * t * ky;
+				if (!(fx >= 0.0 && fy >= 0.0 && fx <= nx - 1 && fy <= ny - 1)) break;
+				h = gmtsupport_pbr_height(GMT, G, P, fx, fy);
+				if (!gmt_M_is_dnan(h) && h > ray + bias) { *sun = 0.0; break; }
+				t += cell * (1.0 + k / 64.0);
+			}
+		}
+	}
+	if (P->occlusion && P->box_radius > cell) {
+		gmtsupport_pbr_drawn(P, nv, N);
+		for (d = 0; d < 8; d++) {
+			ang = 2.0 * M_PI * d / 8;
+			cx = cos(ang);	cy = sin(ang);
+			tan_t = (N[2] > 1.0e-6) ? -(N[0] * cx + N[1] * cy) / N[2] : 0.0;	/* Tangent plane slope along d */
+			sin_t = tan_t / sqrt(1.0 + tan_t * tan_t);
+			for (j = 0, best = 0.0; j < 6; j++) {
+				r = P->box_radius * (j + 0.5) / 6;
+				h = gmtsupport_pbr_height(GMT, G, P, ix + cx * r * kx, iy + cy * r * ky);
+				if (gmt_M_is_dnan(h)) continue;
+				dh = h - h0;
+				sin_h = dh / sqrt(dh * dh + r * r);
+				w = 1.0 - (r / P->box_radius) * (r / P->box_radius);
+				best = MAX(best, (sin_h - sin_t) * w);
+			}
+			occ += best;
+		}
+		*ao = MAX(0.0, MIN(1.0, 1.0 - occ / 8));
+	}
+}
+
+struct GMT_IMAGE *gmt_pbr_image(struct GMT_CTRL *GMT, struct GMT_PBR *P, struct GMT_GRID *G, struct GMT_PALETTE *CPT) {
+	/* Shade grid G through the CPT into a new RGB image on G's nodes: padded by 2, pixel interleaved, and in
+	 * the row order GMT's own image reader delivers (north row first), which it labels BRPa */
+	int nx, ny, ix, iy, ixm, ixp, iym, iyp;
+	openmp_int row, col;
+	unsigned int band;
+	uint64_t node, dim[3] = {0, 0, 3};
+	double zspan, z_top, x_fac, z_fac, W, H, Z, r, dx, dy, zc, za, zb, zu, zd, dzdx, dzdy, len;
+	double nv[3], rgb[4] = {0.0, 0.0, 0.0, 0.0}, ao, sun;
+	struct GMT_IMAGE *I = NULL;
+
+	/* The relief as a 3-D view draws it */
+	nx = (int)G->header->n_columns;	ny = (int)G->header->n_rows;
+	dx = G->header->inc[GMT_X];	dy = G->header->inc[GMT_Y];
+	x_fac = (gmt_M_is_geographic(GMT, GMT_IN)) ? MAX(1.0e-6, cosd(0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]))) : 1.0;
+	W = fabs(G->header->wesn[XHI] - G->header->wesn[XLO]) * x_fac;
+	H = fabs(G->header->wesn[YHI] - G->header->wesn[YLO]);
+	zspan = G->header->z_max - G->header->z_min;
+	z_fac = (zspan > 0.0 && MAX(W, H) > 0.0) ? 0.1 * MAX(W, H) / zspan : 1.0;
+	P->fx = 1.0 / x_fac;
+	P->fz = 1.0 / (z_fac * P->ve);
+	P->L[0] = sind(P->azimuth) * cosd(P->elevation);
+	P->L[1] = cosd(P->azimuth) * cosd(P->elevation);
+	P->L[2] = sind(P->elevation);
+	P->H[0] = P->L[0];	P->H[1] = P->L[1];	P->H[2] = P->L[2] + 1.0;	/* Halfway between L and V = +z */
+	len = sqrt(P->H[0] * P->H[0] + P->H[1] * P->H[1] + P->H[2] * P->H[2]);
+	if (len > 0.0) { P->H[0] /= len; P->H[1] /= len; P->H[2] /= len; }
+	P->HdL = MAX(1.0e-5, MIN(1.0, P->H[0] * P->L[0] + P->H[1] * P->L[1] + P->H[2] * P->L[2]));
+	P->a = MAX(P->roughness, 0.05);	/* Keep the GGX lobe finite */
+	P->a *= P->a;	P->a2 = P->a * P->a;
+	r = (P->ior - 1.0) / (P->ior + 1.0);
+	P->f0 = r * r;
+	Z = zspan * z_fac * P->ve;
+	P->box_radius = P->radius * sqrt(W * W + H * H + Z * Z);
+	z_top = -DBL_MAX;
+	if (P->shadow) {	/* Highest point, pad excluded: only the shadow march reads it. Each thread keeps its own
+		 * maximum and merges it at the end, since reduction(max:) is not in OpenMP 2.0 (MSVC) */
+#ifdef _OPENMP
+#pragma omp parallel private(row,col,node) shared(G,z_top)
+#endif
+		{
+			double z_max = -DBL_MAX;
+#ifdef _OPENMP
+#pragma omp for
+#endif
+			for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
+				for (col = 0; col < (openmp_int)G->header->n_columns; col++) {
+					node = gmt_M_ijp(G->header, row, col);
+					if (!gmt_M_is_fnan(G->data[node]) && G->data[node] > z_max) z_max = G->data[node];
+				}
+			}
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+			if (z_max > z_top) z_top = z_max;
+		}
+	}
+	P->h_top = z_top / P->fz;
+
+	/* Padded like any image a module may have to project, and pixel interleaved, which is how it is filled */
+	if ((I = GMT_Create_Data(GMT->parent, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, G->header->wesn, G->header->inc, G->header->registration, 2, NULL)) == NULL)
+		return (NULL);
+	strncpy(I->header->mem_layout, "BRPa", 4);
+	/* Every node is independent: it only reads the grid and writes its own pixel. Rows are handed out
+	 * dynamically because the shadow march and the occlusion make a node's cost vary widely with the terrain */
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic) private(row,col,ix,iy,ixm,ixp,iym,iyp,zc,za,zb,zu,zd,dzdx,dzdy,len,nv,rgb,ao,sun,node,band) shared(GMT,P,G,I,CPT,nx,ny,dx,dy)
+#endif
+	for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
+		iy = ny - 1 - (int)row;	/* Row counted from the south */
+		iym = (iy > 0) ? iy - 1 : iy;	iyp = (iy < ny - 1) ? iy + 1 : iy;
+		for (col = 0; col < (openmp_int)G->header->n_columns; col++) {
+			ix = (int)col;
+			zc = gmtsupport_pbr_z(G, ix, iy);
+			(void)gmt_get_rgb_from_z(GMT, CPT, zc, rgb);
+			if (!gmt_M_is_dnan(zc)) {	/* Central differences, edge clamped; a NaN neighbour gives a flat direction */
+				ixm = (ix > 0) ? ix - 1 : ix;	ixp = (ix < nx - 1) ? ix + 1 : ix;
+				za = gmtsupport_pbr_z(G, ixp, iy);	zb = gmtsupport_pbr_z(G, ixm, iy);
+				zu = gmtsupport_pbr_z(G, ix, iyp);	zd = gmtsupport_pbr_z(G, ix, iym);
+				dzdx = (ixp == ixm || gmt_M_is_dnan(za) || gmt_M_is_dnan(zb)) ? 0.0 : (za - zb) / ((ixp - ixm) * dx);
+				dzdy = (iyp == iym || gmt_M_is_dnan(zu) || gmt_M_is_dnan(zd)) ? 0.0 : (zu - zd) / ((iyp - iym) * dy);
+				nv[0] = -dzdx;	nv[1] = -dzdy;	nv[2] = 1.0;
+				len = sqrt(nv[0] * nv[0] + nv[1] * nv[1] + nv[2] * nv[2]);
+				nv[0] /= len;	nv[1] /= len;	nv[2] /= len;
+				gmtsupport_pbr_occlusion(GMT, G, P, ix, iy, nv, &ao, &sun);
+				gmtsupport_pbr_shade(P, nv, ao, sun, rgb);
+			}
+			node = gmt_M_ijpgi(I->header, row, col);
+			for (band = 0; band < 3; band++)
+				I->data[node + band] = (unsigned char)MIN(255.0, rgb[band] * 255.0 + 0.5);
+		}
+	}
+	return (I);
+}
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * gmtlib_akima computes the coefficients for a quasi-cubic hermite spline.
  * Same algorithm as in the IMSL library.
  * Programmer:	Paul Wessel

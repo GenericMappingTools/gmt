@@ -19,6 +19,8 @@ cat << EOF > $a
 --l2stranstest -M
 --l2stranstest -N
 --l2stranstest -Qred -Q+z-999
+--l2stranstest -F315/30+f0.2+i1.8+l1.2+m0.5 -I+f
+--l2stranstest -F45/20+o0.2+r0.6+s+t+v2
 EOF
 
 # module-specific longopts
@@ -32,5 +34,7 @@ gmt $m $l2s --intensity+azimuth:10+ambient:0+intensity:t1 >> $b
 gmt $m $l2s --monochrome >> $b
 gmt $m $l2s --noclip >> $b
 gmt $m $l2s --alphacolor=red --alphacolor+gridvalue:-999 >> $b
+gmt $m $l2s --pbr=315/30+fill:0.2+ior:1.8+light:1.2+metallic:0.5 --intensity+pbr >> $b
+gmt $m $l2s --physical=45/20+occlusion:0.2+roughness:0.6+shadows+tonemap+exaggeration:2 >> $b
 
 diff $a $b --strip-trailing-cr > fail

@@ -18,6 +18,7 @@ Synopsis
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
+[ |-F|\ *azim*/*elev*\ [**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-J|\ *parameters* ]
@@ -125,6 +126,16 @@ Optional Arguments
     default, the projected grid will be of the same size (rows and
     columns) as the input file. Specify **i** to use the PostScript
     image operator to interpolate the image at the device resolution.
+
+.. _-F:
+
+**-F**\ *azim*/*elev*\ [**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*]
+    Shade the grid with physically based lighting instead of illuminating it with |-I| (the two
+    cannot be combined). The shaded image is made on the grid's own nodes and then projected and
+    plotted as any image, so |-A|, |-E| and |-J| work as usual. Use **-I+f** as a short form that
+    selects the default settings, which are the same as **-F**\ 315/45+o+t.
+
+    .. include:: explain_pbr.rst_
 
 .. _-G:
 
@@ -333,7 +344,26 @@ To create a sinusoidal projection of a remotely located Jessica Rabbit::
 
     gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 
+To shade the Island of Hawaii and the surrounding sea floor with physically based lighting, with a low sun
+from the northwest that makes Mauna Kea and Mauna Loa cast their shadows, ambient occlusion, tone mapping,
+a threefold vertical exaggeration and a brighter sun and fill light than the defaults::
+
+    gmt grdcut @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Ghawaii.nc
+    gmt grdimage hawaii.nc -Cgeo -F315/35+o+s+t+v3+l1.4+f0.5 -JM15c -B -pdf hawaii
+
 .. include:: cpt_notes.rst_
+
+References
+----------
+
+Heitz, E., Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs, Journal of
+Computer Graphics Techniques, Vol. 3, No. 2, 2014, pp. 48-107.
+
+Schlick, C., An Inexpensive BRDF Model for Physically-based Rendering, Computer Graphics Forum,
+Vol. 13, No. 3, 1994, pp. 233-246.
+
+Walter, B., Marschner, S. R., Li, H., and Torrance, K. E., Microfacet Models for Refraction through
+Rough Surfaces, Proceedings of the Eurographics Symposium on Rendering, 2007, pp. 195-206.
 
 See Also
 --------
