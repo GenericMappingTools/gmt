@@ -112,7 +112,10 @@ enum Pshistogram_mode {
 	PSHISTOGRAM_LOG_COUNTS,
 	PSHISTOGRAM_LOG_FREQ_PCT,
 	PSHISTOGRAM_LOG10_COUNTS,
-	PSHISTOGRAM_LOG10_FREQ_PCT};
+	PSHISTOGRAM_LOG10_FREQ_PCT,
+	PSHISTOGRAM_FREQUENCY,		/* n / w */
+	PSHISTOGRAM_PROBABILITY,	/* n / N, alias "proportion" */
+	PSHISTOGRAM_DENSITY};		/* n / (N * w) */
 
 enum Pshistogram_loc {
 	PSHISTOGRAM_L2 = 0,
@@ -204,8 +207,8 @@ GMT_LOCAL int64_t pshistogram_get_variable_bin (struct GMT_ARRAY *T, double x, i
 
 #define BIN_FASTER_IF_THIS_LARGE	1000000	/* If you bin a million points then bin rounding details won't matter */
 
-GMT_LOCAL double pshistogram_stat_value (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double count, bool apply_log) {
-	/* Return the -Z statistic for this bin count; apply_log = false gives the linear value (for cpt lookup) */
+GMT_LOCAL double pshistogram_stat_value (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double count, double width, bool apply_log) {
+	/* Return the -Z statistic for a bin of this count and width; apply_log = false gives the linear value (for cpt lookup) */
 	double value;
 
 	switch (F->hist_type) {
@@ -213,6 +216,15 @@ GMT_LOCAL double pshistogram_stat_value (struct GMT_CTRL *GMT, struct PSHISTOGRA
 		case PSHISTOGRAM_LOG_FREQ_PCT:
 		case PSHISTOGRAM_LOG10_FREQ_PCT:	/* Percentage of the grand total */
 			value = (F->sum_w != 0.0) ? (100.0 * count) / F->sum_w : 0.0;
+			break;
+		case PSHISTOGRAM_FREQUENCY:	/* n / w */
+			value = (width > 0.0) ? count / width : 0.0;
+			break;
+		case PSHISTOGRAM_PROBABILITY:	/* n / N */
+			value = (F->sum_w != 0.0) ? count / F->sum_w : 0.0;
+			break;
+		case PSHISTOGRAM_DENSITY:	/* n / (N * w) */
+			value = (F->sum_w != 0.0 && width > 0.0) ? count / (F->sum_w * width) : 0.0;
 			break;
 		default:	/* Counts */
 			value = count;
@@ -229,7 +241,7 @@ GMT_LOCAL double pshistogram_stat_value (struct GMT_CTRL *GMT, struct PSHISTOGRA
 
 GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, double *weights, uint64_t n) {
 
-	double w, b0, b1, count_sum, yval;
+	double w, b0, b1, count_sum, yval, width;
 	uint64_t ibox, i;
 	int64_t sbox, last_box = 0, hi_bin = F->T->n - 2;
 	int64_t (*pshistogram_get_bin) (struct GMT_ARRAY *, double, int64_t);	
@@ -266,7 +278,7 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 			count_sum += F->boxh[ibox];
 			F->boxh[ibox] = count_sum;
 		}
-		b1 = pshistogram_stat_value (GMT, F, count_sum, true);	/* Cumulative curve ends at the total */
+		b1 = pshistogram_stat_value (GMT, F, count_sum, 1.0, true);	/* Cumulative curve ends at the total; width unused as -Q excludes -Z6|8 */
 		if (F->cumulative == -1) {	/* Reverse cumulative */
 			for (ibox = 0; ibox < F->n_boxes; ibox++)
 				F->boxh[ibox] = count_sum - F->boxh[ibox];
@@ -275,7 +287,8 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	else {	/* Range of the statistic itself, not of the raw counts */
 		b0 = b1 = 0.0;
 		for (ibox = 0; ibox < F->n_boxes; ibox++) {
-			yval = pshistogram_stat_value (GMT, F, F->boxh[ibox], true);
+			width = F->T->array[ibox+1] - F->T->array[ibox];
+			yval = pshistogram_stat_value (GMT, F, F->boxh[ibox], width, true);
 			if (ibox == 0) b0 = b1 = yval;
 			if (yval < b0) b0 = yval;
 			if (yval > b1) b1 = yval;
@@ -306,10 +319,10 @@ GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOG
 	x[2] = x[1];
 	x[3] = x[0];
 	y[0] = y[1] = F->wesn[YLO];
-	y[2] = pshistogram_stat_value (GMT, F, F->boxh[ibox], true);
+	y[2] = pshistogram_stat_value (GMT, F, F->boxh[ibox], dx, true);
 
 	/* For cpt purposes return the linear statistic, never its log */
-	zval = pshistogram_stat_value (GMT, F, F->boxh[ibox], false);
+	zval = pshistogram_stat_value (GMT, F, F->boxh[ibox], dx, false);
 
 	y[3] = y[2];
 	if (Ctrl->E.active) {	/* Adjust histogram plot width [and possibly shift positions] if they are given in data units */
@@ -569,7 +582,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "B-");
 	GMT_Usage (API, 1, "\n-C<cpt>[+b]");
 	GMT_Usage (API, -2, "Use CPT to assign color to bars based on the mid-bar coordinate.  Alternatively, append +b "
-		"to assign color based on the histogram value instead (count or percent only; see -Z).");
+		"to assign color based on the histogram value instead (the -Z statistic, before any log transformation).");
 	GMT_Usage (API, 1, "\n-D[+b][+f<font>][+o<off>][+r]");
 	GMT_Usage (API, -2, "Place histogram count labels on top of each bar; optionally append modifiers:");
 	GMT_Usage (API, 3, "+b Place the labels beneath the bars [above].");
@@ -605,7 +618,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Usage (API, 1, "\n-Q[r]");
 	GMT_Usage (API, -2, "Plot a cumulative histogram; append r for reverse cumulative histogram. "
-		"Note: If neither -R nor -I are set, w/e/s/n will be based on input data.");
+		"Note: If neither -R nor -I are set, w/e/s/n will be based on input data. "
+		"Cannot be used with -Z6 (frequency) or -Z8 (density); use -Z7 (probability) instead.");
 	GMT_Usage (API, 1, "\n-S Draw a stairs-step diagram [Default is bar histogram].");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen for histogram outline or stair-step curves.", NULL, 0);
@@ -618,7 +632,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "3: Log (1+frequency percent).");
 	GMT_Usage (API, 3, "4: Log10 (1+counts).");
 	GMT_Usage (API, 3, "5: Log10 (1+frequency percent).");
-	GMT_Usage (API, -2, "Append +w to sum bin weights in 2nd column rather than counts.");
+	GMT_Usage (API, 3, "6: Frequency, i.e., count / bin width.");
+	GMT_Usage (API, 3, "7: Probability, i.e., count / total count [alias: proportion].");
+	GMT_Usage (API, 3, "8: Density, i.e., count / (total count x bin width); integrates to 1 over the binned range.");
+	GMT_Usage (API, -2, "Append +w to sum bin weights in 2nd column rather than counts. "
+		"Note: -Q cannot be used with modes 6 (frequency) or 8 (density); use mode 7 (probability) for a cumulative distribution.");
 	GMT_Option (API, "bi2,c,di,e,f,h,i,l,o,p,qi,s,t,w,.");
 
 	return (GMT_MODULE_USAGE);
@@ -785,7 +803,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				}
 				if (opt->arg[0]) {	/* Gave an argument */
 					sval = atoi (opt->arg);
-					n_errors += gmt_M_check_condition (GMT, sval < PSHISTOGRAM_COUNTS || sval > PSHISTOGRAM_LOG10_FREQ_PCT, "Option -Z: histogram type must be in 0-5 range\n");
+					n_errors += gmt_M_check_condition (GMT, sval < PSHISTOGRAM_COUNTS || sval > PSHISTOGRAM_DENSITY, "Option -Z: histogram type must be in 0-8 range\n");
 					Ctrl->Z.mode = sval;
 				}
 				if (c) c[0] = '+';	/* Restore */
@@ -869,6 +887,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->T.T.vartime, "Option -F: Cannot be used with variable time bin widths\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Option -T: Must specify bin width\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->E.active, "Option -S: Cannot be used with -E\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->Z.mode == PSHISTOGRAM_FREQUENCY || Ctrl->Z.mode == PSHISTOGRAM_DENSITY),
+		"Option -Q: Cannot be used with -Z6 (frequency) or -Z8 (density); a cumulative count divided by one bin's width is not a meaningful "
+		"cumulative statistic. Use -Z7 (probability) for a cumulative distribution instead.\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active && !gmt_M_is_linear (GMT), "Option -J: Only linear projection supported.\n");
 
 	/* Now must specify either fill color with -G or outline pen with -W */
@@ -1165,7 +1186,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			for (ibox = row = 0; ibox < F.n_boxes; ibox++) {
 				if (Ctrl->I.mode == 1 && gmt_M_is_zero (F.boxh[ibox])) continue;
 				xx = F.T->array[ibox];
-				yy = pshistogram_stat_value (GMT, &F, F.boxh[ibox], true);
+				yy = pshistogram_stat_value (GMT, &F, F.boxh[ibox], F.T->array[ibox+1] - F.T->array[ibox], true);
 				S->data[GMT_X][row] = xx;
 				S->data[GMT_Y][row] = yy;
 				row++;
@@ -1364,7 +1385,11 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			gmt_setpen (GMT, &Ctrl->N.pen[type]);
 			f = (Ctrl->Q.active) ? 0.5 : 1.0 / (stats[type+3] * sqrt (M_PI * 2.0));
 			if (GMT->common.w.active) f = stats[6] * D2R;	/* Scale area by bin-width in radians */
-			f *= area;
+			/* Frequency and density bars are per unit width, so their curves are N * pdf and the pdf itself */
+			if (F.hist_type == PSHISTOGRAM_FREQUENCY)
+				f *= F.sum_w;
+			else if (F.hist_type != PSHISTOGRAM_DENSITY)
+				f *= area;
 			for (k = 0; k < NP; k++) {
 				xp[k] = F.wesn[XLO] + inc * k;
 				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
@@ -1382,6 +1407,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 					case PSHISTOGRAM_FREQ_PCT:		yp[k] = (100.0 * yp[k]) / F.sum_w;	break;
 					case PSHISTOGRAM_LOG_FREQ_PCT:		yp[k] = d_log1p (GMT, 100.0 * yp[k] / F.sum_w);	break;
 					case PSHISTOGRAM_LOG10_FREQ_PCT:	yp[k] = d_log101p (GMT, 100.0 * yp[k] / F.sum_w);	break;
+					case PSHISTOGRAM_PROBABILITY:		yp[k] = (F.sum_w != 0.0) ? yp[k] / F.sum_w : 0.0;	break;
 				}
 
 

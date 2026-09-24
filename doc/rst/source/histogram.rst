@@ -102,16 +102,17 @@ Optional Arguments
 **-C**\ *cpt*\ [**+b**]
     Give a CPT. The mid-coordinate for each bar is used to look up
     the bar color.  Alternatively, append **+b** to use the *bin* value
-    as the look-up value, unless |-Z| involves percentages,
-    in which case the look-up value is the *percentage* computed. If
+    as the look-up value, unless |-Z| selects another statistic
+    (percentage, frequency, probability or density), in which case the
+    look-up value is that statistic, before any log transformation. If
     we are in modern mode and no *cpt* is given then we select the
     current CPT.
 
 .. _-D:
 
 **-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**]
-    Annotate each bar with the count it represents.  Append any of the
-    following modifiers:
+    Annotate each bar with the count it represents, whatever |-Z| type is
+    plotted.  Append any of the following modifiers:
 
     - **+b** - Place the labels beneath the bars instead of above.
     - **+f** - Change to another font than the default annotation font.
@@ -189,7 +190,11 @@ Optional Arguments
 
 **-Q**\ **r**
     Draw a cumulative histogram. Append **r** to instead compute the
-    reverse cumulative histogram.  Cannot be used with **-w**.
+    reverse cumulative histogram.  Cannot be used with **-w**.  Also cannot
+    be used when |-Z| selects mode 6 (frequency) or 8 (density), since a
+    cumulative count divided by a single bin's width is not a meaningful
+    cumulative statistic; use mode 7 (probability) for a proper cumulative
+    distribution that reaches 1.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -228,17 +233,31 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ [*type*][**+w**]
-    Choose between 6 types of histograms:
+    Choose between 9 types of histograms, where *n* is a bin's count (or
+    sum of weights, under **+w**), *N* is the sum of *n* over all bins, and
+    *w* is that bin's width, which need not be the same for every bin (see
+    |-T|).  **Note**: *N* counts only the data that actually landed in a
+    bin; values outside the range set by |-T| are ignored unless |-L| is
+    used to place them in the first or last bin.
 
     * 0 = counts [Default]
-    * 1 = frequency_percent
+    * 1 = frequency_percent, i.e., 100 x *n* / *N*
     * 2 = log (1.0 + count)
     * 3 = log (1.0 + frequency_percent)
     * 4 = :math:`\log_{10}` (1.0 + count)
-    * 5 = :math:`\log_{10}` (1.0 + frequency_percent).
+    * 5 = :math:`\log_{10}` (1.0 + frequency_percent)
+    * 6 = frequency, i.e., *n* / *w*
+    * 7 = probability, i.e., *n* / *N* [alias: proportion]
+    * 8 = density, i.e., *n* / (*N* x *w*).
 
     To use weights provided as a second data column instead of pure counts,
-    append **+w**.
+    append **+w**.  **Note**: Modes 6 (frequency) and 8 (density) divide by
+    each bin's own width, so with unevenly spaced bins (see |-T|) their bars
+    are not simply a rescaling of the counts histogram.  Mode 8 (density) is
+    the only type whose bars integrate to exactly 1, making it directly
+    comparable to a probability density function; that integral is taken
+    over the binned *x* range only, since *N* counts only binned points.
+    Modes 6 and 8 cannot be combined with |-Q|.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
