@@ -1016,8 +1016,8 @@ EXTERN_MSC int GMT_trend1d (void *V_API, int mode, void *args) {
 	else {				/* Write only the model parameters */
 		struct GMT_RECORD Rec;
 		Rec.data = c_model;	Rec.text = NULL;
-		/* Set column type of all output columns to the type of the second input column (y axis) (#9226) */
-		for (i = 0; i < n_model; i++) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][1];
+		/* Set column type of all output columns to the type of the second output column (y axis) (#9226) */
+		for (i = 0; i < n_model; i++) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_OUT][1];
 		GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
 	}
 
