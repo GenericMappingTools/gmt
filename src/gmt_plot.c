@@ -7114,6 +7114,7 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 	/* Determine panel dimensions */
 
 	dim[GMT_X] = rect[XHI] - rect[XLO];	dim[GMT_Y] = rect[YHI] - rect[YLO];
+	B->dim[GMT_X] = dim[GMT_X];	B->dim[GMT_Y] = dim[GMT_Y];	/* Report back the actual inset dimensions so callers (e.g., gmt inset) can resolve a later "?" width/height */
 	if (B->refpoint == NULL) {	/* Need to set the BL refpoint since needed in inset to set the temporary origin */
 		char fake[GMT_LEN64] = {""};
 		snprintf (fake, GMT_LEN64, "x%.16lgi/%.16lgi+jBL", rect[XLO], rect[YLO]);
