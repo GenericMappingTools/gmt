@@ -204,9 +204,32 @@ GMT_LOCAL int64_t pshistogram_get_variable_bin (struct GMT_ARRAY *T, double x, i
 
 #define BIN_FASTER_IF_THIS_LARGE	1000000	/* If you bin a million points then bin rounding details won't matter */
 
+GMT_LOCAL double pshistogram_stat_value (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double count, bool apply_log) {
+	/* Return the -Z statistic for this bin count; apply_log = false gives the linear value (for cpt lookup) */
+	double value;
+
+	switch (F->hist_type) {
+		case PSHISTOGRAM_FREQ_PCT:
+		case PSHISTOGRAM_LOG_FREQ_PCT:
+		case PSHISTOGRAM_LOG10_FREQ_PCT:	/* Percentage of the grand total */
+			value = (F->sum_w != 0.0) ? (100.0 * count) / F->sum_w : 0.0;
+			break;
+		default:	/* Counts */
+			value = count;
+			break;
+	}
+	if (apply_log) {	/* The log (1 + value) modes */
+		if (F->hist_type == PSHISTOGRAM_LOG_COUNTS || F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
+			value = d_log1p (GMT, value);
+		else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS || F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
+			value = d_log101p (GMT, value);
+	}
+	return (value);
+}
+
 GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, double *weights, uint64_t n) {
 
-	double w, b0, b1, count_sum;
+	double w, b0, b1, count_sum, yval;
 	uint64_t ibox, i;
 	int64_t sbox, last_box = 0, hi_bin = F->T->n - 2;
 	int64_t (*pshistogram_get_bin) (struct GMT_ARRAY *, double, int64_t);	
@@ -243,54 +266,26 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 			count_sum += F->boxh[ibox];
 			F->boxh[ibox] = count_sum;
 		}
-		b1 = count_sum;
+		b1 = pshistogram_stat_value (GMT, F, count_sum, true);	/* Cumulative curve ends at the total */
 		if (F->cumulative == -1) {	/* Reverse cumulative */
 			for (ibox = 0; ibox < F->n_boxes; ibox++)
 				F->boxh[ibox] = count_sum - F->boxh[ibox];
 		}
 	}
-	else {
-		b0 = F->sum_w;
-		for (ibox = 0, b1 = 0.0; ibox < F->n_boxes; ibox++) {
-			if (b0 > F->boxh[ibox]) b0 = F->boxh[ibox];
-			if (b1 < F->boxh[ibox]) b1 = F->boxh[ibox];
+	else {	/* Range of the statistic itself, not of the raw counts */
+		b0 = b1 = 0.0;
+		for (ibox = 0; ibox < F->n_boxes; ibox++) {
+			yval = pshistogram_stat_value (GMT, F, F->boxh[ibox], true);
+			if (ibox == 0) b0 = b1 = yval;
+			if (yval < b0) b0 = yval;
+			if (yval > b1) b1 = yval;
 		}
 	}
 
 	/* Now find out what the min max y will be  */
 
-	if (b0 > 0) {
-		if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
-			F->yy0 = d_log1p (GMT, b0);
-		else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
-			F->yy0 = d_log101p (GMT, b0);
-		else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-			F->yy0 = (F->sum_w > 0.0) ? (100.0 * b0) / F->sum_w : 0.0;
-		else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
-			F->yy0 = (F->sum_w > 0.0) ? d_log1p (GMT, 100.0 * b0 / F->sum_w) : 0.0;
-		else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-			F->yy0 = (F->sum_w > 0.0) ? d_log101p (GMT, 100.0 * b0 / F->sum_w) : 0.0;
-		else
-			F->yy0 = b0;
-	}
-	else
-		F->yy0 = 0.0;
-	if (b1 > 0) {
-		if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
-			F->yy1 = d_log1p (GMT, b1);
-		else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
-			F->yy1 = d_log101p (GMT, b1);
-		else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-			F->yy1 = (F->sum_w > 0.0) ? (100.0 * b1) / F->sum_w : 0.0;
-		else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
-			F->yy1 = (F->sum_w > 0.0) ? d_log1p (GMT, 100.0 * b1 / F->sum_w) : 0.0;
-		else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-			F->yy1 = (F->sum_w > 0.0) ? d_log101p (GMT, 100.0 * b1 / F->sum_w) : 0.0;
-		else
-			F->yy1 = b1;
-	}
-	else
-		F->yy1 = 0.0;
+	F->yy0 = (b0 > 0.0) ? b0 : 0.0;
+	F->yy1 = (b1 > 0.0) ? b1 : 0.0;
 
 	gmt_M_toc (GMT, "After filling bin array");
 
@@ -311,24 +306,10 @@ GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOG
 	x[2] = x[1];
 	x[3] = x[0];
 	y[0] = y[1] = F->wesn[YLO];
-	if (F->hist_type == PSHISTOGRAM_LOG_COUNTS)
-		y[2] = d_log1p (GMT, F->boxh[ibox]);
-	else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
-		y[2] = d_log101p (GMT, F->boxh[ibox]);
-	else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-		y[2] = (100.0 * F->boxh[ibox]) / F->sum_w;
-	else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
-		y[2] = d_log1p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-	else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-		y[2] = d_log101p (GMT, 100.0 * F->boxh[ibox] / F->sum_w );
-	else
-		y[2] = F->boxh[ibox];
+	y[2] = pshistogram_stat_value (GMT, F, F->boxh[ibox], true);
 
-	/* For cpt purposes we either return counts or percent */
-	if (F->hist_type == PSHISTOGRAM_FREQ_PCT || F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT || F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-		zval = (100.0 * F->boxh[ibox]) / F->sum_w;
-	else
-		zval = F->boxh[ibox];
+	/* For cpt purposes return the linear statistic, never its log */
+	zval = pshistogram_stat_value (GMT, F, F->boxh[ibox], false);
 
 	y[3] = y[2];
 	if (Ctrl->E.active) {	/* Adjust histogram plot width [and possibly shift positions] if they are given in data units */
@@ -1184,18 +1165,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			for (ibox = row = 0; ibox < F.n_boxes; ibox++) {
 				if (Ctrl->I.mode == 1 && gmt_M_is_zero (F.boxh[ibox])) continue;
 				xx = F.T->array[ibox];
-				if (F.hist_type == PSHISTOGRAM_LOG_COUNTS)
-					yy = d_log1p (GMT, F.boxh[ibox]);
-				else if (F.hist_type == PSHISTOGRAM_LOG10_COUNTS)
-					yy = d_log101p (GMT, F.boxh[ibox]);
-				else if (F.hist_type == PSHISTOGRAM_FREQ_PCT)
-					yy = (100.0 * F.boxh[ibox]) / F.sum_w;
-				else if (F.hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
-					yy = d_log1p (GMT, 100.0 * F.boxh[ibox] / F.sum_w );
-				else if (F.hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
-					yy = d_log101p (GMT, 100.0 * F.boxh[ibox] / F.sum_w );
-				else
-					yy = F.boxh[ibox];
+				yy = pshistogram_stat_value (GMT, &F, F.boxh[ibox], true);
 				S->data[GMT_X][row] = xx;
 				S->data[GMT_Y][row] = yy;
 				row++;
