@@ -312,6 +312,24 @@ in the plane it is a **two-dimensional** projection. The transformation comes in
 #. The radius *r* can either be radius or inverted to mean depth from the surface,
    planetary radii, or even elevations in degrees.
 
+**NOTE**: With **-JP** the given dimension is the dimension of the *plot*, not the radius: a full circle is
+2\ *r* across, so **-JP**\ 12c draws a circle 12 cm wide, while the quarter sector **-R**\ 0/90/0/1 **-JP**\ 12c
+is also 12 cm wide but has a 12 cm radius. Since the bounding box of a sector changes when the sector is rotated
+with **+t**, the same sector given different **+t** values will come out at different radial scales, and a thin
+sector that ends up parallel to the *y*-axis has no width for the given dimension to set (GMT then sizes the height
+instead and warns). Furthermore, each plot is placed with the lower left corner of its bounding box at the current
+plot origin, so overlays that differ in **+t** line up by their bounding boxes and not by their *r* = 0 point. Use
+**-Jp**\ *scale* when several polar plots must share the same radial scale, e.g., when building a radar (spider)
+plot from several rotated axes:
+
+   ::
+
+      gmt begin radar
+        gmt basemap -R-0.0001/0.0001/0/1 -Jp12c -Bya
+        gmt basemap -Jp12c+t-45 -Bya
+        gmt basemap -Jp12c+t-90 -Bya
+      gmt end show
+
 **Example**
 
 As an example of this projection we will create a gridded data set in polar coordinates
