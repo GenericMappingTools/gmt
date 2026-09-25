@@ -480,6 +480,25 @@ struct GMT_CTRL {
 	struct GMT_INTERNAL hidden;	/* Internal global variables that are not to be changed directly by users */
 };
 
+/* Physically based (PBR) shading of a grid through its CPT (grdimage -S, grdview): the settings a user
+ * gives, and what gmt_pbr_image derives from them and from the grid (see gmt_support.c) */
+struct GMT_PBR {
+	bool occlusion, shadow, tone;	/* Ambient occlusion, cast shadows, tone mapping */
+	double azimuth, elevation;	/* Direction of the sun, in degrees */
+	double light, fill;		/* Intensities of the sun and of the headlight */
+	double roughness, metallic, ior;	/* The material */
+	double radius;			/* Occlusion radius, as a fraction of the diagonal of the relief as drawn */
+	double ve;			/* Vertical exaggeration */
+	/* Derived, set by gmt_pbr_image */
+	double L[3];			/* Unit vector toward the sun */
+	double H[3], HdL;		/* Unit halfway vector between the sun and the viewer (+z), and H.L */
+	double a, a2;			/* GGX alpha (roughness squared) and its square */
+	double f0;			/* Dielectric reflectance at normal incidence, from the IOR */
+	double fx, fz;			/* 1 / x scale and 1 / z scale of the relief as drawn */
+	double box_radius;		/* Occlusion radius, drawn units */
+	double h_top;			/* Highest point of the relief, drawn units */
+};
+
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments
  * and is used to declare gmtlib_get_io_ptr in gmt_io.c and gmt_prototypes.h */
 typedef int (*p_to_io_func) (struct GMT_CTRL *, FILE *, uint64_t, double *);
