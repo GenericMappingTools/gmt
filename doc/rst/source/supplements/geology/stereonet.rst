@@ -5,6 +5,9 @@
 stereonet
 *********
 
+WARNING: This module is new and still under active development. Syntax, defaults, and output may change without notice in a future release.
+-------------------------------------------------------------------------------------------------------------------------------------------
+
 |stereonet_purpose|
 
 Synopsis
