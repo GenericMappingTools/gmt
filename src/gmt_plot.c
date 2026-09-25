@@ -1837,11 +1837,12 @@ GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa, boost;
 	double *xx = xings->xx, *yy = xings->yy, *line_angles = xings->angle;
 	unsigned int i, annot_type, justify, *sides = xings->sides, nx = xings->nx;
-	bool flip;
+	bool flip, no_tick;
 	len = gmtplot_get_annot_offset (GMT, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
 
 	for (i = 0; i < nx; i++) {
+		no_tick = false;
 		if (!(GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_ANYWHERE) && ((type == 0 && (sides[i] % 2)) || (type == 1 && !(sides[i] % 2)))) continue;
 
 		if (gmtlib_prepare_label (GMT, line_angles[i], sides[i], xx[i], yy[i], type, &line_angle, &text_angle, &justify)) continue;
@@ -1853,12 +1854,28 @@ GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		if (!flip && GMT->current.setting.map_annot_oblique & annot_type) o_len = tick_length;
 		if (GMT->current.setting.map_annot_oblique & GMT_OBL_ANNOT_EXTEND_TICKS) {
 			div = ((sides[i] % 2) ? fabs (ca) : fabs (sa));
-			o_len /= div;
+			/* We only ride out to the tip of the extended tick if there actually is one: gmtplot_map_tick skips
+			 * ticks whose gridline meets the border at less than MAP_ANNOT_MIN_ANGLE, and dividing by that same
+			 * tiny div here would fling the annotation far along the border, away from the crossing it belongs
+			 * to and with no tick to connect the two.  Below that angle we step straight out from the border
+			 * instead, so the annotation stays where its gridline meets the frame [issue #8418] */
+			if (div > sind (GMT->current.setting.map_annot_min_angle))
+				o_len /= div;
+			else
+				no_tick = true;
 		}
 		else
 			o_len += copysign (boost, o_len);
-		xx[i] += o_len * ca;
-		yy[i] += o_len * sa;
+		if (no_tick) {	/* Offset normal to the border since there is no oblique tick to follow */
+			if (sides[i] % 2)
+				xx[i] += (sides[i] == 1) ? o_len : -o_len;
+			else
+				yy[i] += (sides[i] == 2) ? o_len : -o_len;
+		}
+		else {
+			xx[i] += o_len * ca;
+			yy[i] += o_len * sa;
+		}
 		if (!flip && (GMT->current.setting.map_annot_oblique & annot_type) && GMT->current.setting.map_annot_offset[level] > 0.0) {
 			if (sides[i] % 2)
 				xx[i] += (sides[i] == 1) ? GMT->current.setting.map_annot_offset[level] : -GMT->current.setting.map_annot_offset[level];
