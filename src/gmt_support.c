@@ -12851,7 +12851,105 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 }
 
 /*! . */
+/* ------------------------------------------------------------------------- *
+ * Ghost-cell migration (issue #4358), Phase 0: pad-access audit
+ *
+ * gmtsupport_poison_pad overwrites every node in the pad with a sentinel value
+ * instead of the boundary condition GMT just computed.  Any module whose result
+ * changes when this is on is a module that *reads* the halo, i.e. one that must
+ * be converted to ghost cells before the pad can go away.  Enabled at run time
+ * with GMT_POISON_PAD=1 (sentinel 1e20) or GMT_POISON_PAD=nan, so a single
+ * build can be A/B'd against itself.
+ * ------------------------------------------------------------------------- */
+
+GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction);
+
+GMT_LOCAL int gmtsupport_poison_mode (void) {
+	/* Returns 0 (off), 1 (large sentinel) or 2 (NaN); the environment is read once */
+	static int mode = -1;
+	char *c = NULL;
+	if (mode >= 0) return (mode);
+	if ((c = getenv ("GMT_POISON_PAD")) == NULL || c[0] == '\0' || !strcmp (c, "0"))
+		mode = 0;
+	else if (!strncmp (c, "nan", 3U) || !strncmp (c, "NaN", 3U) || !strncmp (c, "NAN", 3U))
+		mode = 2;
+	else
+		mode = 1;
+	return (mode);
+}
+
+GMT_LOCAL void gmtsupport_poison_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
+	/* Fill the whole pad with a sentinel so that any read of it is detectable */
+	int mode;
+	unsigned int *pad = NULL;
+	uint64_t row, col, ij;
+	gmt_grdfloat bad;
+
+	if ((mode = gmtsupport_poison_mode ()) == 0) return;	/* Audit not requested */
+	if (G == NULL || G->header == NULL || G->data == NULL) return;
+	if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) return;
+	pad = G->header->pad;
+	if ((pad[XLO] + pad[XHI] + pad[YLO] + pad[YHI]) == 0) return;	/* Nothing to poison */
+	bad = (mode == 2) ? (gmt_grdfloat)GMT->session.f_NaN : (gmt_grdfloat)1.0e20;
+
+	for (row = 0; row < G->header->my; row++) {	/* Walk the full padded array and hit anything outside the interior */
+		for (col = 0; col < G->header->mx; col++) {
+			if (row >= pad[YHI] && row < (uint64_t)(pad[YHI] + G->header->n_rows) &&
+			    col >= pad[XLO] && col < (uint64_t)(pad[XLO] + G->header->n_columns)) continue;
+			ij = row * G->header->mx + col;
+			if (ij < G->header->size) G->data[ij] = bad;
+		}
+	}
+}
+
 int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction) {
+	/* Front for the real BC setter; see gmtsupport_poison_pad above for why */
+	int error;
+	bool thin_pad = false;
+	unsigned int k;
+	struct GMT_GRID_HEADER_HIDDEN *HH = (G && G->header) ? gmt_get_H_hidden (G->header) : NULL;
+
+	/* A grid with no pad still needs boundary conditions, and the code that computes them works on a
+	 * padded matrix.  Compute them on a private padded copy and keep only the halo, so that the grid
+	 * itself is never given a pad and its data matrix - which may belong to Julia, Python or MATLAB -
+	 * is never reallocated (issue #4358).
+	 *
+	 * This is done in both directions.  On the way out a module hands the caller a grid whose halo
+	 * must describe the data the grid now holds - the gradient, not the relief it was computed from -
+	 * so any halo it still carries is recomputed rather than kept; skipping that left every grid
+	 * produced by one module and sampled by another with no halo at all. */
+	/* Only build a halo for a grid that would have had a pad.  When the module has asked for no pad at
+	 * all - grdmix, grdpaste and friends set the session pad to zero because they want none - the padded
+	 * layout computes no boundary conditions either, so computing them here is work nobody asked for,
+	 * and it perturbs what those modules read back out of the header (issue #4358). */
+	if (HH && G->data && !HH->no_ghost && !HH->no_BC && (direction == GMT_OUT || HH->ghost == NULL) &&
+	    GMT->current.io.pad[XLO] >= 2 && GMT->current.io.pad[YHI] >= 2 &&
+	    !(G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) && gmtlib_ghost_wanted (GMT) && !gmtlib_ghost_is_suspended ()) {
+		for (k = 0; !thin_pad && k < 4; k++) if (G->header->pad[k] < 2) thin_pad = true;
+		if (thin_pad) {	/* Too thin for the BC code to work in, so it works in a copy instead */
+			unsigned int pad2[4] = {2U, 2U, 2U, 2U};
+			struct GMT_GRID *P = NULL;
+			/* The copy inherits the halo, so a side that holds real data (GMT_BC_IS_DATA) survives
+			 * the round trip and only the sides the BC code actually sets are recomputed */
+			if ((P = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA)) == NULL) return (GMT_MEMORY_ERROR);
+			gmt_grd_pad_on (GMT, P, pad2);	/* The copy carries the pad that the BC code needs */
+			error = gmtsupport_grd_BC_set (GMT, P, direction);
+			gmtsupport_poison_pad (GMT, P);
+			gmtlib_ghost_from_grid (GMT, G, P);	/* Keep the halo it computed, drop the padded copy */
+			gmt_free_grid (GMT, &P, true);
+			return (error);
+		}
+	}
+
+	error = gmtsupport_grd_BC_set (GMT, G, direction);
+	gmtsupport_poison_pad (GMT, G);
+	/* With GMT_GHOST_CELLS set we move the halo we just computed out of the data
+	 * matrix, so the rest of the run sees a contiguous pad-less grid (issue #4358). */
+	if (direction == GMT_IN && gmtlib_ghost_wanted (GMT)) gmtlib_ghost_from_pad (GMT, G);
+	return (error);
+}
+
+GMT_LOCAL int gmtsupport_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction) {
 	/* Set two rows of padding (pad[] can be larger) around data according
 	   to desired boundary condition info in that header.
 	   Returns -1 on problem, 0 on success.
@@ -13805,6 +13903,9 @@ int gmt_cube_BC_set (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int dire
 	struct GMT_GRID *G = gmt_create_grid (GMT);	/* Create a dummy temporary grid structure */
 
 	gmt_copy_gridheader (GMT, G->header, U->header);
+	/* G->data will point into the middle of the cube's one big array, so this grid must
+	 * keep its pad: compacting it would shuffle the layer inside the cube (issue #4358) */
+	gmt_get_H_hidden (G->header)->no_ghost = 1;
 
 	for (k = 0; k < U->header->n_bands; k++) {	/* Do each layer BC separately */
 		G->data = &(U->data[k*U->header->size]);	/* Start of next 2-D layer */
