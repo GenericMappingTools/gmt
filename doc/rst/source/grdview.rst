@@ -260,8 +260,7 @@ lighting: a low sun from the northwest that makes Mauna Kea and Mauna Loa cast t
 occlusion, tone mapping, a threefold vertical exaggeration of the shading and a brighter sun and fill
 light than the defaults::
 
-    gmt grdcut @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Ghawaii.nc
-    gmt grdview hawaii.nc -Cgeo -F315/35+o+s+t+v3+l1.4+f0.5 -JM15c -JZ3c -p150/35 -B -pdf hawaii3D
+gmt grdimage @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Cgeo -F315/35+o+s+t+v3+l1.4+f0.5 -JM15c -JZ3c -p150/35 -B -png hawaii
 
 .. module_note_begins
 

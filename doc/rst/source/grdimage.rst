@@ -348,8 +348,7 @@ To shade the Island of Hawaii and the surrounding sea floor with physically base
 from the northwest that makes Mauna Kea and Mauna Loa cast their shadows, ambient occlusion, tone mapping,
 a threefold vertical exaggeration and a brighter sun and fill light than the defaults::
 
-    gmt grdcut @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Ghawaii.nc
-    gmt grdimage hawaii.nc -Cgeo -F315/35+o+s+t+v3+l1.4+f0.5 -JM15c -B -pdf hawaii
+gmt grdimage @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Cgeo -F315/35+o+s+t+v3+l1.4+f0.5 -JM15c -B -png hawaii
 
 .. include:: cpt_notes.rst_
 
