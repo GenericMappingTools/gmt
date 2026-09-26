@@ -17,29 +17,8 @@
 /*
  * Brief synopsis: psstereonet reads structural geology observations given as
  * pairs of angles (planes as strike/dip or dip-direction/dip, or lines as
- * trend/plunge) and plots them on a stereonet, i.e., the projection of the
- * lower (or upper) hemisphere of a unit sphere onto the horizontal plane.
- *
- * A stereonet is not a new map projection: it is simply a hemisphere seen from
- * above, centered on the nadir.  Hence we use the standard GMT azimuthal
- * projections centered on (0,0), whose default 90-degree horizon gives exactly
- * one hemisphere:
- *
- *   -JA0/0/<width>	Lambert azimuthal equal-area -> Schmidt net (equal-area)
- *   -JS0/0/<width>	Stereographic (equal-angle)   -> Wulff net (equal-angle)
- *
- * With that setup the north pole of the sphere (lat = +90) plots at the top of
- * the net, so azimuth is measured clockwise from the top of the plot while the
- * angular distance from the center of the net is 90 minus the plunge of the
- * line being plotted.  A line with trend T and plunge P is therefore the point
- * (lon, lat) obtained from the unit vector
- *
- *	x = cos (90-P), y = sin (90-P) * sin (T), z = sin (90-P) * cos (T)
- *
- * while the cyclographic trace (great circle) of a plane with strike S and dip
- * D is the meridian lon = 90-D rotated by S about the x-axis, i.e., about the
- * axis that points at the center of the net.  A point on that trace is given
- * by sweeping a parameter t from -90 to +90.
+ * trend/plunge) and plots them on a stereonet, i.e., the lower (or upper)
+ * hemisphere seen from above, via -JA0/0 (Schmidt net) or -JS0/0 (Wulff net).
  *
  * Author:	Federico Esteban
  * Date:	22-AUG-2026
@@ -378,9 +357,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 }
 
 GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct GMT_OPTION **options) {
-	/* A stereonet is fully determined once the user has picked equal-area or equal-angle and a width, so
-	 * we fill in the parts of -J and -R that the user should not have to think about, and we default to a
-	 * grid-only frame since the net has no meaningful longitude or latitude annotations. */
+	/* Fill in the -J center, the fixed -R and the default -B mesh that every stereonet needs */
 	bool dump = (GMT_Find_Option (API, 'M', *options) != NULL);	/* If -M we are not plotting at all */
 	bool got_B = false, got_axis = false;
 	char string[GMT_LEN64] = {""};
@@ -401,8 +378,7 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 		}
 	}
 	else if (!dump) {	/* No -J given, so we must either inherit one or default to a Schmidt net */
-		/* An earlier net in this figure is remembered in the history, and GMT hands that on to a later
-		 * call that omits -J, so only fall back to our own default if there is no such net to inherit */
+		/* Inherit an earlier net in this figure, else use our own default */
 		int id = gmt_get_option_id (0, "J");	/* The generic -J history entry holds the projection code */
 		bool inherit = (id >= 0 && API->GMT->init.history[id] && strchr ("AaSs", API->GMT->init.history[id][0]));
 		if (!inherit) {
@@ -420,9 +396,7 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	if ((opt = GMT_Make_Option (API, 'R', "g")) == NULL) return (GMT_PARSE_ERROR);
 	if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);
 
-	/* Scan any -B settings: we only lay down our own default mesh if the user asked for no axis
-	 * intervals of their own, so that a -B that just carries frame settings (e.g., -B+t<title>)
-	 * still gets the classic net drawn under its title. */
+	/* Only add our default mesh if no -B gave its own axis intervals (e.g., just -B+t<title>) */
 	for (opt = *options; opt; opt = opt->next) {
 		if (opt->option != 'B') continue;
 		got_B = true;
@@ -443,8 +417,7 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 }
 
 GMT_LOCAL void psstereonet_geo_format (double annot, char *fmt, size_t len) {
-	/* Build a FORMAT_GEO_MAP template with just enough decimal digits to show <annot> exactly,
-	 * so that a fractional annotation interval (e.g., -A22.5) is not rounded to whole degrees. */
+	/* Build a FORMAT_GEO_MAP with just enough decimals to show <annot> exactly (e.g., -A22.5) */
 	unsigned int n = 0;
 	double scaled = annot;
 	while (n < 3 && fabs (scaled - rint (scaled)) > GMT_CONV6_LIMIT) {
@@ -458,8 +431,7 @@ GMT_LOCAL void psstereonet_geo_format (double annot, char *fmt, size_t len) {
 }
 
 GMT_LOCAL void psstereonet_add_option (char *cmd, size_t len, char option, char *arg) {
-	/* Append -<option><arg> to the command we build for the plot module.  Arguments such as a legend
-	 * label may contain spaces, so those must be passed on inside quotes to survive the option parser. */
+	/* Append -<option><arg> to cmd, quoted if it has spaces (e.g., a legend label) */
 	char item[GMT_LEN256] = {""};
 	size_t used = strlen (cmd);
 	if ((used + 1) >= len) return;	/* No room left, so nothing to do */
@@ -471,9 +443,7 @@ GMT_LOCAL void psstereonet_add_option (char *cmd, size_t len, char option, char 
 }
 
 GMT_LOCAL void psstereonet_line_to_lonlat (double trend, double plunge, double *lon, double *lat) {
-	/* Return the point where a line with the given trend and plunge (in degrees, positive downwards)
-	 * pierces the hemisphere.  It sits an angular distance 90-plunge from the center of the net, in the
-	 * direction of the trend, which for our 0/0-centered azimuthal projection means: */
+	/* Return the lon, lat where a line with this trend and plunge pierces the hemisphere */
 	double x, y, z, sd, cd, st, ct;
 	sincosd (90.0 - plunge, &sd, &cd);
 	sincosd (trend, &st, &ct);
@@ -483,10 +453,7 @@ GMT_LOCAL void psstereonet_line_to_lonlat (double trend, double plunge, double *
 }
 
 GMT_LOCAL void psstereonet_plane_to_lonlat (double strike, double dip, double t, double *lon, double *lat) {
-	/* Return the point at parameter t (which runs from -90 to +90) along the cyclographic trace of a
-	 * plane with the given strike and dip.  A plane striking due north is the meridian lon = 90-dip, and
-	 * a general strike is that meridian rotated by the strike about the axis that points at the center
-	 * of the net, i.e., about the x-axis. */
+	/* Return the lon, lat at parameter t (-90 to +90) along the cyclographic trace of this plane */
 	double x, y, z, yr, zr, sd, cd, st, ct, ss, cs;
 	sincosd (90.0 - dip, &sd, &cd);
 	sincosd (t, &st, &ct);
@@ -500,9 +467,7 @@ GMT_LOCAL void psstereonet_plane_to_lonlat (double strike, double dip, double t,
 
 GMT_LOCAL int psstereonet_convert (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GMT_DATASET *D,
                                  struct GMT_DATASET **Trace, struct GMT_DATASET **Point, struct GMT_DATASET **Zval) {
-	/* Convert the (azimuth, dip) pairs in D to the great circles and points that we can plot on the net.
-	 * Trace gets one segment per plane [NULL if -Tl], Point gets a single segment with one row per input
-	 * record, and Zval gets the third column, if any, with one value per plane [for plot -Z]. */
+	/* Convert D to one trace per plane [none if -Tl], one point per record, and the -C z-values */
 	bool do_trace = (Ctrl->T.mode != PSSTEREONET_LINE);
 	bool do_z = (Ctrl->C.active && D->n_columns > GMT_Z);
 	uint64_t tbl, seg, row, p, n = 0, dim[4] = {1, 1, 0, 2};
@@ -533,9 +498,7 @@ GMT_LOCAL int psstereonet_convert (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL
 			for (row = 0; row < S->n_rows; row++, n++) {
 				azimuth = S->data[GMT_X][row];
 				dip = S->data[GMT_Y][row];
-				/* A dip or plunge is 0-90 by definition.  An impossible value would silently project
-				 * onto the far hemisphere, where it is clipped away, so we stop rather than hand back
-				 * a figure that is quietly missing data.  Azimuths need no such check since they wrap. */
+				/* An out-of-range dip or plunge would silently land on the far hemisphere and get clipped */
 				if (dip < 0.0 || dip > 90.0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Record %" PRIu64 ": %s of %g is outside the 0-90 range\n",
 						n, (Ctrl->T.mode == PSSTEREONET_LINE) ? "Plunge" : "Dip", dip);
@@ -609,8 +572,7 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psstereonet main code ----------------------------*/
 
-	/* Decide what to draw: -W asks for the cyclographic traces of the planes while -S, -G and -L ask for
-	 * the poles (or the lines when -Tl).  If the user asked for neither we draw the one that makes sense. */
+	/* -W draws the traces and -S, -G or -L the poles (or lines); with neither, draw what makes sense */
 	do_point = Ctrl->S.active || Ctrl->G.active || Ctrl->L.active || Ctrl->T.mode == PSSTEREONET_LINE;
 	do_trace = (Ctrl->T.mode != PSSTEREONET_LINE) && (Ctrl->W.active || !do_point);
 	if (do_trace && Ctrl->W.string == NULL) Ctrl->W.string = strdup (PSSTEREONET_DEF_PEN);
@@ -649,13 +611,10 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 
 	/* Here we are plotting a stereonet */
 
-	/* The angles have been read, so undo the Cartesian input setting: the frame machinery keys off the
-	 * input column types, and while they say the data are plain numbers it will quietly skip the -B
-	 * annotations and any -B+t title since it cannot tell we are on a geographic projection */
+	/* Back to geographic input, or the frame would skip the -B annotations and any -B+t title */
 	gmt_set_geographic (GMT, GMT_IN);
 
-	/* The input-related common options only concern the angles we just read, so make sure they do not
-	 * also get applied when plot reads back the coordinates we computed from them */
+	/* The input options only apply to the angles, not to the lon, lat we hand to plot */
 	gmt_disable_bghio_opts (GMT);	/* Suspends -b, -g, -h, -i and -o */
 	GMT->common.e.active = GMT->common.s.active = GMT->common.q.active[GMT_IN] = false;
 
@@ -721,22 +680,14 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 	gmt_map_basemap (GMT);	/* Draw the perimeter of the net */
 
 	if (Ctrl->A.draw) {	/* Annotate azimuth around the perimeter via a matching polar basemap */
-		/* MAP_FRAME_AXES must go back to auto so that the polar projection picks the outer arc to annotate,
-		 * and FORMAT_GEO_MAP must use the 0-360 range so that azimuths are not reported as 0-180 west/east.
-		 * The format itself must carry enough decimals for a fractional -A (e.g., -A22.5), or the annotation
-		 * would round to the nearest whole degree even though the tick lands exactly on the given azimuth. */
-		/* The +t0 is not redundant: -JP never sets its own rotation, so it would inherit whatever the
-		 * previous projection left behind, and -JS on the equator is nudged off 0 by 0.001 degrees to
-		 * dodge an infinite loop (see gmtmap_init_stereo).  That leftover tilt lands the 270-degree
-		 * annotation a hair past the 180-degree boundary that decides which way a label is flipped,
-		 * so on a Wulff net it would come out upside down. */
+		/* The polar basemap needs auto frame axes and 0-360 azimuths with as many decimals as -A */
+		/* +t0 undoes the -JS equator nudge that would otherwise flip the 270 label on a Wulff net */
 		char geo_fmt[GMT_LEN16] = {""};
 		psstereonet_geo_format (Ctrl->A.annot, geo_fmt, GMT_LEN16);
 		snprintf (cmd, GMT_LEN1024, "-R0/360/0/1 -JP%gi+a+t0 -Bxa%gf%g -O -K --MAP_FRAME_AXES=auto --FORMAT_GEO_MAP=%s",
 			GMT->current.map.width, Ctrl->A.annot, Ctrl->A.tick, geo_fmt);
 		gmt_init_B (GMT);
-		/* Forget our own two-level -B or the polar basemap would inherit a secondary axis with no intervals,
-		 * and rewind the basemap order since we already used up both of our before/after passes above */
+		/* Drop our two-level -B and rewind the basemap order so the polar basemap starts fresh */
 		GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = false;
 		GMT->current.map.frame.order = 0;
 		if ((error = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd))) {
