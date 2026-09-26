@@ -132,7 +132,6 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/geodesy/earthtide
    supplements/geodesy/gpsgridder
    supplements/geodesy/velo
-   supplements/stereonet/stereonet
    supplements/gshhg/gshhg
    supplements/img/img2grd
    supplements/mgd77/mgd77convert
@@ -175,6 +174,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/spotter/polespotter
    supplements/spotter/rotconverter
    supplements/spotter/rotsmoother
+   supplements/stereonet/stereonet
    supplements/windbarbs/barb
    supplements/windbarbs/grdbarb
    supplements/x2sys/x2sys_binlist
@@ -310,7 +310,6 @@ Supplemental Modules
     - :doc:`/supplements/geodesy/earthtide`
     - :doc:`/supplements/geodesy/gpsgridder`
     - :doc:`/supplements/geodesy/velo`
-    - :doc:`/supplements/stereonet/stereonet`
     - :doc:`/supplements/gsfml/fzanalyzer`
     - :doc:`/supplements/gsfml/fzblender`
     - :doc:`/supplements/gsfml/fzinformer`
@@ -358,6 +357,7 @@ Supplemental Modules
     - :doc:`/supplements/spotter/polespotter`
     - :doc:`/supplements/spotter/rotconverter`
     - :doc:`/supplements/spotter/rotsmoother`
+    - :doc:`/supplements/stereonet/stereonet`
     - :doc:`/supplements/windbarbs/barb`
     - :doc:`/supplements/windbarbs/grdbarb`
     - :doc:`/supplements/x2sys/x2sys_binlist`
@@ -654,13 +654,6 @@ geodesy
 | :doc:`/supplements/geodesy/velo`           | |velo_purpose|       |
 +--------------------------------------------+----------------------+
 
-stereonet
----------
-
-+--------------------------------------------+----------------------+
-| :doc:`/supplements/stereonet/stereonet`      | |stereonet_purpose|  |
-+--------------------------------------------+----------------------+
-
 GSFML
 -----
 
@@ -803,6 +796,13 @@ spotter
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/rotsmoother`  | |rotsmoother_purpose|  |
 +------------------------------------------+------------------------+
+
+stereonet
+---------
+
++--------------------------------------------+----------------------+
+| :doc:`/supplements/stereonet/stereonet`    | |stereonet_purpose|  |
++--------------------------------------------+----------------------+
 
 windbarbs
 ---------
