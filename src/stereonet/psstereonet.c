@@ -358,6 +358,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.string == NULL, "Option -S: Must specify a symbol\n");
+	if (Ctrl->S.string) {	/* plot only gets lon, lat [and z], so the symbol cannot read its size or parameters from the data */
+		struct GMT_SYMBOL S;
+		gmt_M_memset (&S, 1, struct GMT_SYMBOL);
+		if (gmt_parse_symbol_option (GMT, Ctrl->S.string, &S, 0, true))
+			n_errors++;
+		else
+			n_errors += gmt_M_check_condition (GMT, S.read_size || S.n_required,
+				"Option -S: Give the symbol size and all its parameters, since there are no extra data columns to read them from\n");
+		gmt_symbol_free (GMT, &S);
+	}
 
 	n_errors += gmt_check_binary_io (GMT, 2);
 
@@ -694,7 +704,7 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 		if (Ctrl->l.n) psstereonet_add_option (cmd, GMT_LEN1024, 'l', Ctrl->l.string[n_l++]);
 		if ((error = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot the cyclographic traces\n");
-			Return (API->error);
+			Return (error);
 		}
 		if (zfile[0] && GMT_Close_VirtualFile (API, zfile) != GMT_NOERROR)
 			Return (API->error);
@@ -715,7 +725,7 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 		if (n_l < Ctrl->l.n) psstereonet_add_option (cmd, GMT_LEN1024, 'l', Ctrl->l.string[n_l++]);
 		if ((error = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot the %s\n", (Ctrl->T.mode == PSSTEREONET_LINE) ? "lines" : "poles");
-			Return (API->error);
+			Return (error);
 		}
 		if (GMT_Close_VirtualFile (API, vfile) != GMT_NOERROR)
 			Return (API->error);
@@ -744,7 +754,7 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 		GMT->current.map.frame.order = 0;
 		if ((error = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to annotate the azimuth around the net\n");
-			Return (API->error);
+			Return (error);
 		}
 	}
 
