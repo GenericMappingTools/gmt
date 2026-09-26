@@ -1454,6 +1454,9 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0, pad_mode = 0;
 	uint64_t node, k, kk, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET, ftype2 = GMT_NOTSET;
+	/* Projected dimensions/increments; declared here since "goto tr_image" below would skip their initializers */
+	int nx_proj = 0, ny_proj = 0;
+	double inc[2] = {0.0, 0.0};
 
 	char *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""}, data_grd[GMT_VF_LEN] = {""}, *e = NULL;
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL;
@@ -1960,9 +1963,6 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 		goto tr_image;
 	}
 	if (need_to_project) {	/* Need to resample the grid or image [and intensity grid] using the specified map projection */
-		int nx_proj = 0, ny_proj = 0;
-		double inc[2] = {0.0, 0.0};
-
 		if (got_z_grid && P && P->categorical && (GMT->common.n.interpolant != BCR_NEARNEIGHBOR || GMT->common.n.antialias)) {
 			GMT_Report(API, GMT_MSG_WARNING, "Your CPT is categorical. Enabling -nn+a to avoid interpolation across categories.\n");
 			GMT->common.n.interpolant = BCR_NEARNEIGHBOR;

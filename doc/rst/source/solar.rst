@@ -81,7 +81,8 @@ Optional Arguments
     - **+d** - Print *date* in ISO 8601 format, e.g, **+d**\ *2000-04-25T04:52*, to compute sun parameters
       for this date and time [Default is now].
     - **+z** - If necessary, append the time zone *TZ*. The time zone is given as an offset from UTC.
-      Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
+      The format is [-]\ *hh*\ [:*mm*]: negative offsets look like *-03:30* or *-03*, positive
+      offsets look like *05:45*, *02:00* or *02*.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -119,7 +120,8 @@ Optional Arguments
     - **+d** - Append *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
       to know where the day-night was at that date [Default is now].
     - **+z** - If necessary, append the time zone *TZ*. The time zone is given as an offset from UTC.
-      Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
+      The format is [-]\ *hh*\ [:*mm*]: negative offsets look like *-03:30* or *-03*, positive
+      offsets look like *05:45*, *02:00* or *02*.
 
     Refer to https://en.wikipedia.org/wiki/Twilight for definitions of different twilights.
 

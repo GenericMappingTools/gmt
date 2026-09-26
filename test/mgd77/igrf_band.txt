@@ -1,0 +1,21 @@
+Degrees 1-5 plus 6-13 must equal all degrees:
+residual < 1e-6 nT
+Degree 1 plus degrees 2-13 must equal all degrees:
+residual < 1e-6 nT
+Explicitly asking for degrees 1-13 must be the same as not restricting at all:
+identical
+Total field and components for the full field, degree 1 only, and degrees 6-13:
+41836.4995	28009.0175	-2809.0860	30949.9058
+44677.9387	22573.0698	-3876.4283	38360.7616
+222.4216	128.1612	170.1325	-64.0390
+Number of errors when +l is used with CM4 (-Ft/1) or with the mixed mode (-Ft/934):
+1
+1
+Number of errors for a malformed band (+l5), a reversed band (+l5/2) and a zero degree (+l0/3):
+1
+1
+1
+Number of truncation warnings for a 1980 date with +l1/13:
+1
+Truncating degree 13 to 10 for 1980 must give the complete 1980 field:
+identical

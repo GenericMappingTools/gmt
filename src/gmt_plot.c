@@ -2800,7 +2800,8 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 		proj_A = (GMT->current.proj.projection_GMT == GMT_MERCATOR || GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC ||
 			GMT->current.proj.projection_GMT == GMT_WINKEL || GMT->current.proj.projection_GMT == GMT_ECKERT4 || GMT->current.proj.projection_GMT == GMT_ECKERT6 ||
 			GMT->current.proj.projection_GMT == GMT_ROBINSON || GMT->current.proj.projection_GMT == GMT_CYL_EQ || GMT->current.proj.projection_GMT == GMT_CYL_STEREO ||
-			GMT->current.proj.projection_GMT == GMT_CYL_EQDIST || GMT->current.proj.projection_GMT == GMT_MILLER || GMT->current.proj.projection_GMT == GMT_LINEAR);
+			GMT->current.proj.projection_GMT == GMT_CYL_EQDIST || GMT->current.proj.projection_GMT == GMT_MILLER || GMT->current.proj.projection_GMT == GMT_LINEAR ||
+			GMT->current.proj.projection_GMT == GMT_PROJ4_EQEARTH);
 		proj_B = (GMT->current.proj.projection_GMT == GMT_HAMMER || GMT->current.proj.projection_GMT == GMT_MOLLWEIDE ||
 			GMT->current.proj.projection_GMT == GMT_SINUSOIDAL);
 		if (gmt_M_is_conical (GMT) && gmt_M_360_range (w, e))	/* Special case since 360 longitudes do not form a circle but a pacman shape */
@@ -3091,6 +3092,7 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 		case GMT_ECKERT6:
 		case GMT_ROBINSON:
 		case GMT_VANGRINTEN:
+		case GMT_PROJ4_EQEARTH:
 			gmtplot_basic_map_boundary (GMT, PSL, w, e, s, n);
 			break;
 		case GMT_PROJ4_SPILHAUS:

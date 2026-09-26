@@ -197,7 +197,7 @@ GMT_LOCAL int gmtwhich_list_tiles (struct GMTAPI_CTRL *API, char *list, unsigned
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
-	bool list;
+	bool list, missing = false;
 	int error = 0, fmode, k_data;
 	unsigned int first = 0;	/* Real start of filename */
 
@@ -294,6 +294,7 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			GMT_Report (API, GMT_MSG_ERROR, "File %s not found!\n", &file[first]);
+			if (Ctrl->G.active) missing = true;	/* Asked to fetch it and still don't have it */
 		}
 	}
 
@@ -302,5 +303,6 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	Return (GMT_NOERROR);
+	/* -C's purpose is to report Y/N as text without erroring, so it always keeps exiting 0 */
+	Return ((missing && !Ctrl->C.active) ? GMT_FILE_NOT_FOUND : GMT_NOERROR);
 }

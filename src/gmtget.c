@@ -184,7 +184,8 @@ EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
 
 EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 	int error = GMT_NOERROR;
-	char *datasets = NULL, *c = NULL, file[PATH_MAX] = {""};
+	bool missing = false;
+	char *datasets = NULL, *c = NULL, file[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 
 	struct GMTGET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -287,6 +288,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 					else {
 						sprintf (file, "@%s", API->remote_info[k].file);
 						gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
+						if (gmt_getdatapath (GMT, &file[1], path, R_OK) == NULL) missing = true;
 					}
 				}
 			}
@@ -315,10 +317,11 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			while (fscanf (fp, "%s %*s %*s", line) == 1) {
 				sprintf (file, "@%s", line);
 				gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
+				if (gmt_getdatapath (GMT, &file[1], path, R_OK) == NULL) missing = true;
 			}
 			fclose (fp);
 		}
-		Return (GMT_NOERROR);
+		Return (missing ? GMT_FILE_NOT_FOUND : GMT_NOERROR);
 	}
 
 	/* Read the supplied default file or the users defaults to override system settings */

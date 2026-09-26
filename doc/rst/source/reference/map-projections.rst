@@ -1106,7 +1106,9 @@ Miscellaneous projections
 GMT supports eight common projections for global presentation of data or models. These are the :ref:`Hammer <-Jh>`,
 :ref:`Mollweide <-Jw>`, :ref:`Winkel Tripel <-Jr>`, :ref:`Robinson <-Jn>`, :ref:`Eckert IV and VI <-Jk>`,
 :ref:`Sinusoidal <-Ji>`, and :ref:`Van der Grinten <-Jv>` projections. Due to the small scale used for global maps these
-projections all use the spherical approximation rather than more elaborate elliptical formulae.
+projections all use the spherical approximation rather than more elaborate elliptical formulae. In addition, the
+:ref:`Equal Earth <-Jeqearth>` and the ocean-centered :ref:`Spilhaus <-Jspilhaus>` projections are available through
+the **PROJ** string syntax of **-J**.
 
 In all cases, the specification of the central meridian can be skipped. The default is the middle of the longitude
 range of the plot, specified by the (**-R**) option.
@@ -1391,6 +1393,82 @@ Centered on the Dateline, the example below was created by this command:
    :align: center
 
    World map using the Van der Grinten projection.
+
+.. _-Jeqearth:
+
+Equal Earth projection (**-J+proj=eqearth**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Syntax**
+
+    **-J+proj=eqearth**\ [**+lon_0=**\ *lon0*]\ **+width=**\ *width*\|\ **+scale=**\ *scale*
+
+**Parameters**
+
+- The central meridian (*lon0*) [0].
+- The map *width* or *scale* in :ref:`plot-units <plt-units>`.
+
+**Description**
+
+The Equal Earth projection, presented by Bojan Šavrič, Tom Patterson and Bernhard Jenny in 2018, is an equal-area
+pseudo-cylindrical projection whose overall look was designed to resemble the (not equal-area) Robinson projection.
+Parallels are straight lines, the central meridian is a straight line half as long as the Equator, and all other
+meridians are curved. It has no GMT 1-letter code: it is done by `PROJ <https://proj.org/en/stable/operations/projections/eqearth.html>`_
+and is selected with the **PROJ** string syntax of the **-J** option. Because **PROJ** does the projection, the
+parameters are the **PROJ** ones (e.g., **+lon_0**, **+ellps**), to which GMT adds **+width** or **+scale** to set
+the map dimension. Note that the whole string must be quoted if you separate the **+**\ *keys* with spaces.
+
+**Example**
+
+Centered on Greenwich, the example below was created by this command:
+
+.. literalinclude:: /_verbatim/GMT_eqearth.txt
+
+.. figure:: /_images/GMT_eqearth.*
+   :width: 500 px
+   :align: center
+
+   World map using the Equal Earth projection.
+
+.. _-Jspilhaus:
+
+Spilhaus projection (**-J+proj=spilhaus**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Syntax**
+
+    **-J+proj=spilhaus**\ [**+lon_0=**\ *lon0*][**+lat_0=**\ *lat0*][**+azi=**\ *azimuth*][**+rot=**\ *rot*]\ **+width=**\ *width*\ \|\ **+scale=**\ *scale*
+
+**Parameters**
+
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center [66.94970198/-49.56371678].
+- The *azimuth* from north at the center of the projection [40.17823482].
+- The *rot*\ ation of the projection [45].
+- The map *width* or *scale* in :ref:`plot-units <plt-units>`.
+
+**Description**
+
+The Spilhaus projection, devised by Athelstan Spilhaus in 1942, is an oblique conformal world map based on the
+Adams world in a square II projection. Its interest is that it is centered on the oceans, so that the world ocean
+is shown as a single uninterrupted body of water while the continents are pushed to the edges of the square map.
+It has no GMT 1-letter code: it is done by `PROJ <https://proj.org/en/stable/operations/projections/spilhaus.html>`_
+(which added it in version 9.6) and is selected with the **PROJ** string syntax of the **-J** option. Because
+**PROJ** does the projection, the parameters are the **PROJ** ones, to which GMT adds **+width** or **+scale** to
+set the map dimension. Note that the whole string must be quoted if you separate the **+**\ *keys* with spaces.
+The map is always square and is meant to be used with a global region (**-Rd** or **-Rg**); other regions have
+unknown effects.
+
+Since the projection is not invertible everywhere and its boundary cuts through the continents, plotting needs
+some care. In :doc:`/coast` the coastlines are automatically broken up where the projection is discontinuous (via
+a default **-g** setting that you may override), but painting land or ocean with **-G** or **-S** does not give
+correct results in all cases, and the graticule is not interrupted. Hence, drawing the coastlines with **-W** is
+the safest choice.
+
+**Example**
+
+A world map with a 30 degree graticule is created by this command::
+
+    gmt coast -Rd -J+proj=spilhaus+width=12c -Bg30 -Dc -A10000 -W0.25p,darkbrown -pdf map
 
 Footnotes
 ---------

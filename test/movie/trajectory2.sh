@@ -21,7 +21,7 @@ cat << 'EOF' > pre.sh
 gmt math -T0/14/24+n -o0 T = times.txt
 # Make background static plot with entire dashed line and knots in black
 gmt begin
-	gmt events -R0/9.6/-2.7/2.7 -Jx0.5i -Ar${MOVIE_DPU} trajectory.txt --GMT_INTERPOLANT=linear > points.txt
+	gmt events -R0/9.6/-2.7/2.7 -Jx0.5i -Ar${MOVIE_DPU}c trajectory.txt --GMT_INTERPOLANT=linear > points.txt
 	gmt plot trajectory.txt -W0.25p,- -B0 -X0 -Y0
 	gmt plot -Sc9p -Gblack trajectory.txt
 gmt end
