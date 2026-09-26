@@ -174,7 +174,7 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *module) {
 	/* Returns true if module is a modern name */
 
 	/* Look for modern mode name modules  */
-	if      (!strncmp (module, "stereonet",  9U)) is_modern = true;
+	if      (!strncmp (module, "stereonet", 11U)) is_modern = true;
 	else if (!strncmp (module, "histogram", 11U)) is_modern = true;
 	else if (!strncmp (module, "ternary",    9U)) is_modern = true;
 	else if (!strncmp (module, "contour",    9U)) is_modern = true;
