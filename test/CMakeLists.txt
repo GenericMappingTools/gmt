@@ -36,6 +36,7 @@ if (DO_TESTS)
 		list (REMOVE_ITEM GMT_TEST_DIRS segy)
 		list (REMOVE_ITEM GMT_TEST_DIRS seis)
 		list (REMOVE_ITEM GMT_TEST_DIRS spotter)
+		list (REMOVE_ITEM GMT_TEST_DIRS stereonet)
 		list (REMOVE_ITEM GMT_TEST_DIRS x2sys)
 	endif (NOT DO_SUPPLEMENT_TESTS)
 

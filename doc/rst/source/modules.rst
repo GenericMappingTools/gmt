@@ -132,6 +132,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/geodesy/earthtide
    supplements/geodesy/gpsgridder
    supplements/geodesy/velo
+   supplements/stereonet/stereonet
    supplements/gshhg/gshhg
    supplements/img/img2grd
    supplements/mgd77/mgd77convert
@@ -309,6 +310,7 @@ Supplemental Modules
     - :doc:`/supplements/geodesy/earthtide`
     - :doc:`/supplements/geodesy/gpsgridder`
     - :doc:`/supplements/geodesy/velo`
+    - :doc:`/supplements/stereonet/stereonet`
     - :doc:`/supplements/gsfml/fzanalyzer`
     - :doc:`/supplements/gsfml/fzblender`
     - :doc:`/supplements/gsfml/fzinformer`
@@ -650,6 +652,13 @@ geodesy
 | :doc:`/supplements/geodesy/gpsgridder`     | |gpsgridder_purpose| |
 +--------------------------------------------+----------------------+
 | :doc:`/supplements/geodesy/velo`           | |velo_purpose|       |
++--------------------------------------------+----------------------+
+
+stereonet
+---------
+
++--------------------------------------------+----------------------+
+| :doc:`/supplements/stereonet/stereonet`      | |stereonet_purpose|  |
 +--------------------------------------------+----------------------+
 
 GSFML
