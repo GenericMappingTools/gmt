@@ -8488,7 +8488,8 @@ struct GMT_DATATABLE *gmtlib_read_table(struct GMT_CTRL *GMT, void *source, unsi
 
 		if (row == 0) {	/* Empty segment; we delete to avoid problems downstream in applications */
 			gmt_M_free (GMT, T->segment[seg]);
-			seg--;	/* Go back to where we were */
+			if (seg) seg--;	/* Go back to where we were */
+			else first_seg = true;	/* That was the first segment, so start over */
 		}
 		else {	/* OK to populate segment and increment counters */
 			gmtlib_assign_segment (GMT, GMT_IN, T->segment[seg], row, T->segment[seg]->n_columns);	/* Allocate and place arrays into segment */
