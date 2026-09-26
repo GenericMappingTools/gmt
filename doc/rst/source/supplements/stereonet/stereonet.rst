@@ -301,6 +301,10 @@ to theory and experiment, *Journal of Geophysical Research*, 64(11), 1891-1909.
 Lisle, R. J., and P. R. Leyshon, 2004, *Stereographic Projection Techniques for Geologists
 and Civil Engineers*, 2nd edition, Cambridge University Press.
 
+Schmidt, W., 1925, Gefügestatistik, *Tschermaks Mineralogische und Petrographische
+Mitteilungen*, 38, 392-423. Commonly cited as the origin of the 1%-area counting method
+used by **-Ds**; not consulted directly for this implementation.
+
 Vollmer, F. W., 1995, C program for automatic contouring of spherical orientation data
 using a modified Kamb method, *Computers & Geosciences*, 21(1), 31-49.
 
