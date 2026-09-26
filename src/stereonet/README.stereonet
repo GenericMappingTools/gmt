@@ -1,4 +1,4 @@
-GEOLOGY Supplemental Package
+STEREONET Supplemental Package
 Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory.
 
@@ -10,7 +10,7 @@ Version:	6 (for GMT 6 release).
 
 This directory contains:
 
-	README.geology			This document
+	README.stereonet		This document
 	psstereonet.c			psstereonet C program code
 	longopt/psstereonet_inc.h	long-option translation table
 

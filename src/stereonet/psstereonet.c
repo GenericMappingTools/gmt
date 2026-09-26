@@ -58,7 +58,7 @@
 
 #define THIS_MODULE_CLASSIC_NAME	"psstereonet"
 #define THIS_MODULE_MODERN_NAME	"stereonet"
-#define THIS_MODULE_LIB		"geology"
+#define THIS_MODULE_LIB		"stereonet"
 #define THIS_MODULE_PURPOSE	"Plot structural geology data on a stereonet"
 #define THIS_MODULE_KEYS	"<D{,>X},>DM,CC("
 #define THIS_MODULE_NEEDS	"JR"

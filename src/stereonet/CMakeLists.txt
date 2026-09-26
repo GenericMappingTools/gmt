@@ -25,8 +25,8 @@
 #   SUPPL_EXAMPLE_PROGS: Example scripts
 #
 
-set (SUPPL_NAME geology)
+set (SUPPL_NAME stereonet)
 AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H)
 set (SUPPL_PROGS_SRCS psstereonet.c ${SUPPL_LONG_OPT_H})
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS})
-set (SUPPL_EXAMPLE_FILES README.geology)
+set (SUPPL_EXAMPLE_FILES README.stereonet)
