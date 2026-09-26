@@ -156,8 +156,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S<width>] [-A[<annot>[/<tick>]]] [%s] "
-		"[-G<fill>] %s[-L<pen>] %s%s[-S<symbol>[<size>]] [-T[d|l|p][+u]] [%s] [%s] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S<width>] [-A[<annot>[/<tick>]]] [%s] [-C<cpt>] "
+		"[-G<fill>] %s[-L<pen>] [-M[c|p]] %s%s[-S<symbol>[<size>]] [-T[d|l|p][+u]] [%s] [%s] "
 		"[-W<pen>] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
@@ -169,8 +169,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<table>");
 	GMT_Usage (API, -2, "One or more data files with two columns holding a pair of angles in degrees. What "
-		"the two angles mean is set by -T [the strike and dip of planes]. If no files are given we read "
-		"standard input.");
+		"the two angles mean is set by -T [the strike and dip of planes]. A third column is needed for -C. "
+		"If no files are given we read standard input.");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-JA|S<width>");
@@ -194,12 +194,21 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"drawn, not even the perimeter of the net; give a bare -B for the classic two-level mesh "
 		"[-Bpg10 -Bsg30]. A -B that only carries frame settings, such as a -B+t<title>, gets that same "
 		"mesh, so you can title a default net without spelling out the intervals.");
+	GMT_Usage (API, 1, "\n-C<cpt>");
+	GMT_Usage (API, -2, "Color the symbols (fill) and the cyclographic traces (pen) by the value in a third "
+		"input column, using this CPT. In modern mode, give no <cpt> to use the current CPT.");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fill for the symbols.");
 	GMT_Usage (API, 1, "\n-L<pen>");
 	GMT_Usage (API, -2, "Set the pen used to outline the symbols [%s].", PSSTEREONET_DEF_PEN);
+	GMT_Usage (API, 1, "\n-M[c|p]");
+	GMT_Usage (API, -2, "Do not plot; instead write to standard output the longitude and latitude, on the "
+		"-JA|S0/0 projection, of the items we would draw:");
+	GMT_Usage (API, 3, "c: The cyclographic traces of the planes, one segment each [Default for planes].");
+	GMT_Usage (API, 3, "p: The poles, or the lines if -Tl [Default for -Tl].");
 	GMT_Usage (API, 1, "\n-S<symbol>[<size>]");
 	GMT_Usage (API, -2, "Plot the pole to each plane (or the line itself if -Tl) with this symbol; see the "
-		"plot module for the available symbol codes [%s]. Without -S no symbols are plotted for planes.",
+		"plot module for the available symbol codes [%s]. Give its size and all its parameters, since there "
+		"are no extra data columns to read them from. Without -S no symbols are plotted for planes.",
 		PSSTEREONET_DEF_SYMBOL);
 	GMT_Usage (API, 1, "\n-T[d|l|p][+u]");
 	GMT_Usage (API, -2, "Select what the two input angles mean:");

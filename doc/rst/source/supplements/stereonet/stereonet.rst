@@ -19,8 +19,10 @@ Synopsis
 [ |-J|\ **A**\|\ **S**\ *width* ]
 [ |-A|\ [*annot*\ [/*tick*]] ]
 [ |SYN_OPT-B| ]
+[ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
 [ |-L|\ *pen* ]
+[ |-M|\ [**c**\|\ **p**] ]
 [ |-S|\ *symbol*\ [*size*] ]
 [ |-T|\ [**d**\|\ **l**\|\ **p**][**+u**] ]
 [ |SYN_OPT-U| ]
@@ -108,6 +110,12 @@ so you can title a default net without spelling out the intervals.
 Add, e.g., ``--MAP_GRID_PEN_PRIMARY=0.25p,gray`` to make the fine mesh recede into the
 background.
 
+.. _-C:
+
+**-C**\ *cpt*
+    Color the symbols (their fill) and the cyclographic traces (their pen) by the value in a
+    third input column, using this CPT.  In modern mode, give no *cpt* to use the current CPT.
+
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -131,12 +139,22 @@ background.
 **-L**\ *pen* :ref:`(more ...) <-Wpen_attrib>`
     Set the pen used to outline the symbols selected with |-S|.
 
+.. _-M:
+
+**-M**\ [**c**\|\ **p**]
+    Do not plot; instead write to standard output the longitude and latitude, on the
+    **-JA**\|\ **S**\ 0/0 projection, of the items we would draw:
+
+    - **c** - The cyclographic traces of the planes, one segment each [Default for planes].
+    - **p** - The poles, or the lines if **-Tl** [Default for **-Tl**].
+
 .. _-S:
 
 **-S**\ *symbol*\ [*size*]
     Plot the pole to each plane (or the line itself if **-Tl**) using this symbol; see
-    :doc:`plot </plot>` for the available symbol codes [**-Sc**\ 0.15c].  Without |-S| no
-    symbols are plotted for planes.
+    :doc:`plot </plot>` for the available symbol codes [**-Sc**\ 0.15c].  Give its size and
+    all its parameters, since there are no extra data columns to read them from (so, e.g.,
+    no vectors).  Without |-S| no symbols are plotted for planes.
 
 .. _-T:
 
@@ -174,7 +192,7 @@ background.
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 2 input columns].
+.. |Add_-bi| replace:: [Default is 2 input columns, or 3 with -C].
 .. include:: ../../explain_-bi.rst_
 
 .. include:: ../../explain_-c.rst_
@@ -225,6 +243,7 @@ Notes
    otherwise project onto the far hemisphere and be silently clipped away.
 #. There is no **-R** option: a stereonet always covers a full hemisphere, and giving one
    is rejected as an error rather than silently ignored.
+#. Inside a **subplot**, give the net in every panel with the panel width, e.g., **-JA?**.
 
 .. module_common_ends
 
@@ -256,6 +275,11 @@ drawing the cyclographic traces in red and the poles as blue crosses, try::
 To plot the poles to bedding, measured as *trend plunge*, as red circles on a 10-centimeter
 Wulff net without the azimuth ring, try::
 
+    cat << EOF > bedding.txt
+    310 35
+    325 42
+    300 28
+    EOF
     gmt begin bedding
       gmt stereonet bedding.txt -JS10c -B -Tl -A0 -Sc0.2c -Gred
     gmt end show
