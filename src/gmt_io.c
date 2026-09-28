@@ -8489,6 +8489,9 @@ struct GMT_DATATABLE *gmtlib_read_table(struct GMT_CTRL *GMT, void *source, unsi
 		}
 
 		if (row == 0) {	/* Empty segment; we delete to avoid problems downstream in applications */
+			gmt_M_str_free (T->segment[seg]->header);
+			gmt_M_str_free (T->segment[seg]->label);
+			gmt_M_free (GMT, T->segment[seg]->hidden);
 			gmt_M_free (GMT, T->segment[seg]);
 			if (seg) seg--;	/* Go back to where we were */
 			else first_seg = true;	/* That was the first segment, so start over */
