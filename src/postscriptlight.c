@@ -939,6 +939,33 @@ void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[],
 	PSL_command (PSL, "] def\n", n);
 }
 
+static void psl_set_label_str_array (struct PSL_CTRL *PSL, char *array[], int n) {
+	/* Like psl_set_txt_array but passes each @~ Symbol font toggle as \001 for PSL_label.ps; @@ stays a literal @ */
+	int i;
+	size_t k, j;
+	char *outtext = NULL, *marked = NULL;
+	PSL_command (PSL, "/PSL_label_str [\n");
+	for (i = 0; i < n; i++) {
+		outtext = psl_prepare_text (PSL, array[i]);	/* Expand escape codes and fix utf-8 characters */
+		marked = PSL_memory (PSL, NULL, 2 * strlen (outtext) + 1, char);
+		for (k = j = 0; outtext[k]; k++) {
+			if (outtext[k] == '@' && outtext[k+1] == '~') {
+				strcpy (&marked[j], "\\001");
+				j += 4;	k++;
+			}
+			else {
+				if (outtext[k] == '@' && outtext[k+1] == '@') marked[j++] = outtext[k++];
+				marked[j++] = outtext[k];
+			}
+		}
+		marked[j] = '\0';
+		PSL_command (PSL, "\t(%s)\n", marked);
+		PSL_free (marked);
+		PSL_free (outtext);
+	}
+	PSL_command (PSL, "] def\n");
+}
+
 static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node) {
 	/* These are used by PSL_plottextline.  We make sure there are no point pairs that would yield dx = dy = 0 (repeat point)
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
@@ -1048,7 +1075,7 @@ static void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle,
 	PSL_comment (PSL, "Set array with baseline angle for each text label:\n");
 	psl_set_real_array (PSL, "label_angle", angle, nlab);
 	PSL_comment (PSL, "Set array with the text labels:\n");
-	psl_set_txt_array (PSL, "label_str", txt, nlab);
+	psl_set_label_str_array (PSL, txt, nlab);
 
 	return;
 }
