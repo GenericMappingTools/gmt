@@ -2697,10 +2697,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 
 			for (e = 0; e < (uint64_t)n_use; e++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
-				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)e);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)(e+1));
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
-				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)e, GMT_SVD_EIGEN_NUMBER_CUTOFF);
-				/* obs (hence alpha) now has the solution for the coefficients based on the first e eigenvalues */
+				/* NUMBER_CUTOFF takes a count, so pass e+1 to keep eigenvalues 0..e */
+				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)(e+1), GMT_SVD_EIGEN_NUMBER_CUTOFF);
+				/* obs (hence alpha) now has the solution for the coefficients based on the first e+1 eigenvalues */
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,C,part) shared(Grid,yp,xp,nm,GMT,Ctrl,X,G,par,Lz,alpha,Out,normalize,norm)
@@ -2748,10 +2749,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						rms = sqrt (rms / nm);
 						l2_sum_e += eigen[e].value * eigen[e].value;
 						if (Ctrl->W.active)
-							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg chi2 = %lg\n", (int)e, rms, chi2_sum);
+							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg chi2 = %lg\n", (int)(e+1), rms, chi2_sum);
 						else
-							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg\n", (int)e, rms);
-						S->data[0][e] = e;	/* Eigenvalue number (starting at 0) */
+							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg\n", (int)(e+1), rms);
+						S->data[0][e] = e + 1;	/* Number of eigenvalues used (starting at 1) */
 						S->data[1][e] = eigen[e].value;	/* Eigenvalue, from largest to smallest */
 						S->data[2][e] = 100.0 * l2_sum_e / l2_sum_n;	/* Percent of model variance */
 						S->data[3][e] = rms;	/* RMS misfit for this solution */
@@ -2782,10 +2783,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 					if (strchr (Ctrl->G.file, '%'))	/* Gave a template, use it to write one of the two types of grids */
 						sprintf (file, Ctrl->G.file, (int)e+1);
 					else	/* Create the appropriate cumulative gridfile name from static file name */
-						greenspline_set_filename (Ctrl->G.file, e, width, GMT_SVD_CUMULATIVE, file);
+						greenspline_set_filename (Ctrl->G.file, (unsigned int)(e+1), width, GMT_SVD_CUMULATIVE, file);
 					snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s). %s contribution for eigenvalue # %d", method[Ctrl->S.mode], Ctrl->S.arg, mkind[GMT_SVD_CUMULATIVE], (int)e+1);
 					if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
-						Return (API->error);				/* Update solution for e eigenvalues only */
+						Return (API->error);				/* Update solution for e+1 eigenvalues only */
 					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Out) != GMT_NOERROR)
 						Return (API->error);
 				}
@@ -2795,10 +2796,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 					if (strchr (Ctrl->G.file, '%'))	/* Gave a template, use it to write one of the two types of grids */
 						sprintf (file, Ctrl->G.file, (int)e+1);
 					else	/* Create the appropriate cumulative gridfile name from static file name */
-						greenspline_set_filename (Ctrl->G.file, e, width, GMT_SVD_INCREMENTAL, file);
+						greenspline_set_filename (Ctrl->G.file, (unsigned int)(e+1), width, GMT_SVD_INCREMENTAL, file);
 					snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s). %s contribution for eigenvalue # %d", method[Ctrl->S.mode], Ctrl->S.arg, mkind[GMT_SVD_INCREMENTAL], (int)e+1);
 					if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
-						Return (API->error);				/* Update solution for e eigenvalues only */
+						Return (API->error);				/* Update solution for e+1 eigenvalues only */
 					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Out) != GMT_NOERROR)
 						Return (API->error);
 				}
