@@ -759,7 +759,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool default_outline = false, outline_active = false, save_u = false, geovector = false, can_update_headpen = true;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y, xcol = 0, icol = 0, tcol_f = 0, tcol_s = 0, grid_order, frame_order, n_z = 0;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0, bcol, ex1, ex2, ex3, change = 0, n_needed = 0;
-	int error = GMT_NOERROR, seq_n_legends = 0, seq_frequency = 0;
+	int error = GMT_NOERROR, text_mode, seq_n_legends = 0, seq_frequency = 0;
 	uint64_t i, n, n_total_read = 0, n_z_for_cpt = 0;
 	size_t n_alloc = 0;
 
@@ -1963,9 +1963,14 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_ROTRECT);
 						break;
 					case GMT_SYMBOL_TEXT:
-						if (fill_active && !data[i].outline)
+						text_mode = data[i].outline;
+						if (get_rgb && !data[i].outline) {	/* CPT fill is already set via FS, so paint with fs */
+							PSL_setfill (PSL, data[i].f.rgb, 0);
+							text_mode = 2;
+						}
+						else if (fill_active && !data[i].outline)
 							PSL_setcolor (PSL, data[i].f.rgb, PSL_IS_FILL);
-						else if (!fill_active)
+						else if (!fill_active && !get_rgb)
 							PSL_setfill (PSL, GMT->session.no_rgb, data[i].outline);
 						(void) gmt_setfont (GMT, &S.font);
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
@@ -1975,7 +1980,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						}
 						else
 							direction = S.angle;
-						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, direction, S.justify, data[i].outline);
+						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, direction, S.justify, text_mode);
 						gmt_M_str_free (data[i].string);
 						break;
 					case PSL_VECTOR:
