@@ -1029,7 +1029,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (clip_set) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_plane_perspective (GMT, -1, 0.0);
 
-	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
+	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active && gmt_M_is_zero (current_fill.rgb[3])) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);		/* Set the required font */
 	if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {
 		/* Reading 2nd coordinate so must set column types */
@@ -1964,7 +1964,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						break;
 					case GMT_SYMBOL_TEXT:
 						text_mode = data[i].outline;
-						if (get_rgb && !data[i].outline) {	/* CPT fill is already set via FS, so paint with fs */
+						if ((get_rgb || (fill_active && !gmt_M_is_zero (data[i].f.rgb[3]))) && !data[i].outline) {	/* CPT or transparent fill: paint via fs so it stays local */
 							PSL_setfill (PSL, data[i].f.rgb, 0);
 							text_mode = 2;
 						}
