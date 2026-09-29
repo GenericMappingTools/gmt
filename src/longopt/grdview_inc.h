@@ -33,7 +33,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'G', "drapegrid|drape",   "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'I', "illumination|shading|intensity",
 	          "",                  "",
-	          "a,d,f,m,n",         "azimuth,default,pbr,ambient,args",
+	          "a,d,f,m,n,P",       "azimuth,default,pbr,ambient,args,physical",
 		  GMT_TP_STANDARD },
 	{ 0, 'N', "plane",
 	          "",                  "",

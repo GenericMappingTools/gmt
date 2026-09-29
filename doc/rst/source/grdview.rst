@@ -15,7 +15,7 @@ Synopsis
 **gmt grdview** *reliefgrid* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
-[ |-F|\ *azim*/*elev*\ [**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*] ]
+[ |-F|\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*] ]
 [ |-G|\ *drapegrid*\|\ *drapeimage* ]
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
@@ -73,12 +73,15 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *azim*/*elev*\ [**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*]
+**-F**\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*]
     Shade the *reliefgrid* with physically based lighting instead of illuminating it with |-I| (the
     two cannot be combined, nor can |-G| or |-T| be used). The shaded colors are computed on the grid's
     own nodes and draped over the relief as an image, so |-F| implies **-Qi** unless **-Qc**\|\ **i**
-    is given. Use **-I+f** as a short form that selects the default settings, which are the same as
-    **-F**\ 315/45+o+t. The shading itself is identical to that of :doc:`grdimage` **-F**.
+    is given. The sun position is optional [315/45]; give just *azim* to keep the default *elev* (but
+    *elev* cannot be given without *azim*). Plain |-F| (or **-I+f**) selects all the default settings,
+    which are the same as **-F**\ 315/45+o+t. **-I+P**\ [*azim*\ [/*elev*]][*modifiers*] is an
+    alternative form that works exactly as |-F|. The shading itself is identical to that of
+    :doc:`grdimage` **-F**.
 
     .. include:: explain_pbr.rst_
 

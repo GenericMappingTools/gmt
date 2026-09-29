@@ -1,4 +1,7 @@
 **-I**\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*]
+    Or
+
+**-I**\ **+P**\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*]
     Apply illumination for the input grid. Several methods are available:
 
     - Give the *file* name of a co-registered grid with intensities in the ±1 range.
@@ -14,3 +17,25 @@
     modifiers [Default is no illumination]. **Note**: If the input grid
     actually is an image then *file* or constant *intens* must be provided
     since derivatives are not available.
+
+    Instead of intensities, give **+P**\ [*azim*\ [/*elev*]][*modifiers*] to shade the input grid with
+    physically based lighting, i.e., the CPT colors are lit as a microfacet material by the sun at
+    azimuth *azim* (degrees clockwise from north, taken modulo 360) [315] and elevation *elev* (degrees
+    above the horizon, 0-90) [45], and by a headlight fill, seen from straight above. Give just *azim*
+    to keep the default *elev* (but *elev* cannot be given without *azim*). Plain **+P**, or **+f**,
+    selects all the default settings, which are the same as **+P**\ 315/45+o+t. See :doc:`grdimage`
+    **-F** for more details. Optionally, append modifiers (the allowed range of each value is given in
+    parentheses, the default in brackets):
+
+    - **+f** Set the *fill* (headlight) intensity (>= 0) [0.35].
+    - **+i** Set the index of refraction *ior* of the surface (>= 1) [1.5]. Values from about 1.3
+      (water) to 2.4 (diamond) cover most materials.
+    - **+l** Set the *light* (sun) intensity (>= 0) [1].
+    - **+m** Set the *metallic* value, from 0 (dielectric) to 1 (metal) (0-1) [0].
+    - **+o** Add ambient occlusion, which darkens creases and valley floors [no occlusion]. Optionally
+      append the sampling *radius* as a fraction of the diagonal of the relief as drawn (> 0) [0.1].
+    - **+r** Set the *roughness*, from 0 (mirror) to 1 (matte) (0-1) [0.3]. Values below 0.05 are
+      treated as 0.05.
+    - **+s** Cast shadows along the sun's azimuth and elevation [no shadows].
+    - **+t** Apply the Khronos PBR Neutral tone mapping, which compresses the highlights [no tone mapping].
+    - **+v** Set the vertical exaggeration *ve* of the relief (> 0) [1].

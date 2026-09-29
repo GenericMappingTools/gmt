@@ -105,7 +105,7 @@ struct GRDIMAGE_CTRL {
 		double rgb[4];		/* Pixel value for transparency in images */
 		double value;		/* If +z is used this z-value will give us the r/g/b via CPT */
 	} Q;
-	struct GRDIMAGE_F {	/* -F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+	struct GRDIMAGE_F {	/* -F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
 		bool active;
 		struct GMT_PBR P;	/* Physically based shading settings (gmt_support.c) */
 	} F;
@@ -183,7 +183,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *extra[2] = {A, " [-A]"};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s %s%s [%s] [-C%s] [-D[r]] [-Ei|<dpi>] "
-		"[-F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]] "
+		"[-F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]] "
 		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>][+i][+z<value>]] "
 		"[%s] [-T[+o[<pen>]][+s]] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s[%s]\n",
 		name, GMT_INGRID, GMT_J_OPT, extra[API->external], GMT_B_OPT, CPT_OPT_ARGS, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT,
@@ -234,7 +234,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+m Set <ambient> light to add [0].");
 	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
 		"To derive intensities from another grid than <grid>, give the alternative data grid with suitable modifiers. "
-		"Use -I+f to shade physically based (see -F) with its default settings, i.e., -F315/45+o+t.");
+		"Use -I+P[<azim>[/<elev>]][<modifiers>] to shade physically based instead, exactly as -F does, "
+		"or -I+f to do so with its default settings, i.e., -F315/45+o+t.");
 	GMT_Option (API, "J-");
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-M Force a monochrome (gray-scale) image.");
@@ -367,7 +368,7 @@ static int parse(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OP
 				else
 					Ctrl->E.dpi = atoi (opt->arg);
 				break;
-			case 'F':	/* Physically based shading -F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+			case 'F':	/* Physically based shading -F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
 				n_errors += gmt_M_repeated_module_option(API, Ctrl->F.active);
 				n_errors += gmt_pbr_parse(GMT, 'F', opt->arg, &Ctrl->F.P);
 				break;
@@ -397,9 +398,9 @@ static int parse(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				if (!strcmp(opt->arg, "+f")) {	/* -I+f: physically based shading (-F) with its default settings */
+				if (!strcmp(opt->arg, "+f") || !strncmp(opt->arg, "+P", 2)) {	/* -I+f or -I+P[<azim>[/<elev>]][<modifiers>]: same as -F */
 					n_errors += gmt_M_repeated_module_option(API, Ctrl->F.active);
-					Ctrl->F.P.occlusion = Ctrl->F.P.tone = true;
+					n_errors += gmt_pbr_parse(GMT, 'I', &opt->arg[2], &Ctrl->F.P);	/* For +f, &opt->arg[2] is "" and selects the defaults */
 					Ctrl->I.active = false;	/* No intensities: -F replaces -I */
 					break;
 				}
@@ -567,7 +568,7 @@ static int parse(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OP
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int grdimage_clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL unsigned int grdimage_clean_global_headers(struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Problem is that many global grids are reported with misleading -R or imprecise
 	 * -R or non-global -R yet nx * xinc = 360, etc.  We fix these here for GMT use. */
 	unsigned int flag = 0;

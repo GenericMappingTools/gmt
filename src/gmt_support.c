@@ -10147,10 +10147,17 @@ void gmt_pbr_defaults(struct GMT_PBR *P) {
 }
 
 unsigned int gmt_pbr_parse(struct GMT_CTRL *GMT, char option, char *arg, struct GMT_PBR *P) {
-	/* Parse <azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+	/* Parse [<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>].
+	 * An empty arg selects all the defaults, i.e., <azim>/<elev>+o+t. A missing <azim> or <elev> keeps its default,
+	 * but <elev> cannot be given without <azim>. */
+	int n;
 	unsigned int n_errors = 0, pos = 0;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 
+	if (!arg[0]) {	/* Nothing given: all the defaults */
+		P->occlusion = P->tone = true;
+		return (0);
+	}
 	if ((c = gmt_first_modifier(GMT, arg, "filmorstv"))) {	/* Process any modifiers */
 		while (gmt_getmodopt(GMT, option, c, "filmorstv", &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
@@ -10168,9 +10175,16 @@ unsigned int gmt_pbr_parse(struct GMT_CTRL *GMT, char option, char *arg, struct 
 		}
 		c[0] = '\0';	/* Chop off all modifiers so azimuth/elevation can be determined */
 	}
-	if (sscanf(arg, "%lf/%lf", &P->azimuth, &P->elevation) != 2) {
-		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -%c: Must give azimuth and elevation\n", option);
+	if (arg[0] == '/') {	/* Gave /<elev> but no <azim> */
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot give elevation without azimuth\n", option);
 		n_errors++;
+	}
+	else if (arg[0]) {	/* Gave <azim> or <azim>/<elev> */
+		n = sscanf(arg, "%lf/%lf", &P->azimuth, &P->elevation);
+		if (n < 1 || (n == 1 && strchr(arg, '/'))) {
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -%c: Must give <azim> or <azim>/<elev>\n", option);
+			n_errors++;
+		}
 	}
 	if (c) c[0] = '+';	/* Restore modifiers */
 	return (n_errors);
@@ -10193,10 +10207,12 @@ unsigned int gmt_pbr_check(struct GMT_CTRL *GMT, char option, struct GMT_PBR *P)
 
 void gmt_pbr_syntax(struct GMTAPI_CTRL *API, char option) {
 	/* The usage lines shared by every option that takes the PBR settings */
-	GMT_Usage(API, 1, "\n-%c<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]", option);
+	GMT_Usage(API, 1, "\n-%c[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]", option);
 	GMT_Usage(API, -2, "Shade the grid with physically based (PBR) lighting: each node's CPT color is lit as a microfacet "
-		"material by the sun at <azim> (0-360) and <elev> (0-90) and by a headlight fill, seen from above. The relief is lit "
-		"as a 3-D view draws it: x and y at one scale and the z range drawn as 0.1 of the larger horizontal side. Modifiers:");
+		"material by the sun at <azim> (0-360) [315] and <elev> (0-90) [45] and by a headlight fill, seen from above. The relief is lit "
+		"as a 3-D view draws it: x and y at one scale and the z range drawn as 0.1 of the larger horizontal side. "
+		"Give just <azim> to keep the default <elev>. Plain -%c selects all the defaults, i.e., -%c315/45+o+t. "
+		"Same as -I+P[<azim>[/<elev>]][<modifiers>]. Modifiers:", option, option);
 	GMT_Usage(API, 3, "+f Set the <fill> (headlight) intensity (>= 0) [0.35].");
 	GMT_Usage(API, 3, "+i Set the index of refraction <ior> of the surface (>= 1) [1.5].");
 	GMT_Usage(API, 3, "+l Set the <light> (sun) intensity (>= 0) [1].");

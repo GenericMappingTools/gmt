@@ -18,7 +18,7 @@ Synopsis
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
-[ |-F|\ *azim*/*elev*\ [**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*] ]
+[ |-F|\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-J|\ *parameters* ]
@@ -129,11 +129,13 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *azim*/*elev*\ [**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*]
+**-F**\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*]
     Shade the grid with physically based lighting instead of illuminating it with |-I| (the two
     cannot be combined). The shaded image is made on the grid's own nodes and then projected and
-    plotted as any image, so |-A|, |-E| and |-J| work as usual. Use **-I+f** as a short form that
-    selects the default settings, which are the same as **-F**\ 315/45+o+t.
+    plotted as any image, so |-A|, |-E| and |-J| work as usual. The sun position is optional
+    [315/45]; give just *azim* to keep the default *elev* (but *elev* cannot be given without *azim*).
+    Plain |-F| (or **-I+f**) selects all the default settings, which are the same as **-F**\ 315/45+o+t.
+    **-I+P**\ [*azim*\ [/*elev*]][*modifiers*] is an alternative form that works exactly as |-F|.
 
     .. include:: explain_pbr.rst_
 

@@ -75,11 +75,13 @@ struct GRD2KML_CTRL {
 		bool active;
 		char *prefix;
 	} N;
-	struct GRD2KML_I {	/* -I[<intensfile>|<value>|<modifiers>] */
+	struct GRD2KML_I {	/* -I[<intensfile>|<value>|<modifiers>] or -I+f|+P[<azim>[/<elev>]][<pbr_modifiers>] */
 		bool active;
 		bool constant;
 		bool derive;
+		bool pbr;	/* Physically based shading (-I+f or -I+P) instead of intensities */
 		double value;
+		struct GMT_PBR P;	/* Physically based shading settings (gmt_support.c) */
 		char *azimuth;	/* Default azimuth(s) for shading */
 		char *file;
 		char *method;	/* Default scaling method */
@@ -122,6 +124,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.filter = 'g';
 	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
+	gmt_pbr_defaults(&C->I.P);	/* Physically based shading defaults (-I+f or -I+P) */
 	C->L.size = 512;	/* Default tile size unless global grids [360] */
 	C->W.scale = M_SQRT2;
 	C->W.cutoff = 0.1;
@@ -145,7 +148,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s -N<name> [-Aa|g|s[<altitude>]] [-C%s] [-E<url>] [-F<filter>] "
-		"[-H<scale>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
+		"[-H<scale>] [-I[<intensgrid>|<value>|<modifiers>|+f|+P[<azim>[/<elev>]][<pbr_modifiers>]]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
 		"[-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s] [%s]\n", name, GMT_INGRID, CPT_OPT_ARGS, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -182,6 +185,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"To derive intensities from <grid> instead, use -I+d to accept the default values (see grdgradient for details) or be specific:");
 	GMT_Usage (API, 3, "+a Append <azimuth> of illumination [-45]");
 	GMT_Usage (API, 3, "+n Append <method> pf intensity calculation [t1]");
+	GMT_Usage(API, -2, "Alternatively, use -I+P[<azim>[/<elev>]][<pbr_modifiers>] to shade <grid> physically based "
+		"instead (see grdimage -F), or -I+f to do so with its default settings, i.e., -I+P315/45+o+t. "
+		"Each level is shaded as a whole and with the relief scale of <grid>, so tiles match across their edges. "
+		"The <pbr_modifiers> are:");
+	GMT_Usage(API, 3, "+f Set the <fill> (headlight) intensity (>= 0) [0.35].");
+	GMT_Usage(API, 3, "+i Set the index of refraction <ior> of the surface (>= 1) [1.5].");
+	GMT_Usage(API, 3, "+l Set the <light> (sun) intensity (>= 0) [1].");
+	GMT_Usage(API, 3, "+m Set the <metallic> value (0-1) [0].");
+	GMT_Usage(API, 3, "+o Add ambient occlusion; optionally append the sampling <radius> as a fraction of the "
+		"diagonal of the relief as drawn (> 0) [0.1].");
+	GMT_Usage(API, 3, "+r Set the <roughness> (0-1) [0.3].");
+	GMT_Usage(API, 3, "+s Cast shadows along the sun's azimuth and elevation.");
+	GMT_Usage(API, 3, "+t Apply the Khronos PBR Neutral tone mapping.");
+	GMT_Usage(API, 3, "+v Set the vertical exaggeration <ve> of the relief (> 0) [1].");
 	GMT_Usage (API, 1, "\n-L<size>");
 	GMT_Usage (API, -2, "Set tile size as a power of 2 [512; for global grids, we instead select 360].n");
 	GMT_Usage (API, 1, "\n-S[<extra>]");
@@ -266,8 +283,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				if (!strcmp (opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
+				n_errors += gmt_M_repeated_module_option(API, Ctrl->I.active);
+				if (!strcmp(opt->arg, "+f") || !strncmp(opt->arg, "+P", 2)) {	/* -I+f or -I+P[<azim>[/<elev>]][<modifiers>]: physically based shading */
+					Ctrl->I.pbr = true;
+					n_errors += gmt_pbr_parse(GMT, 'I', &opt->arg[2], &Ctrl->I.P);	/* For +f, &opt->arg[2] is "" and selects the defaults */
+				}
+				else if (!strcmp(opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
 					Ctrl->I.derive = true;
 				else if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
 					unsigned int pos = 0;
@@ -341,8 +362,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.prefix == NULL, "Option -N: Must specify a prefix for naming usage.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor <= 1, "Option -H: Must specify an integer factor > 1.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.url == NULL, "Option -E: Must specify an URL.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
+	n_errors += gmt_M_check_condition(GMT, Ctrl->I.active && !Ctrl->I.pbr && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
 	                                 "Option -I: Must specify intensity file, value, or modifiers\n");
+	if (Ctrl->I.pbr) {	/* No intensity grid: the shaded colors replace it */
+		n_errors += gmt_pbr_check(GMT, 'I', &Ctrl->I.P);
+		Ctrl->I.active = false;
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -474,6 +499,87 @@ int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter,
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL double grd2kml_pbr_zfac(struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *x_fac, double *diag2) {
+	/* The z scale gmt_pbr_image gives the relief of a grid with header h, plus the x shrink factor it uses
+	 * and the squared horizontal diagonal of the relief as drawn */
+	double W, H, zspan;
+	*x_fac = (gmt_M_is_geographic(GMT, GMT_IN)) ? MAX(1.0e-6, cosd(0.5 * (h->wesn[YLO] + h->wesn[YHI]))) : 1.0;
+	W = fabs(h->wesn[XHI] - h->wesn[XLO]) * (*x_fac);
+	H = fabs(h->wesn[YHI] - h->wesn[YLO]);
+	zspan = h->z_max - h->z_min;
+	*diag2 = W * W + H * H;
+	return ((zspan > 0.0 && MAX(W, H) > 0.0) ? 0.1 * MAX(W, H) / zspan : 1.0);
+}
+
+GMT_LOCAL struct GMT_IMAGE *grd2kml_pbr_tile(struct GMT_CTRL *GMT, struct GMT_PBR *P_in, struct GMT_GRID_HEADER *h_ref, struct GMT_GRID_HEADER *h_level,
+	char *Zgrid, struct GMT_GRID *T, bool alpha, struct GMT_PALETTE *CPT) {
+	/* Physically based shading of tile T. T plus a border of neighbouring nodes is read from the level grid Zgrid and
+	 * shaded, so slopes, occlusion and shadows see across the tile edges, and then only the tile's own pixels are kept.
+	 * The border is 2 nodes, plus the occlusion radius on all sides and the shadow length (at most 256 nodes) on the
+	 * sun's side. The relief is drawn at the z scale of the full grid (header h_ref) and the occlusion radius is a
+	 * fraction of the tile's horizontal diagonal, so all tiles of all levels match. If alpha then a separate alpha
+	 * array makes the NaN nodes of T transparent */
+	int pad[4], lrow, lcol;
+	unsigned int row, col, band, n_bands = (alpha) ? 4 : 3;	/* 4 asks GMT_Create_Data for 3 bands plus the alpha array */
+	uint64_t dim[3] = {0, 0, 0}, node, lnode;
+	double inc = T->header->inc[GMT_X], x_fac, x_ref, d_tile, d_ref, d_pad, z_ref, z_pad, Z, nodes, sx, sy, wesn[4];
+	struct GMT_PBR P = *P_in;
+	struct GMT_GRID *Tp = NULL;
+	struct GMT_IMAGE *Ip = NULL, *I = NULL;
+
+	z_ref = grd2kml_pbr_zfac(GMT, h_ref, &x_ref, &d_ref);	/* z scale of the full grid */
+	(void)grd2kml_pbr_zfac(GMT, T->header, &x_fac, &d_tile);	/* x shrink and horizontal diagonal of the tile */
+	pad[XLO] = pad[XHI] = pad[YLO] = pad[YHI] = 2;	/* Central differences need one node, plus one for safety */
+	if (P.occlusion) {	/* Add the occlusion radius */
+		nodes = P.radius * sqrt(d_tile) / inc;
+		pad[XLO] += (int)ceil(nodes / x_fac);	pad[XHI] = pad[XLO];
+		pad[YLO] += (int)ceil(nodes);	pad[YHI] = pad[YLO];
+	}
+	if (P.shadow && P.elevation < 90.0) {	/* Add the shadow length of the full relief on the sun's side, at most 256 nodes */
+		nodes = (h_ref->z_max - h_ref->z_min) * z_ref * P.ve / tand(MAX(P.elevation, 1.0)) / inc;
+		sx = sind(P.azimuth);	sy = cosd(P.azimuth);
+		if (fabs(sx) > 1.0e-6) pad[(sx > 0.0) ? XHI : XLO] += (int)ceil(MIN(256.0, nodes * fabs(sx) / x_fac));
+		if (fabs(sy) > 1.0e-6) pad[(sy > 0.0) ? YHI : YLO] += (int)ceil(MIN(256.0, nodes * fabs(sy)));
+	}
+	wesn[XLO] = MAX(h_level->wesn[XLO], T->header->wesn[XLO] - pad[XLO] * inc);
+	wesn[XHI] = MIN(h_level->wesn[XHI], T->header->wesn[XHI] + pad[XHI] * inc);
+	wesn[YLO] = MAX(h_level->wesn[YLO], T->header->wesn[YLO] - pad[YLO] * inc);
+	wesn[YHI] = MIN(h_level->wesn[YHI], T->header->wesn[YHI] + pad[YHI] * inc);
+	if ((Tp = GMT_Read_Data(GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Zgrid, NULL)) == NULL)
+		return (NULL);
+
+	/* gmt_pbr_image scales the relief from the grid it gets, so set ve and radius to undo that for the padded tile */
+	z_pad = grd2kml_pbr_zfac(GMT, Tp->header, &x_fac, &d_pad);
+	P.ve = P_in->ve * z_ref / z_pad;
+	Z = (Tp->header->z_max - Tp->header->z_min) * z_ref * P_in->ve;
+	P.radius = P_in->radius * sqrt(d_tile) / sqrt(d_pad + Z * Z);
+	Ip = gmt_pbr_image(GMT, &P, Tp, CPT);
+	GMT_Destroy_Data(GMT->parent, &Tp);
+	if (Ip == NULL) return (NULL);
+
+	/* Keep the pixels of the tile itself */
+	dim[GMT_Z] = n_bands;
+	if ((I = GMT_Create_Data(GMT->parent, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, T->header->wesn, T->header->inc, T->header->registration, 2, NULL)) == NULL) {
+		GMT_Destroy_Data(GMT->parent, &Ip);
+		return (NULL);
+	}
+	strncpy(I->header->mem_layout, Ip->header->mem_layout, 4);
+	for (row = 0; row < T->header->n_rows; row++) {
+		lrow = (int)gmt_M_grd_y_to_row(GMT, gmt_M_grd_row_to_y(GMT, row, T->header), Ip->header);
+		for (col = 0; col < T->header->n_columns; col++) {
+			lcol = (int)gmt_M_grd_x_to_col(GMT, gmt_M_grd_col_to_x(GMT, col, T->header), Ip->header);
+			node = gmt_M_ijpgi(I->header, row, col);
+			if (lrow >= 0 && lcol >= 0 && lrow < (int)Ip->header->n_rows && lcol < (int)Ip->header->n_columns) {
+				lnode = gmt_M_ijpgi(Ip->header, lrow, lcol);
+				for (band = 0; band < 3; band++) I->data[node + band] = Ip->data[lnode + band];
+			}
+			if (alpha) I->alpha[gmt_M_ijp(I->header, row, col)] = (gmt_M_is_fnan(T->data[gmt_M_ijp(T->header, row, col)])) ? 0 : 255;
+		}
+	}
+	GMT_Destroy_Data(GMT->parent, &Ip);
+	return (I);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -505,7 +611,9 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *C = NULL;
 	struct GMT_QUADTREE **Q = NULL;
 	struct GRD2KML_CTRL *Ctrl = NULL;
-	struct GMT_GRID *G = NULL, *T = NULL, *I = NULL;
+	struct GMT_GRID *G = NULL, *T = NULL, *I = NULL, *Zh = NULL;
+	struct GMT_PALETTE *PBR_cpt = NULL;
+	struct GMT_IMAGE *TI = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -751,7 +859,19 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	/* Set up the constant parts of the grdimage command */
 	sprintf (grdimage, "-JX%3.2lfi -X0 -Y0%s -W -Ve --PS_MEDIA=%3.2lfix%3.2lfi", dim, K, dim, dim);
-	if (Ctrl->C.active) { strcat (grdimage, " -C"); strcat (grdimage, Ctrl->C.file); }
+	if (Ctrl->I.pbr) {	/* The tiles are shaded here, so we need the CPT here instead of in grdimage */
+		if ((PBR_cpt = GMT_Read_Data(API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+			error = API->error;	goto end_times;
+		}
+		/* We write the tiles ourselves, so turn off the automatic creation of aux files by GDAL as grdimage -A does */
+#ifdef WIN32
+		if (_putenv("GDAL_PAM_ENABLED=NO"))
+#else
+		if (setenv("GDAL_PAM_ENABLED", "NO", 0))
+#endif
+			GMT_Report(API, GMT_MSG_WARNING, "Unable to set GDAL_PAM_ENABLED to prevent writing of auxiliary files\n");
+	}
+	else if (Ctrl->C.active) { strcat (grdimage, " -C"); strcat (grdimage, Ctrl->C.file); }
 	/* Set up the constant parts of the grdcontour command */
 	if (Ctrl->W.active)	/* Overlay contours */
 		sprintf (grdcontour, "-JX%3.2lfi -O -C%s -Ve", dim, contour_file);
@@ -791,6 +911,9 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			strcpy (Zgrid, DataGrid);
 			step = Ctrl->L.size * G->header->inc[GMT_X];
 			if (Ctrl->I.active) strcpy (Igrid, IntensGrid);
+		}
+		if (Ctrl->I.pbr && (Zh = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Zgrid, NULL)) == NULL) {	/* Level extent, which limits the tile borders */
+			error = API->error;	goto end_times;
 		}
 		/* Loop over all rows at this level */
 		row = col = n_skip = 0;
@@ -841,7 +964,18 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 				use_tile = (n_NaN < n_NM);
 				im_type = (n_NaN) ? 1 : 0;
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize (if PostScript) */
-					char z_data[GMT_VF_LEN] = {""}, i_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""};
+					char z_data[GMT_VF_LEN] = {""}, i_data[GMT_VF_LEN] = {""}, p_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""}, *img_in = z_data;
+					if (Ctrl->I.pbr) {	/* Shade the tile physically based; it is written as is, or plotted by grdimage if -W */
+						if ((TI = grd2kml_pbr_tile(GMT, &Ctrl->I.P, G->header, Zh->header, Zgrid, T, im_type, PBR_cpt)) == NULL) {
+							GMT_Report(API, GMT_MSG_ERROR, "Unable to shade grid tile!\n");
+							error = GMT_RUNTIME_ERROR;	goto end_times;
+						}
+						if (GMT_Open_VirtualFile(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, TI, p_data) == GMT_NOTSET) {
+							GMT_Report(API, GMT_MSG_ERROR, "Unable to open shaded tile as virtual file!\n");
+							error = GMT_RUNTIME_ERROR;	goto end_times;
+						}
+						img_in = p_data;
+					}
 					if (Ctrl->I.active) {	/* Also get the intensity tile */
 						if ((I = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Igrid, NULL)) == NULL) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to read in intensity tile!\n");
@@ -866,12 +1000,21 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 							sprintf (imagefile, "%s/L%2.2dR%3.3dC%3.3d.%s", Ctrl->N.prefix, level, row, col, ext[im_type]);
 						else
 							sprintf (imagefile, "%s/R%3.3dC%3.3d.%s", level_dir, row, col, ext[im_type]);
-						if (Ctrl->I.active)	/* Must pass two grids */
-							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s -A%s", grdimage, z_data, i_data, W, E, S, N, imagefile);
-						else
-							sprintf (cmd, "%s %s -R%s/%s/%s/%s -A%s", grdimage, z_data, W, E, S, N, imagefile);
-						if (im_type) strcat (cmd, transp);
-						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
+						if (Ctrl->I.pbr) {	/* The shaded tile already holds the tile's pixels, and grdimage -A would drop its alpha array */
+							if (GMT_Write_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, imagefile, TI) != GMT_NOERROR) {
+								GMT_Report(API, GMT_MSG_ERROR, "Unable to write shaded tile %s\n", imagefile);
+								error = GMT_RUNTIME_ERROR;	goto end_times;
+							}
+							error = GMT_NOERROR;
+						}
+						else {
+							if (Ctrl->I.active)	/* Must pass two grids */
+								sprintf(cmd, "%s %s -I%s -R%s/%s/%s/%s -A%s", grdimage, z_data, i_data, W, E, S, N, imagefile);
+							else
+								sprintf(cmd, "%s %s -R%s/%s/%s/%s -A%s", grdimage, z_data, W, E, S, N, imagefile);
+							if (im_type) strcat(cmd, transp);
+							error = GMT_Call_Module(API, "grdimage", GMT_MODULE_CMD, cmd);
+						}
 						if (!(error == GMT_NOERROR || error == GMT_IMAGE_NO_DATA)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to create a direct PNG from grid\n");
 							error = GMT_RUNTIME_ERROR;	goto end_times;
@@ -883,12 +1026,12 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 						if (Ctrl->I.active)	/* Must pass two grids */
 							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s ->%s", grdimage, z_data, i_data, W, E, S, N, psfile);
 						else
-							sprintf (cmd, "%s %s -R%s/%s/%s/%s ->%s", grdimage, z_data, W, E, S, N, psfile);
-						if (im_type) strcat (cmd, transp);
+							sprintf(cmd, "%s %s -R%s/%s/%s/%s ->%s", grdimage, img_in, W, E, S, N, psfile);
+						if (im_type && !Ctrl->I.pbr) strcat (cmd, transp);	/* A shaded tile has its NaNs in an alpha band instead */
 						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 						if (error == GMT_NOERROR && Ctrl->W.active) {	/* Overlay contours */
-							sprintf (cmd, "%s %s -R%s/%s/%s/%s %s ->>%s", grdcontour, z_data, W, E, S, N, scalepen_arg, psfile);
-							GMT_Init_VirtualFile (API, 0, z_data);	/* Read the same grid again */
+							sprintf(cmd, "%s %s -R%s/%s/%s/%s %s ->>%s", grdcontour, z_data, W, E, S, N, scalepen_arg, psfile);
+							if (!Ctrl->I.pbr) GMT_Init_VirtualFile (API, 0, z_data);	/* Read the same grid again (grdimage got the shaded image instead) */
 							GMT_Init_VirtualFile (API, 0, contour_file);	/* Read the same contours again */
 							if ((error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd))) {
 								GMT_Report (API, GMT_MSG_ERROR, "Unable to overlay contours!\n");
@@ -898,6 +1041,13 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 					}
 					/* Relinquish the tile memory */
 					GMT_Close_VirtualFile (API, z_data);
+					if (Ctrl->I.pbr) {	/* Same for the shaded tile */
+						GMT_Close_VirtualFile(API, p_data);
+						if (GMT_Destroy_Data(API, &TI) != GMT_NOERROR) {
+							GMT_Report(API, GMT_MSG_ERROR, "Unable to free memory of shaded tile!\n");
+							error = GMT_RUNTIME_ERROR;	goto end_times;
+						}
+					}
 					if (GMT_Destroy_Data (API, &T) != GMT_NOERROR) {
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to free memory of grid tile!\n");
 						error = GMT_RUNTIME_ERROR;	goto end_times;
@@ -959,6 +1109,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		else
 			sprintf (box, "%g x %g m", 60*step, 60*step);
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Level %2.2d: Tile size: %18s Tiles: %3d by %3d = %5d %5d mapped %3d empty%s\n", level, box, row, col, row*col, row*col - n_skip, n_skip, filt_report);
+		if (Ctrl->I.pbr) GMT_Destroy_Data(API, &Zh);
 		if (level < max_level) {	/* Delete the temporary filtered grid(s) */
 			gmt_remove_file (GMT, Zgrid);
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
@@ -1113,8 +1264,9 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_NOTICE, "Done: %d tiles (%d JPG and %d PNG) written to directory %s\n", n_tiles, n_img[0], n_img[1], Ctrl->N.prefix);
 
 end_times:
-	gmt_M_free (GMT, Q);
-	if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
+	gmt_M_free(GMT, Q);
+	if (Ctrl->W.active) GMT_Destroy_Data(API, &C);
+	if (PBR_cpt) GMT_Destroy_Data(API, &PBR_cpt);
 
 	Return (error);
 }

@@ -74,7 +74,7 @@ struct GRDVIEW_CTRL {
 		char *file;
 		char *savecpt;	/* For when we want to save the automatically generated CPT */
 	} C;
-	struct GRDVIEW_F {	/* -F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+	struct GRDVIEW_F {	/* -F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
 		bool active;
 		struct GMT_PBR P;	/* Physically based shading settings (gmt_support.c) */
 	} F;
@@ -509,7 +509,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C%s] "
-		"[-F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]] [-G<drapegrid>|<drapeimage>] "
+		"[-F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]] [-G<drapegrid>|<drapeimage>] "
 		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Qc|g[m|a]|i|m[x|y]|s[<color>][+m]] [%s] [-S<smooth>] "
 		"[-T[+o[<pen>]][+s]] [%s] [%s] [-W<type><pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_B_OPT, CPT_OPT_ARGS, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
@@ -541,7 +541,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+m Set <ambient> light to add [0].");
 	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
 		"To derive intensities from another grid than <topogrid>, give the alternative data grid with suitable modifiers. "
-		"Use -I+f to shade physically based (see -F) with its default settings, i.e., -F315/45+o+t.");
+		"Use -I+P[<azim>[/<elev>]][<modifiers>] to shade physically based instead, exactly as -F does, "
+		"or -I+f to do so with its default settings, i.e., -F315/45+o+t.");
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-N[<level>][+g<fill>]");
 	GMT_Usage (API, -2, "Draw a horizontal plane at z = <level> [minimum grid (or -R) value]. For rectangular projections, append +g<fill> "
@@ -628,7 +629,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				}
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
-			case 'F':	/* Physically based shading -F<azim>/<elev>[+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+			case 'F':	/* Physically based shading -F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
 				n_errors += gmt_M_repeated_module_option(API, Ctrl->F.active);
 				n_errors += gmt_pbr_parse(GMT, 'F', opt->arg, &Ctrl->F.P);
 				break;
@@ -656,9 +657,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				if (!strcmp(opt->arg, "+f")) {	/* -I+f: physically based shading (-F) with its default settings */
+				if (!strcmp(opt->arg, "+f") || !strncmp(opt->arg, "+P", 2)) {	/* -I+f or -I+P[<azim>[/<elev>]][<modifiers>]: same as -F */
 					n_errors += gmt_M_repeated_module_option(API, Ctrl->F.active);
-					Ctrl->F.P.occlusion = Ctrl->F.P.tone = true;
+					n_errors += gmt_pbr_parse(GMT, 'I', &opt->arg[2], &Ctrl->F.P);	/* For +f, &opt->arg[2] is "" and selects the defaults */
 					Ctrl->I.active = false;	/* No intensities: -F replaces -I */
 					break;
 				}

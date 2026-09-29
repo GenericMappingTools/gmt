@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
 [ |-H|\ *scale* ]
-[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*]\|\ **+f**\|\ **+P**\ [*azim*\ [/*elev*]][*modifiers*] ]
 [ |-L|\ *tilesize* ]
 [ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]
@@ -109,6 +109,12 @@ Optional Arguments
 .. _-I:
 
 .. include:: explain_intense.rst_
+
+    With **+P** or **+f**, each tile is shaded together with a border of its neighbouring nodes, so slopes,
+    occlusion and shadows continue across the tile edges. The border is the occlusion radius on all sides
+    plus the shadow length (at most 256 nodes) on the sun's side. The relief is drawn at the vertical scale
+    of the full grid on every level, while the occlusion *radius* is a fraction of the tile's horizontal
+    diagonal, so the occlusion looks the same at every zoom level.
 
 .. _-L:
 

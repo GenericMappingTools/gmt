@@ -45,7 +45,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 		  GMT_TP_STANDARD },
 	{ 0, 'I', "intensity",
                   "",                  "",
-                  "a,d,f,m,n",         "azimuth,default,pbr,ambient,intensity",
+                  "a,d,f,m,n,P",       "azimuth,default,pbr,ambient,intensity,physical",
 		  GMT_TP_STANDARD },
 	{ 0, 'M', "monochrome",        "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'N', "noclip",            "", "", "", "", GMT_TP_STANDARD },
