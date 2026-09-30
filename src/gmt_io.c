@@ -3962,7 +3962,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	}
 	else if (GMT->current.proj.inv_coordinates)
 		gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
-	if (gmtlib_gap_detected (GMT)) {	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
+	if (GMT->current.io.status & GMT_IO_MISMATCH) {	/* A skipped short record is neither a gap nor the previous record for -g */
+		if (GMT->current.io.need_previous) gmt_M_memcpy (GMT->current.io.curr_rec, GMT->current.io.prev_rec, n_use, double);
+	}
+	else if (gmtlib_gap_detected (GMT)) {	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 		*status = gmtlib_set_gap (GMT);
 		return (&GMT->current.io.record);
 	}
