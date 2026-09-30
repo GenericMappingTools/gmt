@@ -383,8 +383,10 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	}
 	else if (!dump) {	/* No -J given, so we must either inherit one or default to a Schmidt net */
 		/* Inherit an earlier net in this figure, else use our own default */
+		struct stat S;
 		int id = gmt_get_option_id (0, "J");	/* The generic -J history entry holds the projection code */
-		bool inherit = (id >= 0 && API->GMT->init.history[id] && strchr ("AS", API->GMT->init.history[id][0]));
+		bool session = (API->gwf_dir && !stat (API->gwf_dir, &S));	/* Same test GMT uses for a running modern session */
+		bool inherit = (session && id >= 0 && API->GMT->init.history[id] && strchr ("AS", API->GMT->init.history[id][0]));
 		if (!inherit) {
 			sprintf (string, "A0/0/%gc", PSSTEREONET_DEF_WIDTH);
 			if ((opt = GMT_Make_Option (API, 'J', string)) == NULL) return (GMT_PARSE_ERROR);
