@@ -75,11 +75,11 @@ struct GRD2KML_CTRL {
 		bool active;
 		char *prefix;
 	} N;
-	struct GRD2KML_I {	/* -I[<intensfile>|<value>|<modifiers>] or -I+f|+P[<azim>[/<elev>]][<pbr_modifiers>] */
+	struct GRD2KML_I {	/* -I[<intensfile>|<value>|<modifiers>] or -I+P[<azim>[/<elev>]][<modifiers>] */
 		bool active;
 		bool constant;
 		bool derive;
-		bool pbr;	/* Physically based shading (-I+f or -I+P) instead of intensities */
+		bool pbr;	/* Physically based shading (-I+P) instead of intensities */
 		double value;
 		struct GMT_PBR P;	/* Physically based shading settings (gmt_support.c) */
 		char *azimuth;	/* Default azimuth(s) for shading */
@@ -124,7 +124,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.filter = 'g';
 	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
-	gmt_pbr_defaults(&C->I.P);	/* Physically based shading defaults (-I+f or -I+P) */
+	gmt_pbr_defaults(&C->I.P);	/* Physically based shading defaults (-I+P) */
 	C->L.size = 512;	/* Default tile size unless global grids [360] */
 	C->W.scale = M_SQRT2;
 	C->W.cutoff = 0.1;
@@ -148,7 +148,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s -N<name> [-Aa|g|s[<altitude>]] [-C%s] [-E<url>] [-F<filter>] "
-		"[-H<scale>] [-I[<intensgrid>|<value>|<modifiers>|+f|+P[<azim>[/<elev>]][<pbr_modifiers>]]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
+		"[-H<scale>] [-I[<intensgrid>|<value>|<modifiers>|+P[<modifiers>]]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
 		"[-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s] [%s]\n", name, GMT_INGRID, CPT_OPT_ARGS, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -179,26 +179,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "m: Median - median (50%% quantile) value of all points.");
 	GMT_Usage (API, 1, "\n-H<scale>");
 	GMT_Usage (API, -2, "Do sub-pixel smoothing using factor <scale> [no sub-pixel smoothing]. Ignored if -W not set.");
-	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
+	GMT_Usage(API, 1, "\n-I[<intensgrid>|<value>|<modifiers>|+P[<modifiers>]]");
 	GMT_Usage (API, -2, "Apply directional illumination. Append name of intensity grid file. "
 		" For a constant intensity (i.e., change the ambient light), append a single value. "
 		"To derive intensities from <grid> instead, use -I+d to accept the default values (see grdgradient for details) or be specific:");
 	GMT_Usage (API, 3, "+a Append <azimuth> of illumination [-45]");
 	GMT_Usage (API, 3, "+n Append <method> pf intensity calculation [t1]");
-	GMT_Usage(API, -2, "Alternatively, use -I+P[<azim>[/<elev>]][<pbr_modifiers>] to shade <grid> physically based "
-		"instead (see grdimage -F), or -I+f to do so with its default settings, i.e., -I+P315/45+o+t. "
-		"Each level is shaded as a whole and with the relief scale of <grid>, so tiles match across their edges. "
-		"The <pbr_modifiers> are:");
-	GMT_Usage(API, 3, "+f Set the <fill> (headlight) intensity (>= 0) [0.35].");
-	GMT_Usage(API, 3, "+i Set the index of refraction <ior> of the surface (>= 1) [1.5].");
-	GMT_Usage(API, 3, "+l Set the <light> (sun) intensity (>= 0) [1].");
-	GMT_Usage(API, 3, "+m Set the <metallic> value (0-1) [0].");
-	GMT_Usage(API, 3, "+o Add ambient occlusion; optionally append the sampling <radius> as a fraction of the "
-		"diagonal of the relief as drawn (> 0) [0.1].");
-	GMT_Usage(API, 3, "+r Set the <roughness> (0-1) [0.3].");
-	GMT_Usage(API, 3, "+s Cast shadows along the sun's azimuth and elevation.");
-	GMT_Usage(API, 3, "+t Apply the Khronos PBR Neutral tone mapping.");
-	GMT_Usage(API, 3, "+v Set the vertical exaggeration <ve> of the relief (> 0) [1].");
+	gmt_pbr_syntax(API, 'I');
+	GMT_Usage(API, -2, "Each tile is shaded with a border of its neighbouring nodes and at the relief scale of <grid>, so tiles "
+		"match across their edges; here the occlusion <radius> is a fraction of the tile's horizontal diagonal.");
 	GMT_Usage (API, 1, "\n-L<size>");
 	GMT_Usage (API, -2, "Set tile size as a power of 2 [512; for global grids, we instead select 360].n");
 	GMT_Usage (API, 1, "\n-S[<extra>]");
@@ -284,9 +273,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
 				n_errors += gmt_M_repeated_module_option(API, Ctrl->I.active);
-				if (!strcmp(opt->arg, "+f") || !strncmp(opt->arg, "+P", 2)) {	/* -I+f or -I+P[<azim>[/<elev>]][<modifiers>]: physically based shading */
+				if (!strncmp(opt->arg, "+P", 2)) {	/* -I+P[<azim>[/<elev>]][<modifiers>]: physically based shading */
 					Ctrl->I.pbr = true;
-					n_errors += gmt_pbr_parse(GMT, 'I', &opt->arg[2], &Ctrl->I.P);	/* For +f, &opt->arg[2] is "" and selects the defaults */
+					n_errors += gmt_pbr_parse(GMT, 'I', &opt->arg[2], &Ctrl->I.P);	/* Plain +P gives "" and selects all the defaults */
 				}
 				else if (!strcmp(opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
 					Ctrl->I.derive = true;
@@ -302,7 +291,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 						}
 					}
 				}
-				else if (!opt->arg[0] || strstr (opt->arg, "+"))	/* No argument or just +, so derive intensities from input grid using default settings */
+				else if (!opt->arg[0] || !strcmp(opt->arg, "+"))	/* No argument or just +, so derive intensities from input grid using default settings */
 					Ctrl->I.derive = true;
 				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
 					Ctrl->I.file = strdup (opt->arg);
@@ -764,7 +753,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			error = GMT_RUNTIME_ERROR;	goto end_times;
 		}
 		z_extend = true;	/* We made a temp file we need to zap later */
-		if (Ctrl->I.active) {	/* Also extend the intensity grid */
+		if (Ctrl->I.active && !Ctrl->I.constant) {	/* Also extend the intensity grid */
 			sprintf (IntensGrid, "%s/grd2kml_extended_intens_%6.6d.grd", API->tmp_dir, uniq);
 			sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -N -G%s", Ctrl->I.file, ext_wesn[XLO], ext_wesn[XHI], ext_wesn[YLO], ext_wesn[YHI], IntensGrid);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Extend intensity grid to multiple of largest grid spacing\n");
@@ -777,8 +766,8 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 	else {	/* No need to extend, use the input files as is */
 		strcpy (DataGrid, Ctrl->In.file);
-		if (Ctrl->I.active)
-			strcpy (IntensGrid, Ctrl->I.file);
+		if (Ctrl->I.active && !Ctrl->I.constant)
+			strcpy(IntensGrid, Ctrl->I.file);
 	}
 
 	if (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)) {	/* If no cpt given or just a master then we must compute a scaled one from the full-size grid and use it throughout */
@@ -899,7 +888,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, registration, G->header->inc[GMT_X], inc, DataGrid, Zgrid, filt_report)) {
 				error = GMT_RUNTIME_ERROR;	goto end_times;
 			}
-			if (Ctrl->I.active) {	/* Also filter the intensity grid */
+			if (Ctrl->I.active && !Ctrl->I.constant) {	/* Also filter the intensity grid */
 				sprintf (Igrid, "%s/grd2kml_I_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
 				if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, registration, G->header->inc[GMT_X], inc, IntensGrid, Igrid, filt_report)) {
 					error = GMT_RUNTIME_ERROR;	goto end_times;
@@ -910,7 +899,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			sprintf (filt_report, " [Original grid used]");
 			strcpy (Zgrid, DataGrid);
 			step = Ctrl->L.size * G->header->inc[GMT_X];
-			if (Ctrl->I.active) strcpy (Igrid, IntensGrid);
+			if (Ctrl->I.active && !Ctrl->I.constant) strcpy(Igrid, IntensGrid);
 		}
 		if (Ctrl->I.pbr && (Zh = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Zgrid, NULL)) == NULL) {	/* Level extent, which limits the tile borders */
 			error = API->error;	goto end_times;
@@ -976,7 +965,9 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 						}
 						img_in = p_data;
 					}
-					if (Ctrl->I.active) {	/* Also get the intensity tile */
+					if (Ctrl->I.constant)	/* Constant intensity: pass the value to grdimage instead of a tile */
+						snprintf(i_data, GMT_VF_LEN, "%.16g", Ctrl->I.value);
+					else if (Ctrl->I.active) {	/* Also get the intensity tile */
 						if ((I = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Igrid, NULL)) == NULL) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to read in intensity tile!\n");
 							error = GMT_RUNTIME_ERROR;	goto end_times;
@@ -1052,7 +1043,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to free memory of grid tile!\n");
 						error = GMT_RUNTIME_ERROR;	goto end_times;
 					}
-					if (Ctrl->I.active)	{	/* Same for intensity tile */
+					if (Ctrl->I.active && !Ctrl->I.constant)	{	/* Same for intensity tile */
 						GMT_Close_VirtualFile (API, i_data);
 						if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to free memory of intensity tile!\n");
@@ -1112,7 +1103,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		if (Ctrl->I.pbr) GMT_Destroy_Data(API, &Zh);
 		if (level < max_level) {	/* Delete the temporary filtered grid(s) */
 			gmt_remove_file (GMT, Zgrid);
-			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
+			if (Ctrl->I.active && !Ctrl->I.constant) gmt_remove_file(GMT, Igrid);
 		}
 		grd2kml_halve_dimensions (&inc, &step);
 	}

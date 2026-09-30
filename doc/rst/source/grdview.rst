@@ -15,9 +15,8 @@ Synopsis
 **gmt grdview** *reliefgrid* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
-[ |-F|\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*] ]
 [ |-G|\ *drapegrid*\|\ *drapeimage* ]
-[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*]\|\ **+P**\ [*modifiers*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
 [ |-Q|\ **c**\|\ **g**\ [**m**]\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\|\ [*color*][**+m**]\ **t** ]
@@ -70,20 +69,6 @@ Optional Arguments
 .. _-C:
 
 .. include:: use_cpt_grd.rst_
-
-.. _-F:
-
-**-F**\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*]
-    Shade the *reliefgrid* with physically based lighting instead of illuminating it with |-I| (the
-    two cannot be combined, nor can |-G| or |-T| be used). The shaded colors are computed on the grid's
-    own nodes and draped over the relief as an image, so |-F| implies **-Qi** unless **-Qc**\|\ **i**
-    is given. The sun position is optional [315/45]; give just *azim* to keep the default *elev* (but
-    *elev* cannot be given without *azim*). Plain |-F| (or **-I+f**) selects all the default settings,
-    which are the same as **-F**\ 315/45+o+t. **-I+P**\ [*azim*\ [/*elev*]][*modifiers*] is an
-    alternative form that works exactly as |-F|. The shading itself is identical to that of
-    :doc:`grdimage` **-F**.
-
-    .. include:: explain_pbr.rst_
 
 .. _-G:
 
@@ -263,7 +248,7 @@ lighting: a low sun from the northwest that makes Mauna Kea and Mauna Loa cast t
 occlusion, tone mapping, a threefold vertical exaggeration of the shading and a brighter sun and fill
 light than the defaults::
 
-gmt grdimage @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Cgeo -F315/35+o+s+t+v3+l1.4+f0.5 -JM15c -JZ3c -p150/35 -B -png hawaii
+    gmt grdview @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Cgeo -I+P315/35+o+s+t+v3+l1.4+f0.5 -JM15c -JZ3c -p150/35 -B -png hawaii
 
 .. module_note_begins
 

@@ -74,10 +74,10 @@ struct GRDVIEW_CTRL {
 		char *file;
 		char *savecpt;	/* For when we want to save the automatically generated CPT */
 	} C;
-	struct GRDVIEW_F {	/* -F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
+	struct GRDVIEW_PBR {	/* -I+P[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
 		bool active;
 		struct GMT_PBR P;	/* Physically based shading settings (gmt_support.c) */
-	} F;
+	} PBR;
 	struct GRDVIEW_G {	/* -G<drapefile>|<drapeimage>  */
 		/* Also handle deprecated triples -Gred.grd -Ggreen.grd -Gblue.grd or -Gred.grd,green.grd,blue.grd */
 		bool active;
@@ -478,7 +478,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->N.fill, -1.0, -1.0, -1.0);	/* Default is no fill of facade */
-	gmt_pbr_defaults(&C->F.P);	/* Physically based shading defaults (-F, or -I+f) */
+	gmt_pbr_defaults(&C->PBR.P);	/* Physically based shading defaults (-I+P) */
 	C->I.azimuth = strdup ("-45.0");		/* Default azimuth for shading when -I is used */
 	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
 	C->T.pen = C->W.pen[0] = C->W.pen[1] = C->W.pen[2] = GMT->current.setting.map_default_pen;	/* Tile and mesh pens */
@@ -509,8 +509,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C%s] "
-		"[-F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>]] [-G<drapegrid>|<drapeimage>] "
-		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Qc|g[m|a]|i|m[x|y]|s[<color>][+m]] [%s] [-S<smooth>] "
+		"[-G<drapegrid>|<drapeimage>] "
+		"[-I[<intensgrid>|<value>|<modifiers>|+P[<modifiers>]]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Qc|g[m|a]|i|m[x|y]|s[<color>][+m]] [%s] [-S<smooth>] "
 		"[-T[+o[<pen>]][+s]] [%s] [%s] [-W<type><pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_B_OPT, CPT_OPT_ARGS, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -523,16 +523,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
 	gmt_explain_cpt_input (API, 'C');
-	gmt_pbr_syntax(API, 'F');
-	GMT_Usage(API, -2, "The shaded colors are draped over <topogrid> as an image, so -F implies -Qi [or use -Qc|i<dpu>] and cannot be "
-		"combined with -G or -I.");
 	GMT_Usage (API, 1, "\n-G<drapegrid>|<drapeimage>");
 	GMT_Usage (API, -2, "Specify how to color the 3-D surface geometry defined by <topogrid>:");
 	GMT_Usage (API, 3, "%s Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Provide an image (<drapeimage>) and it will be draped over the surface.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Notes: 1) -JZ|z and -N always refer to the data in the <topogrid>. "
 		"2) The -G option requires the -Qc|i[<dpu>] option.");
-	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
+	GMT_Usage(API, 1, "\n-I[<intensgrid>|<value>|<modifiers>|+P[<modifiers>]]");
 	GMT_Usage (API, -2, "Apply directional illumination. Append name of an intensity grid, or "
 		"for a constant intensity (i.e., change the ambient light), just give a scalar. "
 		"To derive intensities from <topogrid> instead, append desired modifiers:");
@@ -540,9 +537,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+n Set the <method> and <scale> to use [t1].");
 	GMT_Usage (API, 3, "+m Set <ambient> light to add [0].");
 	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
-		"To derive intensities from another grid than <topogrid>, give the alternative data grid with suitable modifiers. "
-		"Use -I+P[<azim>[/<elev>]][<modifiers>] to shade physically based instead, exactly as -F does, "
-		"or -I+f to do so with its default settings, i.e., -F315/45+o+t.");
+		"To derive intensities from another grid than <topogrid>, give the alternative data grid with suitable modifiers.");
+	gmt_pbr_syntax(API, 'I');
+	GMT_Usage(API, -2, "The shaded colors are draped over <topogrid> as an image, so -I+P implies -Qi [or use -Qc|i<dpu>] and cannot be "
+		"combined with -G or -T.");
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-N[<level>][+g<fill>]");
 	GMT_Usage (API, -2, "Draw a horizontal plane at z = <level> [minimum grid (or -R) value]. For rectangular projections, append +g<fill> "
@@ -629,10 +627,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				}
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
-			case 'F':	/* Physically based shading -F[<azim>[/<elev>]][+f<fill>][+i<ior>][+l<light>][+m<metallic>][+o[<radius>]][+r<roughness>][+s][+t][+v<ve>] */
-				n_errors += gmt_M_repeated_module_option(API, Ctrl->F.active);
-				n_errors += gmt_pbr_parse(GMT, 'F', opt->arg, &Ctrl->F.P);
-				break;
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
@@ -657,10 +651,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				if (!strcmp(opt->arg, "+f") || !strncmp(opt->arg, "+P", 2)) {	/* -I+f or -I+P[<azim>[/<elev>]][<modifiers>]: same as -F */
-					n_errors += gmt_M_repeated_module_option(API, Ctrl->F.active);
-					n_errors += gmt_pbr_parse(GMT, 'I', &opt->arg[2], &Ctrl->F.P);	/* For +f, &opt->arg[2] is "" and selects the defaults */
-					Ctrl->I.active = false;	/* No intensities: -F replaces -I */
+				if (!strncmp(opt->arg, "+P", 2)) {	/* -I+P[<azim>[/<elev>]][<modifiers>]: physically based shading */
+					n_errors += gmt_M_repeated_module_option(API, Ctrl->PBR.active);
+					n_errors += gmt_pbr_parse(GMT, 'I', &opt->arg[2], &Ctrl->PBR.P);	/* Plain +P gives "" and selects all the defaults */
+					Ctrl->I.active = false;	/* No intensities: the shaded colors replace them */
 					break;
 				}
 				if ((c = strstr (opt->arg, "+d"))) {	/* Gave +d, so derive intensities from the input grid using default settings */
@@ -911,12 +905,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 	                                  "Option -Qs: Must also specify a cpt via -C\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
 	                                  "Option -T: Cannot specify -JZ|z\n");
-	if (Ctrl->F.active) {	/* The shaded colors are draped as an image */
-		n_errors += gmt_M_check_condition(GMT, Ctrl->I.active, "Option -F: Cannot be combined with -I\n");
-		n_errors += gmt_M_check_condition(GMT, Ctrl->G.active, "Option -F: Cannot be combined with -G\n");
-		n_errors += gmt_M_check_condition(GMT, Ctrl->T.active, "Option -F: Cannot be combined with -T\n");
-		n_errors += gmt_M_check_condition(GMT, Ctrl->Q.active && Ctrl->Q.mode != GRDVIEW_IMAGE, "Option -F: Requires -Qc|i\n");
-		n_errors += gmt_pbr_check(GMT, 'F', &Ctrl->F.P);
+	if (Ctrl->PBR.active) {	/* The shaded colors are draped as an image */
+		n_errors += gmt_M_check_condition(GMT, Ctrl->I.active, "Option -I: Given more than once (+P or +f cannot be combined with intensities)\n");
+		n_errors += gmt_M_check_condition(GMT, Ctrl->G.active, "Option -I+P: Cannot be combined with -G\n");
+		n_errors += gmt_M_check_condition(GMT, Ctrl->T.active, "Option -I+P: Cannot be combined with -T\n");
+		n_errors += gmt_M_check_condition(GMT, Ctrl->Q.active && Ctrl->Q.mode != GRDVIEW_IMAGE, "Option -I+P: Requires -Qc|i\n");
+		n_errors += gmt_pbr_check(GMT, 'I', &Ctrl->PBR.P);
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -977,7 +971,7 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
 
-	if (Ctrl->F.active) {	/* Physically based shading: the topo grid is shaded through its CPT (gmt_pbr_image) into an
+	if (Ctrl->PBR.active) {	/* Physically based shading: the topo grid is shaded through its CPT (gmt_pbr_image) into an
 		 * image that is then draped over it exactly as a -G<image> would be */
 		Ctrl->C.active = Ctrl->G.active = true;
 		Ctrl->G.n = 1;
@@ -1102,7 +1096,7 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->C.active) {
-		char *dataset_cpt = (!Ctrl->F.active && Ctrl->G.active && Ctrl->G.n == 1 && !gmt_M_file_is_image (Ctrl->G.file[0])) ? Ctrl->G.file[0] : Ctrl->In.file;
+		char *dataset_cpt = (!Ctrl->PBR.active && Ctrl->G.active && Ctrl->G.n == 1 && !gmt_M_file_is_image(Ctrl->G.file[0])) ? Ctrl->G.file[0] : Ctrl->In.file;
 		char *cpt = gmt_cpt_default (API, Ctrl->C.file, dataset_cpt, Topo->header);
 		if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, Ctrl->C.dz)) == NULL) {
 			Return (API->error);
@@ -1117,13 +1111,13 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && !Ctrl->Q.gouraud && P && P->n_colors > 1) || (Ctrl->Q.gouraud && Ctrl->W.contour);
 
 	if (Ctrl->G.active) {	/* Draping wanted */
-		if (Ctrl->F.active || (Ctrl->G.n == 1 && gmt_M_file_is_image (Ctrl->G.file[0]))) {
+		if (Ctrl->PBR.active || (Ctrl->G.n == 1 && gmt_M_file_is_image (Ctrl->G.file[0]))) {
 			double inc[2];
 			/* Want to drape an image on top of surface.  Do so by converting the image to r, g, b grids */
 			struct GMT_IMAGE *I = NULL;
-			if (Ctrl->F.active) {	/* The image is the topo grid itself, shaded physically based through its CPT */
+			if (Ctrl->PBR.active) {	/* The image is the topo grid itself, shaded physically based through its CPT */
 				GMT_Report(API, GMT_MSG_INFORMATION, "Physically based shading of the grid into a drape image\n");
-				if ((I = gmt_pbr_image(GMT, &Ctrl->F.P, Topo, P)) == NULL) {
+				if ((I = gmt_pbr_image(GMT, &Ctrl->PBR.P, Topo, P)) == NULL) {
 					Return (API->error);
 				}
 			}

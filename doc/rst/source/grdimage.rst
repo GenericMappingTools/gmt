@@ -18,9 +18,8 @@ Synopsis
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
-[ |-F|\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
-[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*]\|\ **+P**\ [*modifiers*] ]
 [ |-J|\ *parameters* ]
 [ |-M| ]
 [ |-N| ]
@@ -126,18 +125,6 @@ Optional Arguments
     default, the projected grid will be of the same size (rows and
     columns) as the input file. Specify **i** to use the PostScript
     image operator to interpolate the image at the device resolution.
-
-.. _-F:
-
-**-F**\ [*azim*\ [/*elev*]][**+f**\ *fill*][**+i**\ *ior*][**+l**\ *light*][**+m**\ *metallic*][**+o**\ [*radius*]][**+r**\ *roughness*][**+s**][**+t**][**+v**\ *ve*]
-    Shade the grid with physically based lighting instead of illuminating it with |-I| (the two
-    cannot be combined). The shaded image is made on the grid's own nodes and then projected and
-    plotted as any image, so |-A|, |-E| and |-J| work as usual. The sun position is optional
-    [315/45]; give just *azim* to keep the default *elev* (but *elev* cannot be given without *azim*).
-    Plain |-F| (or **-I+f**) selects all the default settings, which are the same as **-F**\ 315/45+o+t.
-    **-I+P**\ [*azim*\ [/*elev*]][*modifiers*] is an alternative form that works exactly as |-F|.
-
-    .. include:: explain_pbr.rst_
 
 .. _-G:
 
@@ -350,7 +337,7 @@ To shade the Island of Hawaii and the surrounding sea floor with physically base
 from the northwest that makes Mauna Kea and Mauna Loa cast their shadows, ambient occlusion, tone mapping,
 a threefold vertical exaggeration and a brighter sun and fill light than the defaults::
 
-gmt grdimage @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Cgeo -F315/35+o+s+t+v3+l1.4+f0.5 -JM15c -B -png hawaii
+    gmt grdimage @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Cgeo -I+P315/35+o+s+t+v3+l1.4+f0.5 -JM15c -B -png hawaii
 
 .. include:: cpt_notes.rst_
 
