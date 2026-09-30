@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 /*
  * rockmag.c contains code shared by the modules of the rockmag supplement
- * (rmagcurie, and future hysteresis/IRM modules). Not a module itself: no
+ * (rmagcurie, rmaghyst, and future IRM/backfield modules). Not a module itself: no
  * THIS_MODULE_* macros, no GMT_<name> entry point (see paleomag.c /
  * windbarbs/windbarb.c for the same pattern).
  *

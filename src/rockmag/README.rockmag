@@ -41,18 +41,24 @@ thermomagnetic M-T or kappa-T curves).
 			Mrs/Ms, together with both wing fits so the quality
 			of the correction is visible. Warns when Mrs/Ms > 1,
 			which is physically impossible and means the loop
-			never saturated within the measured field range.
+			never saturated within the measured field range,
+			and when it exceeds 0.87, the largest value for
+			randomly oriented single-domain grains.
 
 Planned additions (not yet implemented):
 
 	- IRM/backfield acquisition curves: coercivity of remanence Hcr,
 	  coercivity spectra, and cumulative log-Gaussian (Robertson &
 	  France, 1994; Kruiver et al., 2001) component unmixing.
-	- The Day (1977)/Dunlop (2002) plot, which needs Mrs/Ms from
+	- The Day et al. (1977)/Dunlop (2002) plot, which needs Mrs/Ms from
 	  rmaghyst and Hcr from a backfield curve. Note this requires
 	  loops that actually saturate: a VSM limited to ~900 Oe does not
 	  saturate many rock samples, and then Ms - and any Day plot built
 	  on it - is not recoverable from the measurement.
+
+Input to rmaghyst is a 2-column table (field, magnetization) with one
+complete loop per segment: instrument files that hold several samples
+must be split into one segment per sample first.
 
 Input to rmagcurie is a simple 2-column table (temperature, magnetic
 parameter), one thermomagnetic run per segment (">" header). See

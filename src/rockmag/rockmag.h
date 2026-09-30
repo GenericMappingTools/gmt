@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 /*
  * rockmag.h declares code shared by the modules of the rockmag supplement
- * (rmagcurie, and future hysteresis/IRM modules). Mirrors the paleomag.h/
+ * (rmagcurie, rmaghyst, and future IRM/backfield modules). Mirrors the paleomag.h/
  * windbarbs/windbarb.h pattern: this is a shared library header, not a
  * module itself.
  */
@@ -24,12 +24,13 @@
 #ifndef _GMT_ROCKMAG_H
 #define _GMT_ROCKMAG_H
 
-/* One monotonic-temperature branch (a heating or a cooling ramp) of a
- * thermomagnetic run, as indices into the caller's original arrays. */
+/* One monotonic branch of a temperature or field sweep (a heating or cooling
+ * ramp, or one side of a hysteresis loop), as indices into the caller's
+ * original arrays. */
 struct ROCKMAG_BRANCH {
 	uint64_t start;	/* Index of the first point of this branch (inclusive) */
 	uint64_t stop;	/* Index of the last point of this branch (inclusive) */
-	bool heating;	/* true if temp[start] < temp[stop] (heating ramp), false if cooling */
+	bool heating;	/* true if the swept variable increases along the branch (heating, or ascending field) */
 };
 
 /* Split a temperature sequence temp[0..n-1] (as measured, in whatever order
@@ -50,7 +51,7 @@ EXTERN_MSC uint64_t rockmag_split_branches (struct GMT_CTRL *GMT, double *temp, 
 /* Ordinary least-squares fit of y = intercept + slope*x over the n points
  * x[0..n-1], y[0..n-1]. *r2 is the coefficient of determination (1 minus
  * the residual-to-total sum-of-squares ratio). Returns false, leaving
- * *slope/*intercept/*r2 untouched, if n < 2 or all x are identical (a
+ * slope, intercept and r2 untouched, if n < 2 or all x are identical (a
  * vertical "fit" has no finite slope). If all y are identical the fit is
  * exact (slope 0) but *r2 naturally comes out as the IEEE754 result of
  * 0.0/0.0 (NaN, since both the residual and total sum of squares vanish

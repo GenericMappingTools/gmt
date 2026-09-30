@@ -46,10 +46,10 @@
  *    broad, gradual transition. Kept here mainly for comparison with
  *    published values that used it, or for M(T) rather than chi(T) data.
  *
- * First module of the "rockmag" supplement for rock-magnetic data
- * (hysteresis/Day-plot and IRM/backfield coercivity-unmixing modules are
- * planned to follow, sharing rockmag.c/.h - a separate supplement from
- * "paleomag", which handles directional (Dec/Inc) data instead).
+ * First module of the "rockmag" supplement for rock-magnetic data; rmaghyst
+ * (hysteresis loops) shares rockmag.c/.h with it, and IRM/backfield modules
+ * are planned. A separate supplement from "paleomag", which handles
+ * directional (Dec/Inc) data instead.
  *
  *--------------------------------------------------------------------
  */
@@ -107,6 +107,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"is automatically split into monotonic heating/cooling branches at every temperature "
 		"turning point (e.g., one heating-and-cooling cycle becomes two branches), and every "
 		"branch is analyzed independently.");
+	GMT_Usage (API, -2, "Heating and cooling curves that are not reversible indicate an irreversible "
+		"change of the magnetic minerals during the run, so the cooling branch then describes the "
+		"altered sample rather than the original one (Butler, 1992); a small offset between the "
+		"two Tc estimates can also come from thermal lag. Not every rise in a heating curve is a "
+		"Hopkinson peak either: in Butler's pyrrhotite example the signal increases from 225 to "
+		"275 degrees C because Fe9S10 turns from antiferromagnetic to ferrimagnetic, while the "
+		"Curie point is at 320 degrees C, so the peak of column 1 can mark a transition rather "
+		"than Tc. A single Tc does not rule out a second phase: a weakly magnetic mineral such as "
+		"hematite (Js ~2 G) is easily hidden by a strongly magnetic one such as magnetite (480 G).");
+	GMT_Usage (API, -2, "Reference values (Butler, 1992): Curie or Neel points of 580 degrees C for "
+		"magnetite, 680 for hematite, 320 for pyrrhotite and 120 for goethite. Maghemite is "
+		"metastable and irreversibly converts to hematite on heating to 300-500 degrees C, and "
+		"goethite dehydrates to hematite at 300-400 degrees C, both common causes of "
+		"irreversible curves.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C<Tmin>/<Tmax>");
 	GMT_Usage (API, -2, "Fit 1/(column 2) versus temperature over this window and report its "
@@ -286,7 +300,7 @@ EXTERN_MSC int GMT_rmagcurie (void *V_API, int mode, void *args) {
 	}
 	GMT->current.io.multi_segments[GMT_OUT] = true;	/* To ensure we can write our own segment headers */
 
-	Out = gmt_new_record (GMT, out, record);
+	Out = gmt_new_record (GMT, out, NULL);
 
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
@@ -377,7 +391,6 @@ EXTERN_MSC int GMT_rmagcurie (void *V_API, int mode, void *args) {
 				out[2] = Tc_cw;		out[3] = R2_cw;		out[4] = n_cw;
 				out[5] = Tc_tan;	out[6] = R2_base;	out[7] = n_base;
 				out[8] = R2_flank;	out[9] = n_flank;	out[10] = (double)bn;
-				record[0] = '\0';
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				n_out++;
 			}

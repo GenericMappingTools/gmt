@@ -35,8 +35,9 @@
  * genuinely saturated, linear part of the loop. The hard check is Mrs/Ms: a
  * remanence larger than the saturation it is measured against is impossible,
  * and in practice means the loop never saturated within the measured field
- * range, so Ms (and any Day plot built on it) must not be trusted. This is not
- * hypothetical: a VSM limited to ~900 Oe cannot saturate many rock samples.
+ * range, so chi is overestimated and neither Ms nor Hc (nor any Day plot built
+ * on them) can be trusted. This is not hypothetical: a VSM limited to ~900 Oe
+ * cannot saturate many rock samples.
  *
  * Second module of the "rockmag" supplement; shares rockmag_split_branches,
  * rockmag_linfit and rockmag_crossing with rmagcurie via rockmag.c/.h.
@@ -56,6 +57,7 @@
 #define THIS_MODULE_OPTIONS	"-Vbdefghioq"
 
 #define RMAGHYST_DEF_FRACTION	0.5	/* Default -F window is the upper half of the measured |H| range */
+#define RMAGHYST_SD_MAX_RATIO	0.87	/* Largest Mrs/Ms of randomly oriented, non-interacting SD grains (cubic anisotropy; 0.5 if uniaxial) */
 
 struct RMAGHYST_CTRL {
 	struct RMAGHYST_F {	/* -F<Hmin>/<Hmax> window in |H| for the high-field wing fits */
@@ -89,7 +91,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"moment) of one measurement per record, one complete hysteresis loop per segment, in "
 		"measurement order (from +Hmax down to -Hmax and back). Use -i to remap columns if "
 		"needed. The descending and ascending branches are found automatically at the field "
-		"turning point.");
+		"turning point; if a segment has more than two (e.g., a single bad field reading, or a "
+		"virgin curve recorded before the loop), Mrs and Hc use the longest descending and the "
+		"longest ascending branch.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-F<Hmin>/<Hmax>");
 	GMT_Usage (API, -2, "Window in |H| used to fit the two high-field wings, from which the "
@@ -97,7 +101,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[Default is the upper half of the measured |H| range]. Choose a window where the loop "
 		"is genuinely saturated, i.e. where the wings are straight: compare the two wing slopes "
 		"and their R^2 in the output, and treat Mrs/Ms > 1 as proof that the window (or the "
-		"whole measurement) never reached saturation.");
+		"whole measurement) never reached saturation. A warning is also given above 0.87, the "
+		"largest Mrs/Ms of randomly oriented non-interacting single-domain grains (0.5 if their "
+		"anisotropy is uniaxial).");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OUTPUT:\n");
 	GMT_Usage (API, -2, "One record per loop, preceded by a segment header. Columns are: "
 		"(1) Mrs, the remanence at H = 0; (2) Hc, the coercivity; (3) Ms; (4) Mrs/Ms; "
@@ -105,11 +111,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"positive wing fit; (9,10,11) the same for the negative wing; (12) number of points in "
 		"the loop. Mrs is the only one of these that does not depend on chi (the correction "
 		"vanishes at H = 0), so it survives even when the loop did not saturate.");
-	GMT_Usage (API, -2, "Note: a common manual practice is to read Ms directly off the raw curve "
-		"near the edge of the measured range, with no slope correction. Column 3 is not that "
-		"number: the two agree only where chi is negligible or the wings have already leveled "
-		"off, and can disagree substantially otherwise -- which is part of what Mrs/Ms > 1 is "
-		"warning about.");
+	GMT_Usage (API, -2, "Note: Ms read by hand off the raw curve near the maximum field (a common "
+		"shortcut) is not column 3. That reading still contains the para-/diamagnetic term chi*H, "
+		"so it matches Ms only when the loop is saturated and chi*H is negligible next to Ms. "
+		"When chi is significant, column 3 is the one to use; when the loop did not saturate, "
+		"neither is reliable.");
 	GMT_Option (API, "V,bi,di,e,f,g,h,i,q,.");
 
 	return (GMT_MODULE_USAGE);
@@ -142,8 +148,8 @@ static int parse (struct GMT_CTRL *GMT, struct RMAGHYST_CTRL *Ctrl, struct GMT_O
 	}
 
 	if (Ctrl->F.active && Ctrl->F.min > Ctrl->F.max) gmt_M_double_swap (Ctrl->F.min, Ctrl->F.max);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->F.max <= 0.0,
-		"Option -F: The window is given in |H|, so Hmax must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && (Ctrl->F.min < 0.0 || Ctrl->F.max <= 0.0),
+		"Option -F: The window is given in |H|, so Hmin cannot be negative and Hmax must be positive\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -162,16 +168,24 @@ GMT_LOCAL uint64_t rmaghyst_collect (double *H, double *M, uint64_t n, double lo
 	return k;
 }
 
+/* Field span |H(last) - H(first)| of branch b, measured between its first and last non-NaN fields. */
+GMT_LOCAL double rmaghyst_span (double *H, struct ROCKMAG_BRANCH *b) {
+	uint64_t i = b->start, j = b->stop;
+	while (i < j && gmt_M_is_dnan (H[i])) i++;
+	while (j > i && gmt_M_is_dnan (H[j])) j--;
+	return (gmt_M_is_dnan (H[i]) || gmt_M_is_dnan (H[j])) ? 0.0 : fabs (H[j] - H[i]);
+}
+
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_rmaghyst (void *V_API, int mode, void *args) {
 	int error = 0;
-	uint64_t tbl, seg, i, ib, n_pts, n_branches, n_pos, n_neg, n_out = 0;
+	uint64_t tbl, seg, i, ib, k, n_pts, n_branches, n_pos, n_neg, n_out = 0, use[2];
 	double *H = NULL, *M = NULL, *Mc = NULL, *xbuf = NULL, *ybuf = NULL;
 	double slope_p, icept_p, r2_p, slope_n, icept_n, r2_n;
-	double chi, Ms, Mrs, Hc, ratio, Hmax, lo, hi, v, sum_mrs, sum_hc, out[12];
+	double chi, Ms, Mrs, Hc, ratio, Hmax, lo, hi, v, sum_mrs, sum_hc, span[2], out[12];
 	uint64_t n_mrs, n_hc;
 	bool ok_p, ok_n;
 	char record[GMT_LEN256] = {""}, base[GMT_LEN256] = {""};
@@ -232,7 +246,7 @@ EXTERN_MSC int GMT_rmaghyst (void *V_API, int mode, void *args) {
 	}
 	GMT->current.io.multi_segments[GMT_OUT] = true;	/* To ensure we can write our own segment headers */
 
-	Out = gmt_new_record (GMT, out, record);
+	Out = gmt_new_record (GMT, out, NULL);
 
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
@@ -263,8 +277,17 @@ EXTERN_MSC int GMT_rmaghyst (void *V_API, int mode, void *args) {
 			hi = (Ctrl->F.active) ? Ctrl->F.max : Hmax;
 
 			n_branches = rockmag_split_branches (GMT, H, n_pts, &branch);
+			/* Mrs and Hc come from the longest descending and the longest ascending branch, not
+			 * the first two: a single bad field reading or a virgin curve recorded before the loop
+			 * adds short extra branches, and one of those would otherwise replace half the loop. */
+			use[0] = use[1] = UINT64_MAX;	span[0] = span[1] = 0.0;
+			for (ib = 0; ib < n_branches; ib++) {
+				k = (branch[ib].heating) ? 1 : 0;
+				v = rmaghyst_span (H, &branch[ib]);
+				if (v > span[k]) { span[k] = v;	use[k] = ib; }
+			}
 			if (n_branches != 2)
-				GMT_Report (API, GMT_MSG_WARNING, "%s: found %" PRIu64 " monotonic field branch(es) instead of 2 - this does not look like a single loop; using the first two.\n",
+				GMT_Report (API, GMT_MSG_WARNING, "%s: found %" PRIu64 " monotonic field branch(es) instead of 2 (a bad field reading, a virgin curve, or several loops in one segment); Mrs and Hc use the longest descending and ascending branches. Each loop must be its own segment.\n",
 					base, n_branches);
 
 			xbuf = gmt_M_memory (GMT, NULL, n_pts, double);
@@ -284,20 +307,21 @@ EXTERN_MSC int GMT_rmaghyst (void *V_API, int mode, void *args) {
 				Ms  = 0.5 * (icept_p - icept_n);
 			}
 			else
-				GMT_Report (API, GMT_MSG_WARNING, "%s: fewer than 2 points in the %s wing of the -F window - no slope correction, so Ms, Hc and chi are undefined.\n",
+				GMT_Report (API, GMT_MSG_WARNING, "%s: fewer than 2 distinct fields in the %s wing of the -F window - no slope correction, so Ms, Hc and chi are undefined.\n",
 					base, (ok_p) ? "negative" : ((ok_n) ? "positive" : "positive and negative"));
 
-			/* Mrs needs no correction (chi*H vanishes at H = 0), so it is computed from the
-			 * raw loop and survives even when the wings gave us nothing. */
-			for (i = 0; i < n_pts; i++)
-				Mc[i] = (gmt_M_is_dnan (chi)) ? M[i] : M[i] - chi * H[i];
+			for (i = 0; i < n_pts; i++) Mc[i] = M[i] - chi * H[i];
 
+			/* Mrs needs no correction (chi*H vanishes at H = 0), so it is read off the raw loop
+			 * and survives even when the wings gave us nothing. Hc does depend on chi. */
 			sum_mrs = sum_hc = 0.0;	n_mrs = n_hc = 0;
-			for (ib = 0; ib < n_branches && ib < 2; ib++) {
-				uint64_t st = branch[ib].start, bn = branch[ib].stop - branch[ib].start + 1;
+			for (k = 0; k < 2; k++) {
+				uint64_t st, bn;
 				double at_zero;
-				if (rockmag_crossing (&H[st], &Mc[st], bn, 0.0, &at_zero)) { sum_mrs += fabs (at_zero);	n_mrs++; }
-				if (rockmag_crossing (&Mc[st], &H[st], bn, 0.0, &at_zero)) { sum_hc  += fabs (at_zero);	n_hc++;  }
+				if (use[k] == UINT64_MAX) continue;	/* No branch in this direction */
+				st = branch[use[k]].start;	bn = branch[use[k]].stop - st + 1;
+				if (rockmag_crossing (&H[st], &M[st], bn, 0.0, &at_zero)) { sum_mrs += fabs (at_zero);	n_mrs++; }
+				if (!gmt_M_is_dnan (chi) && rockmag_crossing (&Mc[st], &H[st], bn, 0.0, &at_zero)) { sum_hc += fabs (at_zero);	n_hc++; }
 			}
 			Mrs = (n_mrs) ? sum_mrs / (double)n_mrs : GMT->session.d_NaN;
 			Hc  = (n_hc)  ? sum_hc  / (double)n_hc  : GMT->session.d_NaN;
@@ -305,9 +329,12 @@ EXTERN_MSC int GMT_rmaghyst (void *V_API, int mode, void *args) {
 			if (n_hc == 0 && !gmt_M_is_dnan (chi)) GMT_Report (API, GMT_MSG_WARNING, "%s: the corrected loop never crosses M = 0 - Hc undefined.\n", base);
 
 			ratio = Mrs / Ms;
-			if (ratio > 1.0)
-				GMT_Report (API, GMT_MSG_WARNING, "%s: Mrs/Ms = %g is physically impossible (remanence cannot exceed saturation). The loop almost certainly did not saturate within the -F window, so Ms is not usable - and neither is any Day plot built on it.\n",
-					base, ratio);
+			if (Ms <= 0.0 || ratio > 1.0)
+				GMT_Report (API, GMT_MSG_WARNING, "%s: Ms = %g with Mrs/Ms = %g is physically impossible (Ms must be positive and at least Mrs). The loop almost certainly did not saturate within the -F window, so Ms and Hc - both depend on the slope correction chi - are not usable, and neither is any Day plot built on them.\n",
+					base, Ms, ratio);
+			else if (ratio > RMAGHYST_SD_MAX_RATIO)
+				GMT_Report (API, GMT_MSG_WARNING, "%s: Mrs/Ms = %g exceeds %g, the largest value for any randomly oriented assemblage of non-interacting single-domain grains. The loop most likely did not saturate within the -F window, so Ms and Hc are suspect.\n",
+					base, ratio, RMAGHYST_SD_MAX_RATIO);
 
 			snprintf (record, GMT_LEN256, "%s |H|max=%.6g -F%.6g/%.6g n=%" PRIu64, base, Hmax, lo, hi, n_pts);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
@@ -321,7 +348,6 @@ EXTERN_MSC int GMT_rmaghyst (void *V_API, int mode, void *args) {
 			out[9] = (ok_n) ? r2_n    : GMT->session.d_NaN;
 			out[10] = (double)n_neg;
 			out[11] = (double)n_pts;
-			record[0] = '\0';
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			n_out++;
 
