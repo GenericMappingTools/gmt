@@ -321,7 +321,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 	if (!Ctrl->M.active) {	/* Need a proper stereonet setup for anything but dumping */
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify -JA<width> or -JS<width>\n");
 		if (GMT->common.J.active) {
-			if (!(GMT->current.proj.projection == GMT_LAMB_AZ_EQ || GMT->current.proj.projection == GMT_STEREO)) {
+			if (GMT->common.J.string[0] != 'A' && GMT->common.J.string[0] != 'S') {	/* Only the width forms -JA|S */
 				GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only -JA (Schmidt net) or -JS (Wulff net) are available for this module\n");
 				n_errors++;
 			}
@@ -366,7 +366,11 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	unsigned int k;
 
 	if ((opt = GMT_Find_Option (API, 'J', *options))) {	/* Expand the -JA|S<width> shorthand, if that is what we got */
-		if (strchr ("AaSs", opt->arg[0])) {
+		if (opt->arg[0] == 'a' || opt->arg[0] == 's') {	/* A scale instead of a width */
+			GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only -JA (Schmidt net) or -JS (Wulff net) are available for this module\n");
+			return (GMT_PARSE_ERROR);
+		}
+		if (opt->arg[0] && strchr ("AS", opt->arg[0])) {
 			if (opt->arg[1] && !strchr (opt->arg, '/'))
 				sprintf (string, "%c0/0/%s", opt->arg[0], &opt->arg[1]);
 			else if (strchr (opt->arg, '/')) {	/* An explicit center was given; the net is always centered on 0/0 */
@@ -380,7 +384,7 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	else if (!dump) {	/* No -J given, so we must either inherit one or default to a Schmidt net */
 		/* Inherit an earlier net in this figure, else use our own default */
 		int id = gmt_get_option_id (0, "J");	/* The generic -J history entry holds the projection code */
-		bool inherit = (id >= 0 && API->GMT->init.history[id] && strchr ("AaSs", API->GMT->init.history[id][0]));
+		bool inherit = (id >= 0 && API->GMT->init.history[id] && strchr ("AS", API->GMT->init.history[id][0]));
 		if (!inherit) {
 			sprintf (string, "A0/0/%gc", PSSTEREONET_DEF_WIDTH);
 			if ((opt = GMT_Make_Option (API, 'J', string)) == NULL) return (GMT_PARSE_ERROR);
