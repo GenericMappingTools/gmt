@@ -38,7 +38,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'H', "subpixel",          "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'I', "illumination|intensity|shading",
 	          "",                  "",
-	          "a,d,m,n",           "azimuth,default,ambient,nargs",
+	          "a,d,m,n,P",         "azimuth,default,ambient,nargs,physical",
 		  GMT_TP_STANDARD },
 	{ 0, 'L', "tilesize|tile_size", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'N', "prefix",            "", "", "", "", GMT_TP_STANDARD },

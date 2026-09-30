@@ -19,7 +19,7 @@ Synopsis
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
-[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*]\|\ **+P**\ [*modifiers*] ]
 [ |-J|\ *parameters* ]
 [ |-M| ]
 [ |-N| ]
@@ -333,7 +333,25 @@ To create a sinusoidal projection of a remotely located Jessica Rabbit::
 
     gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 
+To shade the Island of Hawaii and the surrounding sea floor with physically based lighting, with a low sun
+from the northwest that makes Mauna Kea and Mauna Loa cast their shadows, ambient occlusion, tone mapping,
+a threefold vertical exaggeration and a brighter sun and fill light than the defaults::
+
+    gmt grdimage @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Cgeo -I+P315/35+o+s+t+v3+l1.4+f0.5 -JM15c -B -png hawaii
+
 .. include:: cpt_notes.rst_
+
+References
+----------
+
+Heitz, E., Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs, Journal of
+Computer Graphics Techniques, Vol. 3, No. 2, 2014, pp. 48-107.
+
+Schlick, C., An Inexpensive BRDF Model for Physically-based Rendering, Computer Graphics Forum,
+Vol. 13, No. 3, 1994, pp. 233-246.
+
+Walter, B., Marschner, S. R., Li, H., and Torrance, K. E., Microfacet Models for Refraction through
+Rough Surfaces, Proceedings of the Eurographics Symposium on Rendering, 2007, pp. 195-206.
 
 See Also
 --------
