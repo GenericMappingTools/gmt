@@ -8421,6 +8421,8 @@ struct GMT_DATATABLE *gmtlib_read_table(struct GMT_CTRL *GMT, void *source, unsi
 		while (! (GMT->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
 				In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
+				while (gmt_M_rec_is_table_header (GMT))	/* Wind past comments here too */
+					In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
 				if (In == NULL) continue;
 				if ((GMT->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) break; 
 			}
@@ -8455,12 +8457,12 @@ struct GMT_DATATABLE *gmtlib_read_table(struct GMT_CTRL *GMT, void *source, unsi
 		}
 		if (pol_check) this_is_poly = (row > 2 && !gmt_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row));	/* true if this segment is closed polygon */
 		if (this_is_poly) n_poly_seg++;
-		if (check_geometry) {	/* Determine if dealing with closed polygons or lines based on first segment only */
+		if (check_geometry && row) {	/* Determine if dealing with closed polygons or lines based on first non-empty segment only */
 			if (this_is_poly) poly = true;
 			check_geometry = false;	/* Done with one-time checking */
 			*geometry = (poly) ? GMT_IS_POLY : GMT_IS_LINE;	/* Update the geometry setting */
 		}
-		if (poly) {	/* If file contains a polygon then we must close it if needed */
+		if (poly && row) {	/* If file contains a polygon then we must close it if needed */
 			if (gmt_M_type (GMT, GMT_IN, GMT_X) & GMT_IS_GEO) {	/* Must check for polar cap */
 				double dlon = GMT->hidden.mem_coord[GMT_X][0] - GMT->hidden.mem_coord[GMT_X][row-1];
 				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && GMT->hidden.mem_coord[GMT_Y][0] == GMT->hidden.mem_coord[GMT_Y][row-1])) {
@@ -8488,7 +8490,8 @@ struct GMT_DATATABLE *gmtlib_read_table(struct GMT_CTRL *GMT, void *source, unsi
 
 		if (row == 0) {	/* Empty segment; we delete to avoid problems downstream in applications */
 			gmt_M_free (GMT, T->segment[seg]);
-			seg--;	/* Go back to where we were */
+			if (seg) seg--;	/* Go back to where we were */
+			else first_seg = true;	/* That was the first segment, so start over */
 		}
 		else {	/* OK to populate segment and increment counters */
 			gmtlib_assign_segment (GMT, GMT_IN, T->segment[seg], row, T->segment[seg]->n_columns);	/* Allocate and place arrays into segment */
