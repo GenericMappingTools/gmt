@@ -183,7 +183,7 @@ Optional Arguments
         
     **Notes**: (1) Modifiers **++c** and **+i** require a file name with a suitable extension
     to be given via |-G| (we automatically insert "_cum_###" or "_inc_###" before the
-    extension, using a fixed integer format for the eigenvalue number, starting at 0).
+    extension, using a fixed integer format for the number of eigenvalues used, starting at 1).
     (2) Use both modifiers to write both types of intermediate grids.
 
 .. _-D:
