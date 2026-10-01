@@ -16,4 +16,4 @@ while read tz minutes; do
 		'{got = $1 * 1440 - 720 + $2; if (got - m > 1e-4 || m - got > 1e-4) printf "+z%s gave %.6f minutes, expected %s\n", tz, got, m}'
 done < tz.txt > fail
 
-gmt solar -I0/0+zabc -C > /dev/null 2>&1 && echo "+zabc was accepted" >> fail
+if gmt solar -I0/0+zabc -C > /dev/null 2>&1; then echo "+zabc was accepted" >> fail; fi
