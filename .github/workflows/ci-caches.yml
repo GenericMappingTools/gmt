@@ -59,6 +59,7 @@ jobs:
                 @earth_relief_20m_p \
                 @earth_relief_15m_p \
                 @earth_relief_10m_p \
+                @earth_relief_10m_g \
                 @earth_relief_06m_p \
                 @earth_relief_05m_p \
                 @earth_relief_05m_g \
