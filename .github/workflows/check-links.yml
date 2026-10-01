@@ -30,7 +30,7 @@ jobs:
 
     - name: Link Checker
       id: lychee
-      uses: lycheeverse/lychee-action@v2.8.0
+      uses: lycheeverse/lychee-action@v2.9.0
       with:
         fail: false  # Don't fail action on broken links
         output: /tmp/lychee-out.md
