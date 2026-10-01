@@ -33,7 +33,7 @@ concurrency:
 jobs:
   data_cache:
     name: Cache GMT data
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     if: github.event_name != 'push'
     defaults:
       run:
@@ -48,8 +48,7 @@ jobs:
             channels:
               - conda-forge
               - nodefaults
-          create-args: >-
-            gmt=6.5.0
+          create-args: gmt
 
       - name: Download remote data
         run: |
@@ -92,7 +91,7 @@ jobs:
                 @earth_night_20m_p \
                 @earth_mask_30s_p"
           # Use the static server
-          export GMT_DATA_SERVER=static
+          export GMT_DATA_SERVER=https://static.generic-mapping-tools.org
           # Download remote data multiple times to make sure all are downloaded
           gmt which -Ga $data
           gmt which -Ga $data

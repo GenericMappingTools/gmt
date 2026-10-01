@@ -17,6 +17,6 @@ L - L developing
 C purple
 L - L institutional
 N 1
-S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
+S 0.1i c 0.15i p12+r300 0.25p 0.3i This circle is hachured
 S 0.1i e 0.15i yellow 0.25p 0.3i This ellipse is yellow
 EOF

@@ -10,6 +10,7 @@ rm -f $a $b ; touch $b
 
 cat << EOF > $a
 --l2stranstest -Cfile.cpt -Cfile.cpt
+--l2stranstest -I+P -I+P315/30
 --l2stranstest -Gthis/file.grd -Gthat/file.grd
 --l2stranstest -Ilighting/file+a
 --l2stranstest -I+d -I6+m6+nsome.args
@@ -22,6 +23,7 @@ EOF
 
 # module-specific longopts
 gmt $m $l2s --cpt=file.cpt --cmap=file.cpt >> $b
+gmt $m $l2s --intensity+physical --intensity+physical:315/30 >> $b
 gmt $m $l2s --drapegrid=this/file.grd --drape=that/file.grd >> $b
 gmt $m $l2s --illumination=lighting/file+azimuth >> $b
 gmt $m $l2s --shading+default --intensity=6+ambient:6+args:some.args >> $b

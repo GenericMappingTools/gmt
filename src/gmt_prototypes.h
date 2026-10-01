@@ -747,6 +747,11 @@ EXTERN_MSC void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 EXTERN_MSC struct GMT_DATASEGMENT * gmt_prepare_contour (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double z);
 EXTERN_MSC void gmt_get_plot_array (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_illuminate (struct GMT_CTRL *GMT, double intensity, double *rgb);
+EXTERN_MSC void gmt_pbr_defaults(struct GMT_PBR *P);
+EXTERN_MSC unsigned int gmt_pbr_parse(struct GMT_CTRL *GMT, char option, char *arg, struct GMT_PBR *P);
+EXTERN_MSC unsigned int gmt_pbr_check(struct GMT_CTRL *GMT, char option, struct GMT_PBR *P);
+EXTERN_MSC void gmt_pbr_syntax(struct GMTAPI_CTRL *API, char option);
+EXTERN_MSC struct GMT_IMAGE *gmt_pbr_image(struct GMT_CTRL *GMT, struct GMT_PBR *P, struct GMT_GRID *G, struct GMT_PALETTE *CPT);
 EXTERN_MSC int gmt_colorname2index (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC void gmt_list_custom_symbols (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx, double dy, double *x_shift, double *y_shift, unsigned int mode);

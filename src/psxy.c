@@ -1202,7 +1202,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	unsigned int n_total_read = 0, j, geometry, xcol = 0, icol = 0, tcol_f = 0, tcol_s = 0, n_z = 0, k, kk;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
-	int error = GMT_NOERROR, outline_setting = 0, seq_n_legends = 0, seq_frequency = 0;
+	int error = GMT_NOERROR, outline_setting = 0, text_mode, seq_n_legends = 0, seq_frequency = 0;
 	uint64_t n_z_for_cpt = 0;
 
 	char s_args[GMT_BUFSIZ] = {""};
@@ -2192,15 +2192,20 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						break;
 					case GMT_SYMBOL_TEXT:
-						if (fill_active && !outline_active)
+						text_mode = outline_setting;
+						if (get_rgb && !outline_active) {	/* CPT fill is already set via FS, so paint with fs */
+							PSL_setfill (PSL, current_fill.rgb, 0);
+							text_mode = 2;
+						}
+						else if (fill_active && !outline_active)
 							PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
-						else if (fill_active)
+						else if (fill_active || get_rgb)
 							PSL_setcolor (PSL, current_fill.rgb, outline_setting);
 						else
 							PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
 						(void) gmt_setfont (GMT, &S.font);
 						direction = (S.azim) ? gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, S.angle) : S.angle;
-						PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, direction, S.justify, outline_setting);
+						PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, direction, S.justify, text_mode);
 						break;
 					case PSL_VECTOR:	/* Cartesian vector symbol */
 						gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
