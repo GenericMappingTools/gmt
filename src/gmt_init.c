@@ -6858,7 +6858,11 @@ EXTERN_MSC void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
 	/* MAP_ANNOT_OBLIQUE */
-	GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_LON_HORIZONTAL | GMT_OBL_ANNOT_LAT_HORIZONTAL | GMT_OBL_ANNOT_EXTEND_TICKS;
+	/* The anywhere bit was lost when this setting went from a bit-sum to a keyword list; without it an oblique frame
+	 * only annotates longitudes on the S/N borders and latitudes on the W/E borders, which throws away most of the
+	 * annotations as soon as the graticule is rotated far from the frame axes.  The documentation has said "default
+	 * is anywhere" all along, and that is what GMT 6.1.0 did [issue #8418] */
+	GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_ANYWHERE | GMT_OBL_ANNOT_LON_HORIZONTAL | GMT_OBL_ANNOT_LAT_HORIZONTAL | GMT_OBL_ANNOT_EXTEND_TICKS;
 	/* MAP_ANNOT_MIN_ANGLE */
 	GMT->current.setting.map_annot_min_angle = 20;
 	/* MAP_ANNOT_MIN_SPACING */
