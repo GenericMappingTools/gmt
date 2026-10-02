@@ -160,6 +160,8 @@ jobs:
       - name: Download cached GMT remote data from GitHub Artifacts
         run: |
           gh run download -n gmt-cache -D ~/.gmt/static/
+          ls -l ~/.gmt/static/ || true
+          ls -l ~/.gmt/static/server/ || true
           touch ~/.gmt/static/gmt_data_server.txt ~/.gmt/static/gmt_hash_server.txt
         env:
           GH_TOKEN: ${{ github.token }}
