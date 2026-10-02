@@ -92,7 +92,7 @@ jobs:
                 @earth_night_20m_p \
                 @earth_mask_30s_p"
           # Use the static server
-          export GMT_DATA_SERVER=https://static.generic-mapping-tools.org
+          export GMT_DATA_SERVER=static
           # GMT <= 6.7 exits 0 on a failed download, so also check its output and retry
           failures='Unable to obtain remote file|not found!|Remote download is currently deactivated'
           download() {
@@ -107,16 +107,7 @@ jobs:
             return 1
           }
           download gmt which -Ga $data || exit 1
-          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
-          mv ~/.gmt/gmt_data_server.txt ~/.gmt/server/
-          mv ~/.gmt/gmt_hash_server.txt ~/.gmt/server/
           download gmt get -Dcache || exit 1
-          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
-          mkdir ~/.gmt/static/
-          mv ~/.gmt/server ~/.gmt/static/
-          mv ~/.gmt/cache ~/.gmt/static/
-          # The tests read the two index files from the root of ~/.gmt/static
-          cp ~/.gmt/static/server/gmt_data_server.txt ~/.gmt/static/server/gmt_hash_server.txt ~/.gmt/static/
           # check files
           ls -lR ~/.gmt
 
