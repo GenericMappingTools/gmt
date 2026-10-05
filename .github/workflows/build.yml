@@ -136,12 +136,6 @@ jobs:
       - name: Download cached GMT remote data from GitHub Artifacts
         run: |
           gh run download -n gmt-cache -D ~/.gmt/static/
-          # Older gmt-cache artifacts carry the two index files only in server/
-          for f in gmt_data_server.txt gmt_hash_server.txt; do
-            [ -s ~/.gmt/static/$f ] || cp ~/.gmt/static/server/$f ~/.gmt/static/ || true
-            [ -s ~/.gmt/static/$f ] || { echo "::error::$f is missing or empty in the gmt-cache artifact"; exit 1; }
-            touch ~/.gmt/static/$f
-          done
         env:
           GH_TOKEN: ${{ github.token }}
 
