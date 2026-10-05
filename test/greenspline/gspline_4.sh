@@ -22,7 +22,8 @@ gmt psbasemap -R$R2D/$Z -JX6i/3i -JZ2.5i -p$view -Bx5f1g1 -By1g1 -Bz2f1 -BWSneZ+
 gmt psxyz -R -JX -JZ -p$view -O -K @Table_5_23.txt -Su0.05i -Gblack -Wfaint >> $ps
 # Loop over the z-levels and draw the 10 % contour only
 while read z; do
-	gmt grdcontour -JX "3D_cube.grd?($z)" -C10 -L9/11 -S8 -D | gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K -Gp39+r300+fgray+b- -Wthin -i0,1,2+s0+o${z} >> $ps
+	gmt grdcontour -JX "3D_cube.grd?($z)" -C10 -L9/11 -S8 -D > tmp_pipe.txt
+	gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K -Gp39+r300+fgray+b- -Wthin -i0,1,2+s0+o${z} < tmp_pipe.txt >> $ps
 done < t.lis
 echo "12 6 Volume exceeding 10% UO@-2@- concentration" | gmt pstext -R$R2D/$Z -JX -JZ -p$view -F+jLT+f16p -O -K -Z10 -Dj0.1i >> $ps
 gmt psxyz -R -JX -JZ -p$view -O -Wthin << EOF >> $ps

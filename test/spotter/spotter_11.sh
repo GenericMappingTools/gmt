@@ -22,17 +22,23 @@ gmt backtracker suiko.txt -Db -E@WK97.txt > start_at_ridge.txt
 gmt pscoast -R150/220/00/65 -JM7i -P -K -G30/120/30 -A500 -Dl -W0.25p -B20 -BWSne -Xc > $ps
 gmt psxy -R -J -O -K -Sc0.1i -Gred -W0.5p loihi.txt >> $ps
 # Task 1:
-gmt backtracker loihi.txt -Df -Lb25 -E@WK97.txt | gmt psxy -R -J -O -K -W1p >> $ps
+gmt backtracker loihi.txt -Df -Lb25 -E@WK97.txt > tmp_pipe.txt
+gmt psxy -R -J -O -K -W1p < tmp_pipe.txt >> $ps
 # Task 6:
-gmt backtracker end_of_trail.txt -Db -Lb200 -E@WK97.txt | gmt psxy -R -J -O -K -Sc0.2c -Wfaint >> $ps
+gmt backtracker end_of_trail.txt -Db -Lb200 -E@WK97.txt > tmp_pipe.txt
+gmt psxy -R -J -O -K -Sc0.2c -Wfaint < tmp_pipe.txt >> $ps
 # Task 2:
-gmt backtracker loihi.txt -Df -E@WK97.txt | gmt psxy -R -J -O -K -Sc0.1i -Ggreen -W0.5p >> $ps
+gmt backtracker loihi.txt -Df -E@WK97.txt > tmp_pipe.txt
+gmt psxy -R -J -O -K -Sc0.1i -Ggreen -W0.5p < tmp_pipe.txt >> $ps
 # Task 4:
-gmt backtracker suiko.txt -Db -Lf25 -E@WK97.txt | gmt psxy -R -JM -O -K -W1p,orange >> $ps
+gmt backtracker suiko.txt -Db -Lf25 -E@WK97.txt > tmp_pipe.txt
+gmt psxy -R -JM -O -K -W1p,orange < tmp_pipe.txt >> $ps
 # Task 3:
-gmt backtracker start_at_ridge.txt -Df -Lf200 -E@WK97.txt | gmt psxy -R -JM -O -K -Sc0.2c -Wfaint,orange >> $ps
+gmt backtracker start_at_ridge.txt -Df -Lf200 -E@WK97.txt > tmp_pipe.txt
+gmt psxy -R -JM -O -K -Sc0.2c -Wfaint,orange < tmp_pipe.txt >> $ps
 # Task 5:
 echo "170 44 64.7" > suiko.txt
-gmt backtracker suiko.txt -Db -E@WK97.txt | gmt psxy -R -JM -O -K -ST0.1i -Gyellow -W0.5p >> $ps
+gmt backtracker suiko.txt -Db -E@WK97.txt > tmp_pipe.txt
+gmt psxy -R -JM -O -K -ST0.1i -Gyellow -W0.5p < tmp_pipe.txt >> $ps
 gmt psxy -R -JM -O -ST0.1i -Gcyan -W0.5p suiko.txt >> $ps
 

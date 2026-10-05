@@ -41,7 +41,8 @@ done < times.txt
 echo -200 -2000 FLEX | gmt pstext -R -J -O -K -F+f18p+jLB -Dj0.1i >> $ps
 # Plot load
 gmt psbasemap -R-200/200/-6000/0 -J -O -K -BWsne+glightblue -Baf -Y3i >> $ps
-gmt grdtrack -Gsmt.nc t.txt | gmt psxy -R -J -i0,2 -O -K -L+yb -Gbrown >> $ps
+gmt grdtrack -Gsmt.nc t.txt > tmp_pipe.txt
+gmt psxy -R -J -i0,2 -O -K -L+yb -Gbrown < tmp_pipe.txt >> $ps
 echo -200 -6000 LOAD | gmt pstext -R -J -O -K -F+f18p+jLB -Dj0.1i >> $ps
 # Calc and plot gravity
 gmt set FONT_TITLE 20p,Helvetica,black

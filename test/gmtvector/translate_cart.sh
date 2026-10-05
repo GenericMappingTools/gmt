@@ -9,9 +9,11 @@ gmt psxy -R-8/15/-10/6 -JX16c/0 -Baf -BWSne -Sc0.3c -Ggreen spiral.txt -P -K -Xc
 gmt vector spiral.txt -Tt60/2 > shifted.txt
 gmt psxy -R -J -O -K -Sc0.2c -Gred shifted.txt >> $ps
 echo "Fixed translation" | gmt pstext -R -J -O -K -F+f16p+jTR+cTR -Dj0.5c -W1p >> $ps
-gmt convert spiral.txt shifted.txt -A -o0,1,4,5 | gmt psxy -R -J -O -K -Sv0.1+s -W0.25p >> $ps
+gmt convert spiral.txt shifted.txt -A -o0,1,4,5 > tmp_pipe.txt
+gmt psxy -R -J -O -K -Sv0.1+s -W0.25p < tmp_pipe.txt >> $ps
 gmt psxy -R -J -Baf -BWSne -Sc0.3c -Ggreen spiral.txt -O -K -Y12.5c >> $ps
 gmt vector spiral.txt -Tt > shifted.txt
 gmt psxy -R -J -O -K -Sc0.2c -Gblue shifted.txt >> $ps
-gmt convert spiral.txt shifted.txt -A -o0,1,4,5 | gmt psxy -R -J -O -K -Sv0.1+s -W0.25p >> $ps
+gmt convert spiral.txt shifted.txt -A -o0,1,4,5 > tmp_pipe.txt
+gmt psxy -R -J -O -K -Sv0.1+s -W0.25p < tmp_pipe.txt >> $ps
 echo "Variable translation" | gmt pstext -R -J -O -F+f16p+jTR+cTR -Dj0.5c -W1p >> $ps

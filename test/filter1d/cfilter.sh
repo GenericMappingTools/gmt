@@ -9,7 +9,8 @@ gmt psxy -R-500/500/-300/300 -JX6i/2i -P -T -K -Y8.5i -Xc > $ps
 gmt psxy -R -J -Bx100g50 -By100g50 -BWSne -O noise.txt -W0.25p,red,. -K > tmp.eps
 gmt psxy -R -J -O noise.txt -Sc0.05i -Gred -K >> tmp.eps
 cat tmp.eps >> $ps
-gmt filter1d -Fb100 noise.txt | gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
+gmt filter1d -Fb100 noise.txt > tmp_pipe.txt
+gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue < tmp_pipe.txt >> $ps
 # Create a funny custom filter
 cat << EOF > myfilt.txt
 1
@@ -27,7 +28,8 @@ cat << EOF > myfilt.txt
 EOF
 gmt psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
-gmt filter1d -Ffmyfilt.txt noise.txt | gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
+gmt filter1d -Ffmyfilt.txt noise.txt > tmp_pipe.txt
+gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue < tmp_pipe.txt >> $ps
 # Create a normal custom filter
 cat << EOF > myfilt.txt
 1
@@ -41,7 +43,8 @@ cat << EOF > myfilt.txt
 EOF
 gmt psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
-gmt filter1d -Ffmyfilt.txt noise.txt | gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
+gmt filter1d -Ffmyfilt.txt noise.txt > tmp_pipe.txt
+gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue < tmp_pipe.txt >> $ps
 # Create an operator filter
 cat << EOF > myfilt.txt
 -1
@@ -51,4 +54,5 @@ cat << EOF > myfilt.txt
 EOF
 gmt psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
-gmt filter1d -Ffmyfilt.txt noise.txt | gmt psxy -R-500/500/-300/300 -J -O -W2p,blue >> $ps
+gmt filter1d -Ffmyfilt.txt noise.txt > tmp_pipe.txt
+gmt psxy -R-500/500/-300/300 -J -O -W2p,blue < tmp_pipe.txt >> $ps

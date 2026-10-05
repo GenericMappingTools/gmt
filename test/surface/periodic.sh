@@ -12,7 +12,8 @@ gmt math -T-45/45/1 0 = path.txt
 #gmt math -T0/200/1 -o1 -90 90 RAND = y
 #paste x y > random_xy.txt
 # Sample synthetic grid at random locations
-gmt grdtrack -Gt.nc random_xy.txt | gmt blockmean -Rg -I1 -fg > data.txt
+gmt grdtrack -Gt.nc random_xy.txt > tmp_pipe.txt
+gmt blockmean -Rg -I1 -fg < tmp_pipe.txt > data.txt
 # Grid with gmt surface so periodic boundaries are 0|360
 gmt surface -R0/360/-85/85 -I1 -fg data.txt -Gdatag.nc
 # Grid with gmt surface so periodic boundaries are -180/+180
@@ -28,5 +29,7 @@ gmt psxy -R -J -O -K data.txt -Ss0.05i -Gred >> $ps
 # Original synthetic grid for comparison
 gmt grdcontour t.nc -C10 -A50 -JQ0/5.5i $G -O -Baf -BWsne -K -Y2.85i >> $ps
 # Plot crossection along Equator
-gmt grdtrack path.txt -Gdatad.nc -o0,2 | gmt psxy -R-45/45/-70/70 -JX5.5i/1i -Y3i -Bafg90 -BWsne -W2p,green -O -K >> $ps
-gmt grdtrack path.txt -Rd -Gdatag.nc -o0,2 | gmt psxy -R-45/45/-70/70 -J -W0.5p,blue -O >> $ps
+gmt grdtrack path.txt -Gdatad.nc -o0,2 > tmp_pipe.txt
+gmt psxy -R-45/45/-70/70 -JX5.5i/1i -Y3i -Bafg90 -BWsne -W2p,green -O -K < tmp_pipe.txt >> $ps
+gmt grdtrack path.txt -Rd -Gdatag.nc -o0,2 > tmp_pipe.txt
+gmt psxy -R-45/45/-70/70 -J -W0.5p,blue -O < tmp_pipe.txt >> $ps

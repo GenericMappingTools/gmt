@@ -38,8 +38,10 @@ gmt mapproject -C -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az_x}
 gmt psxy -Rg -JG0/80/6i -Bafg30 box.d -Glightgreen -W0.5p -P -K -Xc -Y4.25i > $ps
 gmt psbasemap -R -J -Bafg30 -B+o${plon}/${plat} -O -K --MAP_GRID_PEN_PRIMARY=0.25p,. >> $ps
 echo $lon $lat 0 200 200 | gmt psxy -R -J -O -K -SE -Gblack >> $ps
-gmt project -C$lon/$lat -G25 -A$az_x -L-20000/20000 -Q | gmt psxy -R -J -O -K -W0.5p,blue >> $ps
-gmt project -C$lon/$lat -G25 -A$az_y -L-20000/20000 -Q | gmt psxy -R -J -O -K -W0.5p,blue >> $ps
+gmt project -C$lon/$lat -G25 -A$az_x -L-20000/20000 -Q > tmp_pipe.txt
+gmt psxy -R -J -O -K -W0.5p,blue < tmp_pipe.txt >> $ps
+gmt project -C$lon/$lat -G25 -A$az_y -L-20000/20000 -Q > tmp_pipe.txt
+gmt psxy -R -J -O -K -W0.5p,blue < tmp_pipe.txt >> $ps
 echo $lon $lat $az_x 800 | gmt psxy -R -J -O -K -S=0.1i+e+h0.5 -Gred -W0.5p,red >> $ps
 echo $lon $lat $az_y 800 | gmt psxy -R -J -O -K -S=0.1i+e+h0.5 -Gred -W0.5p,red >> $ps
 echo $plon $plat 0 200 200 | gmt psxy -R -J -O -K -SE -Gred >> $ps
@@ -54,8 +56,10 @@ echo $LL_lon $LL_lat 0 150 150 | gmt psxy -R -J -O -K -SE -Gblue >> $ps
 echo $UR_lon $UR_lat 0 150 150 | gmt psxy -R -J -O -K -SE -Gblue >> $ps
 #
 gmt psbasemap  -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az_x}/$scale -O -K -Bafg -BWS+glightgreen -Y-3.5i >> $ps
-gmt project -C$lon/$lat -G25 -A$az_x -L-20000/20000 -Q | gmt psxy -R -J -O -K -W0.5p,blue >> $ps
-gmt project -C$lon/$lat -G25 -A$az_y -L-2000/2000 -Q | gmt psxy -R -J -O -K -W0.5p,blue >> $ps
+gmt project -C$lon/$lat -G25 -A$az_x -L-20000/20000 -Q > tmp_pipe.txt
+gmt psxy -R -J -O -K -W0.5p,blue < tmp_pipe.txt >> $ps
+gmt project -C$lon/$lat -G25 -A$az_y -L-2000/2000 -Q > tmp_pipe.txt
+gmt psxy -R -J -O -K -W0.5p,blue < tmp_pipe.txt >> $ps
 echo $lon $lat 0 100 100 | gmt psxy -R -J -O -K -SE -Gblack >> $ps
 echo $lon $lat $az_x 800 | gmt psxy -R -J -O -K -S=0.15i+e+h0.5 -Gred -W1p,red >> $ps
 echo $lon $lat $az_y 800 | gmt psxy -R -J -O -K -S=0.15i+e+h0.5 -Gred -W1p,red >> $ps
