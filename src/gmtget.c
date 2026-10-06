@@ -308,7 +308,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			/* Read gmt_hash_server.txt, loop over lines, call gmt_download */
-			snprintf (hashpath, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_HASH_SERVER_FILE);
+			snprintf (hashpath, PATH_MAX, "%s/%s", GMT->session.USERDIR, GMT_HASH_SERVER_FILE);
 			if ((fp = fopen (hashpath, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to access or read %s\n", hashpath);
 				Return (GMT_RUNTIME_ERROR);
