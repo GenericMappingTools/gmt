@@ -278,7 +278,7 @@ Limitations on transparency
 ---------------------------
 
 The PostScript imaging model does not support any form of transparency.  However, Adobe added
-`pdfMark <https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/index.html>`_
+`pdfMark <https://ghostscript.readthedocs.io/en/latest/VectorDevices.html#pdfmark-extensions>`_
 which allows PostScript to specify transparency but only if activated when converting PostScript
 or EPS to PDF with Adobe Distiller or GhostScript. Each graphic (e.g., polygon, line, text, image)
 can have a specified transparency. Yet, for images this is very limited: We can choose a particular
