@@ -300,7 +300,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		if (!Ctrl->Q.active && (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "cache", 5U))) {	/* Want cache (not when just listing) */
+		if (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "cache", 5U)) {	/* Want cache */
 			char line[GMT_LEN256] = {""}, hashpath[PATH_MAX] = {""};
 			FILE *fp = NULL;
 			if (access (GMT->session.CACHEDIR, R_OK) && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Have or just made a server subdirectory */
