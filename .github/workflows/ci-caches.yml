@@ -107,7 +107,7 @@ jobs:
             return 1
           }
           download gmt which -Ga $data || exit 1
-          # gmt get -Dcache reads the hash index from server/, not from where GMT writes it
+          # gmt get -Dcache reads the hash index from server/, not from where GMT writes it. Remove when bumping to GMT 6.8.
           cp ~/.gmt/static/gmt_hash_server.txt ~/.gmt/static/server/
           download gmt get -Dcache || exit 1
           # check files
