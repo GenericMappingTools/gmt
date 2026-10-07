@@ -9422,20 +9422,24 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		/* Place the panel tag, once per panel (if requested), then update the gmt.panel file to say we have been there */
 		if (strcmp (P->tag, "-")) {	/* Place the panel tag */
 			int form, refpoint, justify;
+			double w = 0.0, h = 0.0;
+			unsigned char *eps = NULL;
+			struct imageinfo header;
 
 			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmtlib_refpoint_to_panel_xy (GMT, refpoint, P, &plot_x, &plot_y);	/* Convert just code to panel location */
-			if (gmt_text_is_latex (GMT, P->tag)) {	/* LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." not supported in tags */
-				FILE *fp = NULL;
-				if ((fp = fopen ("/tmp/Crummy_Latex_equation_tmp.txt", "a"))) {
-					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to create temporary Latex file to bypass equations in panels\n");
-					/* See branch latex-in-subplot-tags. We get gs error when I tried to implement the standard solution inside the PSL_completion function.
-					 * More work is needed to learn what goes wrong, probably by asking on the ghostscript help/support line. */
-					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Latex expressions are not (yet) supported as subplot panel tags - use text instead after subplot end\n");
-					fprintf (fp, "%lg\t%lg\t%s\n", P->col * P->w - P->off[GMT_X], (P->nrows - P->row) * P->h - P->off[GMT_Y], P->tag);
-					fclose (fp);
+			if (gmt_text_is_latex (GMT, P->tag)) {	/* LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
+				/* The EPS made from the LaTeX expression (with its embedded fonts) is too large to be part of the PSL_plot_completion
+				 * procedure (PostScript limitcheck), so we store it here in a reusable file object that the procedure executes later */
+				if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_tag, P->tag, &header)) == NULL) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conversion of LaTeX panel tag to EPS failed\n");
+					goto no_latex_tags;
 				}
-				goto no_latex_tags;
+				/* Scale up EPS dimensions by the ratio of tag font size to LaTeX default size of 10p */
+				w = (header.width / 72.0)  * (GMT->current.setting.font_tag.size / 10.0);
+				h = (header.height / 72.0) * (GMT->current.setting.font_tag.size / 10.0);
+				PSL_deflatexeps (PSL, "PSL_latex_tag", eps, &header);
+				PSL_free (eps);
 			}
 			/* Undo any offsets above that was required to center the plot on the subplot panel */
 			plot_x -= (P->dx);
@@ -9451,7 +9455,33 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_command (PSL, PSL_makecolor (PSL, GMT->current.setting.font_tag.fill.rgb));
 			PSL_command (PSL, " ");
 			PSL_setfont (PSL, GMT->current.setting.font_tag.id);
-			if (P->pen[0] || P->fill[0] || P->shade[0]) {	/* Must deal with textbox fill/outline/shade */
+			if (w > 0.0) {	/* Place the LaTeX EPS stored above, possibly inside a box */
+				if (P->pen[0] || P->fill[0] || P->shade[0]) {	/* Must deal with box fill/outline/shade */
+					/* All fills and pens have already gone through a syntax check in subplot -A */
+					double x0 = plot_x - 0.5 * ((justify + 3) % 4) * w - P->clearance[GMT_X], y0 = plot_y - 0.5 * (justify / 4) * h - P->clearance[GMT_Y];
+					double x1 = x0 + w + 2.0 * P->clearance[GMT_X], y1 = y0 + h + 2.0 * P->clearance[GMT_Y];
+					int outline = 0;
+					struct GMT_FILL fill;
+					struct GMT_PEN pen;
+					gmt_M_memset (&pen, 1, struct GMT_PEN);
+					gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
+					PSL_command (PSL, "FQ O0\n");	/* Ensure fill/pen have been reset */
+					if (P->shade[0] && !gmt_getfill (GMT, P->shade, &fill)) {  /* Want to paint an offset, shaded rectangle behind the tag box */
+						PSL_setfill (PSL, fill.rgb, 0);  /* Shade color */
+						PSL_plotbox (PSL, x0+P->soff[GMT_X], y0+P->soff[GMT_Y], x1+P->soff[GMT_X], y1+P->soff[GMT_Y]);
+					}
+					if (P->pen[0] && !gmt_getpen (GMT, P->pen, &pen)) {	/* Want to draw the outline of the tag box */
+						gmt_setpen (GMT, &pen);
+						outline = 1;
+					}
+					if (P->fill[0] && !gmt_getfill (GMT, P->fill, &fill)) {  /* Want to paint inside of tag box */
+						PSL_setfill (PSL, fill.rgb, outline);	/* Box color and possible outline */
+						PSL_plotbox (PSL, x0, y0, x1, y1);
+					}
+				}
+				PSL_plotlatexepsdef (PSL, plot_x, plot_y, w, h, justify, "PSL_latex_tag", GMT->current.setting.font_tag.fill.rgb, &header);
+			}
+			else if (P->pen[0] || P->fill[0] || P->shade[0]) {	/* Must deal with textbox fill/outline/shade */
 				/* All fills and pens have already gone through a syntax check in subplot -A */
 				int outline = 0;
 				struct GMT_FILL fill;

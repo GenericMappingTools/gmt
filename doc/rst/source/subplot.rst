@@ -118,9 +118,6 @@ Optional Arguments (begin mode)
       shift relative to the tag box [default is **2p**\ /**-2p**] and *shade* sets the
       fill style to use for shading [default is **gray50**].
     - **+v** - Increase tag numbers vertically down columns [default is horizontally across rows].
-    
-    **Note**: Currently you cannot use LaTeX expressions in the panel tag. The workaround is
-    to place such tags separately via :doc:`text`.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
