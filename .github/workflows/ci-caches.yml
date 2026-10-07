@@ -92,24 +92,34 @@ jobs:
                 @earth_night_20m_p \
                 @earth_mask_30s_p"
           # Use the static server
-          export GMT_DATA_SERVER=https://static.generic-mapping-tools.org
-          # Download remote data multiple times to make sure all are downloaded
-          gmt which -Ga $data
-          gmt which -Ga $data
-          gmt which -Ga $data
-          # Download cache files multiple times to make sure all are downloaded
-          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
-          mv ~/.gmt/gmt_data_server.txt ~/.gmt/server/
-          mv ~/.gmt/gmt_hash_server.txt ~/.gmt/server/
-          gmt get -Dcache
-          gmt get -Dcache
-          gmt get -Dcache
-          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
-          mkdir ~/.gmt/static/
-          mv ~/.gmt/server ~/.gmt/static/
-          mv ~/.gmt/cache ~/.gmt/static/
+          export GMT_DATA_SERVER=static
+          # GMT <= 6.7 exits 0 on a failed download, so also check its output and retry
+          failures='Unable to obtain remote file|not found!|Remote download is currently deactivated'
+          download() {
+            for attempt in 1 2 3; do
+              [ ${attempt} -gt 1 ] && echo "Some files are still missing, retrying in 60 s" && sleep 60
+              status=0
+              "$@" > download.log 2>&1 || status=$?
+              cat download.log
+              [ ${status} -eq 0 ] && ! grep -Eq "${failures}" download.log && return 0
+            done
+            echo "::error::Failed to download all files after 3 attempts"
+            return 1
+          }
+          download gmt which -Ga $data || exit 1
+          # gmt get -Dcache reads the hash index from server/, not from where GMT writes it. Remove when bumping to GMT 6.8.
+          cp ~/.gmt/static/gmt_hash_server.txt ~/.gmt/static/server/
+          download gmt get -Dcache || exit 1
           # check files
           ls -lR ~/.gmt
+
+      - name: Check that the cache is complete
+        run: |
+          set -e
+          test -s ~/.gmt/static/gmt_data_server.txt
+          test -s ~/.gmt/static/gmt_hash_server.txt
+          test -d ~/.gmt/static/server
+          test -d ~/.gmt/static/cache
 
       # Upload the downloaded files as artifacts to GitHub
       - name: Upload artifacts to GitHub
@@ -117,6 +127,7 @@ jobs:
         with:
           name: gmt-cache
           path: ~/.gmt/static
+          if-no-files-found: error
 
   coastline_cache:
     name: Cache GSHHG and DCW datasets
