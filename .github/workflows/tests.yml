@@ -23,7 +23,7 @@ concurrency:
 jobs:
   changes:
     name: Detect relevant changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       relevant: ${{ steps.filter.outputs.relevant }}
     steps:
@@ -213,7 +213,7 @@ jobs:
     name: ${{ matrix.name }}
     needs: changes
     if: needs.changes.outputs.relevant != 'true' && github.event_name != 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     strategy:
       matrix:
         include:

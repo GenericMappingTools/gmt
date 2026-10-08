@@ -22,7 +22,7 @@ name: Code Validator
 jobs:
   changes:
     name: Detect relevant changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       relevant: ${{ steps.filter.outputs.relevant }}
     steps:
@@ -43,7 +43,7 @@ jobs:
     name: Code Validator
     needs: changes
     if: needs.changes.outputs.relevant == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Check out repository
         uses: actions/checkout@v6.0.2
