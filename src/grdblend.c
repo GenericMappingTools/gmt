@@ -499,7 +499,11 @@ GMT_LOCAL int grdblend_init_blend_job(struct GMT_CTRL *GMT, char **files, unsign
 				if (srtm_job)
 					GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 					            "Convert tile from JPEG2000 to netCDF grid [%s]\n", B[n].file);
-				if (gmt_get_tempname (GMT->parent, "grdblend_reformatted", ".nc", buffer))
+				char template[GMT_LEN32] = {""};
+				/* One template per grid, as for the resampled ones above: MSVC's _mktemp_s hands back the
+				   same name every time, so a fixed template made every reformatted grid overwrite the last */
+				sprintf(template, "grdblend_reformatted_%d", n);
+				if (gmt_get_tempname(GMT->parent, template, ".nc", buffer))
 					return GMT_RUNTIME_ERROR;
 				snprintf (cmd, GMT_LEN256, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
@@ -520,7 +524,9 @@ GMT_LOCAL int grdblend_init_blend_job(struct GMT_CTRL *GMT, char **files, unsign
 			}
 			B[n].memory = false;		/* Since we read from file, even if it was a mem-grid before */
 			t = B[n].G->header;	/* Since it got reallocated */
-			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdconvert changed the region */
+			/* In case grdconvert changed the region. Only for longitudes, as the checks above: on a
+			   Cartesian grid this +-360 "adjustment" shifts the tile's columns off the output grid */
+			if (gmt_M_x_is_lon(GMT, GMT_IN) && grdblend_overlap_check(GMT, &B[n], h, 0)) continue;
 		}
 		if (B[n].weight < 0.0) {	/* Negative weight means invert sense of taper */
 			B[n].weight = fabs (B[n].weight);
