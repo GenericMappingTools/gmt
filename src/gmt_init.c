@@ -9420,7 +9420,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	for (i = first; item[i]; i++)
 		if (item[i] == '/') cnt++;
 
-	if ((cnt == 3 || cnt == 5) && (item[first] == '-' || item[first] == '+' || isdigit(item[first]))) {	/* Plain old -Rw/e/s/n */
+	if ((cnt == 3 || cnt == 5) && (item[first] == '-' || item[first] == '+' || isdigit(item[first]) || (item[first] == '.' && isdigit(item[first+1])))) {	/* Plain old -Rw/e/s/n (allow leading . as in .5) */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got regular w/e/s/n for region (%s)\n", item);
 		strncpy (string, item, GMT_BUFSIZ-1);
 	}

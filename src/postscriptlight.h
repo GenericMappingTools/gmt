@@ -472,6 +472,7 @@ EXTERN_MSC int PSL_plotbitimage (struct PSL_CTRL *PSL, double x, double y, doubl
 EXTERN_MSC int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, int nbits);
 EXTERN_MSC int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, struct imageinfo *h);
 EXTERN_MSC int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, double *rgb, struct imageinfo *h);
+EXTERN_MSC int PSL_plotlatexepsdef (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, const char *name, double *rgb, struct imageinfo *h);
 EXTERN_MSC int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type);
 EXTERN_MSC int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type);
 EXTERN_MSC int PSL_plotparagraph (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *paragraph, double angle, int justify);
@@ -511,6 +512,7 @@ EXTERN_MSC int PSL_settextmode (struct PSL_CTRL *PSL, int mode);
 EXTERN_MSC int PSL_settransparencies (struct PSL_CTRL *PSL, double *transparencies);
 EXTERN_MSC int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
 EXTERN_MSC int PSL_definteger (struct PSL_CTRL *PSL, const char *param, int value);
+EXTERN_MSC int PSL_deflatexeps (struct PSL_CTRL *PSL, const char *name, unsigned char *buffer, struct imageinfo *h);
 EXTERN_MSC int PSL_defpen (struct PSL_CTRL *PSL, const char *param, double width, char *style, double offset, double rgb[]);
 EXTERN_MSC int PSL_defpoints (struct PSL_CTRL *PSL, const char *param, double fontsize);
 EXTERN_MSC int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb[]);

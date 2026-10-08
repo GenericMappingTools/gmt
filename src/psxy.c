@@ -1483,7 +1483,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
 	if (clip_set) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
+	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active && gmt_M_is_zero (current_fill.rgb[3])) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);	/* Set the required font */
 	if (S.symbol == GMT_SYMBOL_BARX && !S.base_set) S.base = GMT->common.R.wesn[XLO];	/* Default to west level for horizontal log10 bars */
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
@@ -2193,7 +2193,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						break;
 					case GMT_SYMBOL_TEXT:
 						text_mode = outline_setting;
-						if (get_rgb && !outline_active) {	/* CPT fill is already set via FS, so paint with fs */
+						if ((get_rgb || (fill_active && !gmt_M_is_zero (current_fill.rgb[3]))) && !outline_active) {	/* CPT or transparent fill: paint via fs so it stays local */
 							PSL_setfill (PSL, current_fill.rgb, 0);
 							text_mode = 2;
 						}

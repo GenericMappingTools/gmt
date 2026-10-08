@@ -4345,21 +4345,20 @@ int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, do
 	return (PSL_NO_ERROR);
 }
 
-int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, double *rgb, struct imageinfo *h) {
-   /* Plots an Latex EPS image
-    * x,y      : Position of image (in plot coordinates)
-    * xsize, ysize   : Size of image (in user units)
-    * justify  : Indicate which corner (x,y) refers to (see graphic)
-    * buffer   : EPS file (buffered)
-    * rgb      : Font color
-    * h        : Image buffer header
-    *
-    *   9       10      11
-    *   |----------------|
-    *   5    <image>     7
-    *   |----------------|
-    *   1       2        3
-    */
+static void psl_write_latexeps (struct PSL_CTRL *PSL, unsigned char *buffer, struct imageinfo *h) {
+   /* Write the buffered Latex EPS file to the output */
+   if (PSL->internal.memory) {
+      psl_prepare_buffer (PSL, h->length); /* Make sure we have enough memory to hold the EPS */
+      strncat (&(PSL->internal.buffer[PSL->internal.n]), (char *)buffer, h->length);
+      PSL->internal.n += h->length;
+   }
+   else
+      fwrite (buffer, 1U, (size_t)h->length, PSL->internal.fp);
+}
+
+static void psl_place_latexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, const char *name, double *rgb, struct imageinfo *h) {
+   /* Shared by PSL_plotlatexeps and PSL_plotlatexepsdef: place the EPS either given inline (buffer) or
+    * previously stored via PSL_deflatexeps under the given PostScript name */
    double width, height;
 
    /* If one of [xy]size is 0, keep the aspect ratio */
@@ -4379,16 +4378,54 @@ int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, do
    PSL_command (PSL, "%d %d T %.12g %.12g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / width, ysize * PSL->internal.dpu / height);
    PSL_command (PSL, "%.12g %.12g T\n", -h->llx, -h->lly);
    PSL_command (PSL, "N %.12g %.12g M %.12g %.12g L %.12g %.12g L %.12g %.12g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
-   PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
-   if (PSL->internal.memory) {
-      psl_prepare_buffer (PSL, h->length); /* Make sure we have enough memory to hold the EPS */
-      strncat (&(PSL->internal.buffer[PSL->internal.n]), (char *)buffer, h->length);
-      PSL->internal.n += h->length;
+   if (name)	/* Rewind and execute the EPS stored earlier via PSL_deflatexeps */
+      PSL_command (PSL, "%s dup 0 setfileposition cvx exec\n", name);
+   else {
+      PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
+      psl_write_latexeps (PSL, buffer, h);
+      PSL_command (PSL, "%%%%EndDocument\n");
    }
-   else
-      fwrite (buffer, 1U, (size_t)h->length, PSL->internal.fp);
-   PSL_command (PSL, "%%%%EndDocument\n");
    PSL_command (PSL, "PSL_eps_end\n");
+}
+
+int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, double *rgb, struct imageinfo *h) {
+   /* Plots an Latex EPS image
+    * x,y      : Position of image (in plot coordinates)
+    * xsize, ysize   : Size of image (in user units)
+    * justify  : Indicate which corner (x,y) refers to (see graphic)
+    * buffer   : EPS file (buffered)
+    * rgb      : Font color
+    * h        : Image buffer header
+    *
+    *   9       10      11
+    *   |----------------|
+    *   5    <image>     7
+    *   |----------------|
+    *   1       2        3
+    */
+   psl_place_latexeps (PSL, x, y, xsize, ysize, justify, buffer, NULL, rgb, h);
+   return (PSL_NO_ERROR);
+}
+
+int PSL_deflatexeps (struct PSL_CTRL *PSL, const char *name, unsigned char *buffer, struct imageinfo *h) {
+   /* Stores a Latex EPS image in a reusable PostScript file object called name, so that it can be placed
+    * later via PSL_plotlatexepsdef from inside a PostScript procedure.  The EPS cannot be part of a procedure
+    * body directly since its embedded fonts easily exceed the size limit of a procedure (limitcheck).
+    * name     : PostScript name of the file object (without leading slash)
+    * buffer   : EPS file (buffered)
+    * h        : Image buffer header
+    */
+   /* Note: ReusableStreamDecode is a LanguageLevel 3 filter (fine for Ghostscript, which we need anyway for the LaTeX EPS).
+    * The filter reads everything that follows up to the end marker, hence the def must come after it */
+   PSL_command (PSL, "/%s currentfile 0 (%%%%PSL_End_Of_LaTeX_EPS) /SubFileDecode filter /ReusableStreamDecode filter\n", name);
+   psl_write_latexeps (PSL, buffer, h);
+   PSL_command (PSL, "\n%%%%PSL_End_Of_LaTeX_EPS\ndef\n");
+   return (PSL_NO_ERROR);
+}
+
+int PSL_plotlatexepsdef (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, const char *name, double *rgb, struct imageinfo *h) {
+   /* Same as PSL_plotlatexeps but places the EPS stored earlier via PSL_deflatexeps under the given name */
+   psl_place_latexeps (PSL, x, y, xsize, ysize, justify, NULL, name, rgb, h);
    return (PSL_NO_ERROR);
 }
 
