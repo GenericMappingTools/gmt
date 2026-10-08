@@ -36,7 +36,7 @@ jobs:
       relevant: ${{ steps.filter.outputs.relevant }}
     steps:
       # paths-filter needs a checkout for push events; on PRs it uses the API
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.1
 
       - uses: dorny/paths-filter@v4.0.3
         id: filter
@@ -104,7 +104,7 @@ jobs:
           fi
 
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.1
 
       - name: Fixup git
         run: git config --global --add safe.directory $GITHUB_WORKSPACE
