@@ -18,7 +18,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*\ [**+b**] ]
 [ |-D|\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
-[ |-E|\ *width*\ [**+o**\ *offset*] ]
+[ |-E|\ *width*\ [**+o**\ *offset*\|\ **l**\|\ **c**\|\ **r**] ]
 [ |-F| ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**o**\|\ **O**] ]
@@ -120,14 +120,22 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *width*\ [**+o**\ *offset*]
+**-E**\ *width*\ [**+o**\ *offset*\|\ **l**\|\ **c**\|\ **r**]
     Use an alternative histogram bar width than the default set via |-T|,
-    and optionally shift all bars by an *offset*.  Here *width* is either
+    and optionally shift or align the bar within its bin.  Here *width* is either
     an alternative width in data units, or the user may append a valid plot
     dimension unit (**c**\|\ **i**\|\ **p**) for a fixed dimension instead.
-    Optionally, all bins may be shifted along the axis by *offset*. As for
-    *width*, it may be given in data units of plot dimension units by appending
-    the relevant unit.
+    By default the (possibly narrower) bar is centered in the bin.  Append
+    **+o**\ *offset* to shift all bars along the axis by *offset*, which as for
+    *width* may be given in data units or plot dimension units by appending
+    the relevant unit.  Alternatively, append **+o** with a directive to place
+    the bar relative to the bin center: **c** centers the bar on the bin [Default],
+    **l** places it immediately to the left of the bin center (shorthand for
+    **+o**-\ *width*\ /2), and **r** immediately to the right (shorthand for
+    **+o**\ *width*\ /2).  The **l** and **r** directives require an explicit
+    *width*.  **Note**: Setting *width* to half the bin width makes **l** and **r**
+    align the bars with the left and right edges of the bin, which is what is
+    wanted for grouped (side-by-side) histograms.
 
 .. _-F:
 

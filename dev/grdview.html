@@ -164,7 +164,7 @@
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>section</em>/]<em>master</em>|<em>cpt</em>|<em>color</em><span class="math notranslate nohighlight">\(_1\)</span>,<em>color</em><span class="math notranslate nohighlight">\(_2\)</span>[,<em>color</em><span class="math notranslate nohighlight">\(_3\)</span>,…][<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>dz</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>][<strong>+s</strong><em>fname</em>] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>drapegrid</em>|<em>drapeimage</em> ]
-[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>file</em>|<em>intens</em>|<strong>+a</strong><em>azimuth</em>][<strong>+d</strong>][<strong>+m</strong><em>ambient</em>][<strong>+n</strong><em>args</em>] ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>file</em>|<em>intens</em>|<strong>+a</strong><em>azimuth</em>][<strong>+d</strong>][<strong>+m</strong><em>ambient</em>][<strong>+n</strong><em>args</em>]|<strong>+P</strong>[<em>modifiers</em>] ]
 [ <a class="reference internal" href="#jz"><span><strong>-Jz</strong></span></a></strong>|<strong>Z</strong><em>parameters</em> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<em>level</em>][<strong>+g</strong><em>fill</em>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>c</strong>|<strong>g</strong>[<strong>m</strong>]<strong>i</strong>|<strong>m</strong>[<strong>x</strong>|<strong>y</strong>]|<strong>s</strong>[<strong>m</strong>]|[<em>color</em>][<strong>+m</strong>]<strong>t</strong> ]
@@ -266,6 +266,43 @@ than the main grid, specify that file as the <em>file</em> and add suitable
 modifiers [Default is no illumination]. <strong>Note</strong>: If the input grid
 actually is an image then <em>file</em> or constant <em>intens</em> must be provided
 since derivatives are not available.</p>
+</dd>
+</dl>
+<p><strong>Or</strong></p>
+<dl>
+<dt><strong>-I</strong><strong>+P</strong>[<em>azim</em>[/<em>elev</em>]][<strong>+f</strong><em>fill</em>][<strong>+i</strong><em>ior</em>][<strong>+l</strong><em>light</em>][<strong>+m</strong><em>metallic</em>][<strong>+o</strong>[<em>radius</em>]][<strong>+r</strong><em>roughness</em>][<strong>+s</strong>][<strong>+t</strong>][<strong>+v</strong><em>ve</em>]</dt><dd><p>Instead of intensities, give <strong>+P</strong>[<em>azim</em>[/<em>elev</em>]][<em>modifiers</em>] to shade the input grid with
+physically based lighting (the two cannot be combined). Each node’s CPT color is used as the albedo
+of a microfacet material that is lit by the sun, at azimuth <em>azim</em> (degrees clockwise from north,
+taken modulo 360) [315] and elevation <em>elev</em> (degrees above the horizon, 0-90) [45], and by a
+headlight fill, and seen from straight above. Give just <em>azim</em> to keep the default <em>elev</em> (but <em>elev</em>
+cannot be given without <em>azim</em>). Plain <strong>+P</strong> selects all the default settings, which are the
+same as <strong>+P</strong>315/45+o+t.</p>
+<p>This is physically based rendering (PBR) as done by the shader of the Visualization Toolkit (VTK):
+the Cook-Torrance specular term with the GGX distribution (Walter et al., 2007), the
+height-correlated Smith visibility (Heitz, 2014) and Schlick’s Fresnel approximation (Schlick,
+1994), plus the Lambertian diffuse term that the specular leaves over. Unlike intensities, which
+blend each color toward white or gray, the light here multiplies the color, so hues are kept in
+both the lit and the shaded parts. The relief is lit as a 3-D view would draw it: <em>x</em> and <em>y</em> at
+the same scale (for a geographic grid, <em>x</em> is shortened by the cosine of the middle latitude) and
+the <em>z</em> range drawn as 0.1 of the larger horizontal side, times the vertical exaggeration (see
+<strong>+v</strong>). Optionally, append modifiers (the allowed range of each value is given in parentheses,
+the default in brackets):</p>
+<ul class="simple">
+<li><p><strong>+f</strong> Set the <em>fill</em> (headlight) intensity (&gt;= 0) [0.35].</p></li>
+<li><p><strong>+i</strong> Set the index of refraction <em>ior</em> of the surface (&gt;= 1) [1.5]. Values from about 1.3
+(water) to 2.4 (diamond) cover most materials.</p></li>
+<li><p><strong>+l</strong> Set the <em>light</em> (sun) intensity (&gt;= 0) [1].</p></li>
+<li><p><strong>+m</strong> Set the <em>metallic</em> value, from 0 (dielectric) to 1 (metal) (0-1) [0].</p></li>
+<li><p><strong>+o</strong> Add ambient occlusion, which darkens creases and valley floors [no occlusion]. Optionally
+append the sampling <em>radius</em> as a fraction of the diagonal of the relief as drawn (&gt; 0) [0.1].
+Occlusion is only computed when the radius is larger than one grid node spacing.</p></li>
+<li><p><strong>+r</strong> Set the <em>roughness</em>, from 0 (mirror) to 1 (matte) (0-1) [0.3]. Values below 0.05 are
+treated as 0.05.</p></li>
+<li><p><strong>+s</strong> Cast shadows: the terrain shades itself along the sun’s azimuth and elevation, which the
+hillshade methods of <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> do not do [no shadows].</p></li>
+<li><p><strong>+t</strong> Apply the Khronos PBR Neutral tone mapping, which compresses the highlights [no tone mapping].</p></li>
+<li><p><strong>+v</strong> Set the vertical exaggeration <em>ve</em> of the relief (&gt; 0) [1].</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="jz">
@@ -464,6 +501,13 @@ topo_intens.nc, and looking from the SE, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdview<span class="w"> </span>topography.nc<span class="w"> </span>-JM6i<span class="w"> </span>-Gmagnetics.nc<span class="w"> </span>-Cmag_intens.cpt<span class="w"> </span>-Qs<span class="w"> </span>-p140/30<span class="w"> </span>-Itopo_intens.nc<span class="w"> </span>-pdf<span class="w"> </span>draped3D
 </pre></div>
 </div>
+<p>To view the Island of Hawaii and the surrounding sea floor in perspective, shaded with physically based
+lighting: a low sun from the northwest that makes Mauna Kea and Mauna Loa cast their shadows, ambient
+occlusion, tone mapping, a threefold vertical exaggeration of the shading and a brighter sun and fill
+light than the defaults:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdview<span class="w"> </span>@earth_gebco_15s<span class="w"> </span>-R-156.2/-154.7/18.8/20.35<span class="w"> </span>-Cgeo<span class="w"> </span>-I+P315/35+o+s+t+v3+l1.4+f0.5<span class="w"> </span>-JM15c<span class="w"> </span>-JZ3c<span class="w"> </span>-p150/35<span class="w"> </span>-B<span class="w"> </span>-png<span class="w"> </span>hawaii
+</pre></div>
+</div>
 </section>
 <section id="notes">
 <h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
@@ -485,6 +529,15 @@ this feature off.  It is most noticeable in color bars for discrete CPTs (we now
 the default setting for such CPTs) and very small grids plotted in either <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or
 <a class="reference internal" href="#"><span class="doc">grdview</span></a> <strong>-Qi</strong>|<strong>c</strong>. However, if a raster format (such as JPG or PNG) is selected instead
 then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not seem similarly affected.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<p>Heitz, E., Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs, Journal of
+Computer Graphics Techniques, Vol. 3, No. 2, 2014, pp. 48-107.</p>
+<p>Schlick, C., An Inexpensive BRDF Model for Physically-based Rendering, Computer Graphics Forum,
+Vol. 13, No. 3, 1994, pp. 233-246.</p>
+<p>Walter, B., Marschner, S. R., Li, H., and Torrance, K. E., Microfacet Models for Refraction through
+Rough Surfaces, Proceedings of the Eurographics Symposium on Rendering, 2007, pp. 195-206.</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
@@ -512,7 +565,7 @@ then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not s
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 09, 2026.
       </span></p>
   </div>
 

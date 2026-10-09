@@ -226,12 +226,6 @@ folder of the <em>gh-pages</em> branch.</p></li>
 <li><p>Updating the <code class="docutils literal notranslate"><span class="pre">latest</span></code> documentation link to the new release.</p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">draft-release.yml</span></code> (Drafts the next release notes)</p>
-<p>This workflow is run to draft the next release notes when new tags are made. It downloads GMT tarballs, macOS bundle
-and Windows installers from the GMT FTP server, calculate their sha256sums and save into <cite>gmt-X.Y.Z-checksums.txt</cite>,
-draft the release notes, and uploads them as release assets. Maintainers still need to review the draft release
-notes and click the “publish” button.</p>
-</li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lint-checker.yml</span></code> (Run cppchecks)</p>
 <p>This workflow is run every day at 12:00 (UTC) to run <cite>admin/run_cppcheck.sh</cite> on the source code.</p>
 </li>
@@ -243,9 +237,11 @@ issue automatically.</p>
 </div></blockquote>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tests.yml</span></code> (Tests on Linux/macOS/Windows)</p>
-<p>This workflow is run when Pull Requests are merged into the <em>master</em> branch, if the Pull Request involved changes
+<blockquote>
+<div><p>This workflow is run when Pull Requests are merged into the <em>master</em> branch, if the Pull Request involved changes
 to the folders that contain source code, workflows, tests, or scripts for generating documentation figures. It runs
 the full GMT test suite on Linux, macOS, and Windows.</p>
+</div></blockquote>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">release-drafter.yml</span></code> (Drafts the next release notes)</p>
 <p>This workflow is run to update the next releases notes as pull requests are merged into master.</p>
@@ -287,7 +283,7 @@ people can help to review and collaborate on the changelog curation process desc
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 09, 2026.
       </span></p>
   </div>
 

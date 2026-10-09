@@ -167,7 +167,7 @@
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>URL</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>filtercode</em> ]
 [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>scale</em> ]
-[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>file</em>|<em>intens</em>|<strong>+a</strong><em>azimuth</em>][<strong>+d</strong>][<strong>+m</strong><em>ambient</em>][<strong>+n</strong><em>args</em>] ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>file</em>|<em>intens</em>|<strong>+a</strong><em>azimuth</em>][<strong>+d</strong>][<strong>+m</strong><em>ambient</em>][<strong>+n</strong><em>args</em>]|<strong>+P</strong>[<em>modifiers</em>] ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>tilesize</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<em>extra</em>] ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>title</em> ]
@@ -298,6 +298,43 @@ than the main grid, specify that file as the <em>file</em> and add suitable
 modifiers [Default is no illumination]. <strong>Note</strong>: If the input grid
 actually is an image then <em>file</em> or constant <em>intens</em> must be provided
 since derivatives are not available.</p>
+</dd>
+</dl>
+<p><strong>Or</strong></p>
+<dl>
+<dt><strong>-I</strong><strong>+P</strong>[<em>azim</em>[/<em>elev</em>]][<strong>+f</strong><em>fill</em>][<strong>+i</strong><em>ior</em>][<strong>+l</strong><em>light</em>][<strong>+m</strong><em>metallic</em>][<strong>+o</strong>[<em>radius</em>]][<strong>+r</strong><em>roughness</em>][<strong>+s</strong>][<strong>+t</strong>][<strong>+v</strong><em>ve</em>]</dt><dd><p>Instead of intensities, give <strong>+P</strong>[<em>azim</em>[/<em>elev</em>]][<em>modifiers</em>] to shade the input grid with
+physically based lighting (the two cannot be combined). Each node’s CPT color is used as the albedo
+of a microfacet material that is lit by the sun, at azimuth <em>azim</em> (degrees clockwise from north,
+taken modulo 360) [315] and elevation <em>elev</em> (degrees above the horizon, 0-90) [45], and by a
+headlight fill, and seen from straight above. Give just <em>azim</em> to keep the default <em>elev</em> (but <em>elev</em>
+cannot be given without <em>azim</em>). Plain <strong>+P</strong> selects all the default settings, which are the
+same as <strong>+P</strong>315/45+o+t.</p>
+<p>This is physically based rendering (PBR) as done by the shader of the Visualization Toolkit (VTK):
+the Cook-Torrance specular term with the GGX distribution (Walter et al., 2007), the
+height-correlated Smith visibility (Heitz, 2014) and Schlick’s Fresnel approximation (Schlick,
+1994), plus the Lambertian diffuse term that the specular leaves over. Unlike intensities, which
+blend each color toward white or gray, the light here multiplies the color, so hues are kept in
+both the lit and the shaded parts. The relief is lit as a 3-D view would draw it: <em>x</em> and <em>y</em> at
+the same scale (for a geographic grid, <em>x</em> is shortened by the cosine of the middle latitude) and
+the <em>z</em> range drawn as 0.1 of the larger horizontal side, times the vertical exaggeration (see
+<strong>+v</strong>). Optionally, append modifiers (the allowed range of each value is given in parentheses,
+the default in brackets):</p>
+<ul class="simple">
+<li><p><strong>+f</strong> Set the <em>fill</em> (headlight) intensity (&gt;= 0) [0.35].</p></li>
+<li><p><strong>+i</strong> Set the index of refraction <em>ior</em> of the surface (&gt;= 1) [1.5]. Values from about 1.3
+(water) to 2.4 (diamond) cover most materials.</p></li>
+<li><p><strong>+l</strong> Set the <em>light</em> (sun) intensity (&gt;= 0) [1].</p></li>
+<li><p><strong>+m</strong> Set the <em>metallic</em> value, from 0 (dielectric) to 1 (metal) (0-1) [0].</p></li>
+<li><p><strong>+o</strong> Add ambient occlusion, which darkens creases and valley floors [no occlusion]. Optionally
+append the sampling <em>radius</em> as a fraction of the diagonal of the relief as drawn (&gt; 0) [0.1].
+Occlusion is only computed when the radius is larger than one grid node spacing.</p></li>
+<li><p><strong>+r</strong> Set the <em>roughness</em>, from 0 (mirror) to 1 (matte) (0-1) [0.3]. Values below 0.05 are
+treated as 0.05.</p></li>
+<li><p><strong>+s</strong> Cast shadows: the terrain shades itself along the sun’s azimuth and elevation, which the
+hillshade methods of <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> do not do [no shadows].</p></li>
+<li><p><strong>+t</strong> Apply the Khronos PBR Neutral tone mapping, which compresses the highlights [no tone mapping].</p></li>
+<li><p><strong>+v</strong> Set the vertical exaggeration <em>ve</em> of the relief (&gt; 0) [1].</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="l">
@@ -447,7 +484,7 @@ supplying a suitable title, and using color masking for unmapped area, try:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 09, 2026.
       </span></p>
   </div>
 

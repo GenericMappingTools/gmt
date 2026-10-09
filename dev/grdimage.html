@@ -167,7 +167,7 @@
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>r</strong>] ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<strong>i</strong>|<em>dpi</em>] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>color</em>[<strong>+b</strong>|<strong>f</strong>] ]
-[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>file</em>|<em>intens</em>|<strong>+a</strong><em>azimuth</em>][<strong>+d</strong>][<strong>+m</strong><em>ambient</em>][<strong>+n</strong><em>args</em>] ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>file</em>|<em>intens</em>|<strong>+a</strong><em>azimuth</em>][<strong>+d</strong>][<strong>+m</strong><em>ambient</em>][<strong>+n</strong><em>args</em>]|<strong>+P</strong>[<em>modifiers</em>] ]
 [ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> ]
 [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
@@ -315,6 +315,43 @@ than the main grid, specify that file as the <em>file</em> and add suitable
 modifiers [Default is no illumination]. <strong>Note</strong>: If the input grid
 actually is an image then <em>file</em> or constant <em>intens</em> must be provided
 since derivatives are not available.</p>
+</dd>
+</dl>
+<p><strong>Or</strong></p>
+<dl>
+<dt><strong>-I</strong><strong>+P</strong>[<em>azim</em>[/<em>elev</em>]][<strong>+f</strong><em>fill</em>][<strong>+i</strong><em>ior</em>][<strong>+l</strong><em>light</em>][<strong>+m</strong><em>metallic</em>][<strong>+o</strong>[<em>radius</em>]][<strong>+r</strong><em>roughness</em>][<strong>+s</strong>][<strong>+t</strong>][<strong>+v</strong><em>ve</em>]</dt><dd><p>Instead of intensities, give <strong>+P</strong>[<em>azim</em>[/<em>elev</em>]][<em>modifiers</em>] to shade the input grid with
+physically based lighting (the two cannot be combined). Each node’s CPT color is used as the albedo
+of a microfacet material that is lit by the sun, at azimuth <em>azim</em> (degrees clockwise from north,
+taken modulo 360) [315] and elevation <em>elev</em> (degrees above the horizon, 0-90) [45], and by a
+headlight fill, and seen from straight above. Give just <em>azim</em> to keep the default <em>elev</em> (but <em>elev</em>
+cannot be given without <em>azim</em>). Plain <strong>+P</strong> selects all the default settings, which are the
+same as <strong>+P</strong>315/45+o+t.</p>
+<p>This is physically based rendering (PBR) as done by the shader of the Visualization Toolkit (VTK):
+the Cook-Torrance specular term with the GGX distribution (Walter et al., 2007), the
+height-correlated Smith visibility (Heitz, 2014) and Schlick’s Fresnel approximation (Schlick,
+1994), plus the Lambertian diffuse term that the specular leaves over. Unlike intensities, which
+blend each color toward white or gray, the light here multiplies the color, so hues are kept in
+both the lit and the shaded parts. The relief is lit as a 3-D view would draw it: <em>x</em> and <em>y</em> at
+the same scale (for a geographic grid, <em>x</em> is shortened by the cosine of the middle latitude) and
+the <em>z</em> range drawn as 0.1 of the larger horizontal side, times the vertical exaggeration (see
+<strong>+v</strong>). Optionally, append modifiers (the allowed range of each value is given in parentheses,
+the default in brackets):</p>
+<ul class="simple">
+<li><p><strong>+f</strong> Set the <em>fill</em> (headlight) intensity (&gt;= 0) [0.35].</p></li>
+<li><p><strong>+i</strong> Set the index of refraction <em>ior</em> of the surface (&gt;= 1) [1.5]. Values from about 1.3
+(water) to 2.4 (diamond) cover most materials.</p></li>
+<li><p><strong>+l</strong> Set the <em>light</em> (sun) intensity (&gt;= 0) [1].</p></li>
+<li><p><strong>+m</strong> Set the <em>metallic</em> value, from 0 (dielectric) to 1 (metal) (0-1) [0].</p></li>
+<li><p><strong>+o</strong> Add ambient occlusion, which darkens creases and valley floors [no occlusion]. Optionally
+append the sampling <em>radius</em> as a fraction of the diagonal of the relief as drawn (&gt; 0) [0.1].
+Occlusion is only computed when the radius is larger than one grid node spacing.</p></li>
+<li><p><strong>+r</strong> Set the <em>roughness</em>, from 0 (mirror) to 1 (matte) (0-1) [0.3]. Values below 0.05 are
+treated as 0.05.</p></li>
+<li><p><strong>+s</strong> Cast shadows: the terrain shades itself along the sun’s azimuth and elevation, which the
+hillshade methods of <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> do not do [no shadows].</p></li>
+<li><p><strong>+t</strong> Apply the Khronos PBR Neutral tone mapping, which compresses the highlights [no tone mapping].</p></li>
+<li><p><strong>+v</strong> Set the vertical exaggeration <em>ve</em> of the relief (&gt; 0) [1].</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="j">
@@ -489,7 +526,7 @@ If no <a class="reference internal" href="#c"><span><strong>-C</strong></span></
 <section id="limitations-on-transparency">
 <h2>Limitations on transparency<a class="headerlink" href="#limitations-on-transparency" title="Link to this heading"></a></h2>
 <p>The PostScript imaging model does not support any form of transparency.  However, Adobe added
-<a class="reference external" href="https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/index.html">pdfMark</a>
+<a class="reference external" href="https://ghostscript.readthedocs.io/en/latest/VectorDevices.html#pdfmark-extensions">pdfMark</a>
 which allows PostScript to specify transparency but only if activated when converting PostScript
 or EPS to PDF with Adobe Distiller or GhostScript. Each graphic (e.g., polygon, line, text, image)
 can have a specified transparency. Yet, for images this is very limited: We can choose a particular
@@ -552,6 +589,12 @@ inch/x-unit, tickmarks every 5 units:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdimage<span class="w"> </span>-JI15c<span class="w"> </span>-Rd<span class="w"> </span>http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg<span class="w"> </span>-pdf<span class="w"> </span>jess
 </pre></div>
 </div>
+<p>To shade the Island of Hawaii and the surrounding sea floor with physically based lighting, with a low sun
+from the northwest that makes Mauna Kea and Mauna Loa cast their shadows, ambient occlusion, tone mapping,
+a threefold vertical exaggeration and a brighter sun and fill light than the defaults:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@earth_gebco_15s<span class="w"> </span>-R-156.2/-154.7/18.8/20.35<span class="w"> </span>-Cgeo<span class="w"> </span>-I+P315/35+o+s+t+v3+l1.4+f0.5<span class="w"> </span>-JM15c<span class="w"> </span>-B<span class="w"> </span>-png<span class="w"> </span>hawaii
+</pre></div>
+</div>
 </section>
 <section id="note-on-cpts-in-modern-mode">
 <h2>Note on CPTs in Modern Mode<a class="headerlink" href="#note-on-cpts-in-modern-mode" title="Link to this heading"></a></h2>
@@ -580,6 +623,15 @@ will want to create the CPT once and have <strong>movie</strong> access it again
 each movie frame is a <em>separate session</em> there is no cross-session sharing of current
 CPTs.</p>
 </section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<p>Heitz, E., Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs, Journal of
+Computer Graphics Techniques, Vol. 3, No. 2, 2014, pp. 48-107.</p>
+<p>Schlick, C., An Inexpensive BRDF Model for Physically-based Rendering, Computer Graphics Forum,
+Vol. 13, No. 3, 1994, pp. 233-246.</p>
+<p>Walter, B., Marschner, S. R., Li, H., and Torrance, K. E., Microfacet Models for Refraction through
+Rough Surfaces, Proceedings of the Eurographics Symposium on Rendering, 2007, pp. 195-206.</p>
+</section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
@@ -604,7 +656,7 @@ CPTs.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 09, 2026.
       </span></p>
   </div>
 
