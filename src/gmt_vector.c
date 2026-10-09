@@ -1341,7 +1341,7 @@ extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alph
 void gmt_matrix_vector_mult (struct GMT_CTRL *GMT, double *A, double *b, uint64_t n_rowsA, uint64_t n_colsA, double *c) {
 	uint64_t row, col, ij;
 	gmt_M_unused(GMT);
-	gmt_M_memset (c, n_colsA, double);
+	gmt_M_memset (c, n_rowsA, double);
 	for (row = ij = 0; row < n_rowsA; row++) {
 		for (col = 0; col < n_colsA; col++, ij++)
 			c[row] += A[ij] * b[col];
