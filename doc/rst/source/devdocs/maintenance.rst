@@ -79,30 +79,23 @@ There are 11 configuration files located in ``.github/workflows/``:
      folder of the *gh-pages* branch.
    * Updating the ``latest`` documentation link to the new release.
 
-7. ``draft-release.yml`` (Drafts the next release notes)
-
-   This workflow is run to draft the next release notes when new tags are made. It downloads GMT tarballs, macOS bundle
-   and Windows installers from the GMT FTP server, calculate their sha256sums and save into `gmt-X.Y.Z-checksums.txt`,
-   draft the release notes, and uploads them as release assets. Maintainers still need to review the draft release
-   notes and click the "publish" button.
-
-8. ``lint-checker.yml`` (Run cppchecks)
+7. ``lint-checker.yml`` (Run cppchecks)
 
    This workflow is run every day at 12:00 (UTC) to run `admin/run_cppcheck.sh` on the source code.
 
-9. ``scm-check.yml`` (Check for new scientific color maps releases)
+8. ``scm-check.yml`` (Check for new scientific color maps releases)
 
     This workflows is run every Sunday at 12:00 (UTC) to check whether there has been a new release of the
     `Scientific colour maps <http://www.fabiocrameri.ch/colourmaps.php>`_. If a new release is found, it will open an
     issue automatically.
 
-10. ``tests.yml`` (Tests on Linux/macOS/Windows)
+9. ``tests.yml`` (Tests on Linux/macOS/Windows)
 
     This workflow is run when Pull Requests are merged into the *master* branch, if the Pull Request involved changes
     to the folders that contain source code, workflows, tests, or scripts for generating documentation figures. It runs
     the full GMT test suite on Linux, macOS, and Windows.
 
-11. ``release-drafter.yml`` (Drafts the next release notes)
+10. ``release-drafter.yml`` (Drafts the next release notes)
 
     This workflow is run to update the next releases notes as pull requests are merged into master.
 
