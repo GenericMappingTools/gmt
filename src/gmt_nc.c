@@ -1689,6 +1689,9 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	else if (GMT->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEBUG nc_read_grd %s: wesn=%g %g %g %g header wesn y=%g %g inc=%g %g n=%u %u reg=%d\n",	/* DEBUG-WINDOWS */
+	            HH->name, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], header->wesn[YLO], header->wesn[YHI], header->inc[GMT_X], header->inc[GMT_Y],
+	            header->n_columns, header->n_rows, (int)header->registration);
 	if ((error = gmt_M_err_fail (GMT, gmtnc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), HH->name)))
 		return (error);
 
