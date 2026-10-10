@@ -914,7 +914,7 @@ GMT_LOCAL void grdcontour_trace_free(struct GMT_CTRL *GMT, struct GRDCONTOUR_TRA
 			}
 			gmt_M_free(GMT, T->line[c]);
 		}
-		gmt_M_free (GMT, T->line);
+		gmt_M_free(GMT, T->line);
 	}
 	gmt_M_free(GMT, T->n_lines);
 	gmt_M_free(GMT, T->n_alloc);
@@ -950,11 +950,11 @@ GMT_LOCAL GDALDatasetH grdcontour_gdal_raster(struct GMT_CTRL *GMT, struct GMT_G
 		GMT_Report(GMT->parent, GMT_MSG_ERROR, "The GDAL MEM driver is not available\n");
 		return (NULL);
 	}
-	if ((hDS = GDALCreate (hDrv, "", (int)h->n_columns, (int)h->n_rows, 0, type, NULL)) == NULL) {
-		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Failed to create the in-memory GDAL raster: %s\n", CPLGetLastErrorMsg ());
+	if ((hDS = GDALCreate(hDrv, "", (int)h->n_columns, (int)h->n_rows, 0, type, NULL)) == NULL) {
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Failed to create the in-memory GDAL raster: %s\n", CPLGetLastErrorMsg());
 		return (NULL);
 	}
-	nc = CPLPrintPointer(txt, &G->data[gmt_M_ijp (h, 0, 0)], GMT_LEN64);	/* Address of the first (northwesternmost) node */
+	nc = CPLPrintPointer(txt, &G->data[gmt_M_ijp(h, 0, 0)], GMT_LEN64);	/* Address of the first (northwesternmost) node */
 	txt[nc] = '\0';
 	opt = CSLSetNameValue(opt, "DATAPOINTER", txt);
 	snprintf(txt, GMT_LEN64, "%d", (int)sizeof (gmt_grdfloat));
@@ -964,7 +964,7 @@ GMT_LOCAL GDALDatasetH grdcontour_gdal_raster(struct GMT_CTRL *GMT, struct GMT_G
 	nc = (GDALAddBand(hDS, type, opt) == CE_None);
 	CSLDestroy(opt);
 	if (!nc) {
-		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Failed to attach the grid to the GDAL raster: %s\n", CPLGetLastErrorMsg ());
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Failed to attach the grid to the GDAL raster: %s\n", CPLGetLastErrorMsg());
 		GDALClose(hDS);
 		return (NULL);
 	}
@@ -1008,8 +1008,8 @@ GMT_LOCAL struct GRDCONTOUR_TRACE *grdcontour_gdal_contours(struct GMT_CTRL *GMT
 
 	value = gmt_M_memory(GMT, NULL, n_contours, double);
 	list  = gmt_M_memory(GMT, NULL, 32 * n_contours + 32, char);
-	strcpy (list, "FIXED_LEVELS=");
-	len = strlen (list);
+	strcpy(list, "FIXED_LEVELS=");
+	len = strlen(list);
 	for (c = 0; c < n_contours; c++) {
 		value[c] = cont[c].val - small;	/* Nudge so that nodes exactly at the contour level count as being above it */
 		if (skip && skip[c]) continue;	/* Level that the caller will not use anyway */
@@ -1039,24 +1039,24 @@ GMT_LOCAL struct GRDCONTOUR_TRACE *grdcontour_gdal_contours(struct GMT_CTRL *GMT
 		goto bad;
 	}
 	if ((hOGR = GDALCreate(hDrv, "contours", 0, 0, 0, GDT_Unknown, NULL)) == NULL) {
-		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Failed to create the in-memory OGR data source: %s\n", CPLGetLastErrorMsg ());
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Failed to create the in-memory OGR data source: %s\n", CPLGetLastErrorMsg());
 		goto bad;
 	}
 	if ((hLayer = GDALDatasetCreateLayer(hOGR, "contour", NULL, wkbLineString, NULL)) == NULL) {
-		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Failed to create the in-memory OGR layer: %s\n", CPLGetLastErrorMsg ());
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Failed to create the in-memory OGR layer: %s\n", CPLGetLastErrorMsg());
 		goto bad;
 	}
-	hField = OGR_Fld_Create("ID", OFTInteger);	OGR_L_CreateField (hLayer, hField, TRUE);	OGR_Fld_Destroy (hField);
-	hField = OGR_Fld_Create("ELEV", OFTReal);	OGR_L_CreateField (hLayer, hField, TRUE);	OGR_Fld_Destroy (hField);
+	hField = OGR_Fld_Create("ID", OFTInteger);	OGR_L_CreateField(hLayer, hField, TRUE);	OGR_Fld_Destroy(hField);
+	hField = OGR_Fld_Create("ELEV", OFTReal);	OGR_L_CreateField(hLayer, hField, TRUE);	OGR_Fld_Destroy(hField);
 
 	opt = CSLAddString(opt, "ID_FIELD=0");
 	opt = CSLAddString(opt, "ELEV_FIELD=1");
 	opt = CSLAddString(opt, list);
 	GMT_Report(GMT->parent, GMT_MSG_INFORMATION, "Tracing %u contour levels with GDAL\n", n_wanted);
-	nc = (GDALContourGenerateEx(GDALGetRasterBand (hDS, 1), hLayer, opt, NULL, NULL) == CE_None);
-	CSLDestroy (opt);	opt = NULL;
+	nc = (GDALContourGenerateEx(GDALGetRasterBand(hDS, 1), hLayer, opt, NULL, NULL) == CE_None);
+	CSLDestroy(opt);	opt = NULL;
 	if (!nc) {
-		GMT_Report(GMT->parent, GMT_MSG_ERROR, "GDALContourGenerateEx failed: %s\n", CPLGetLastErrorMsg ());
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "GDALContourGenerateEx failed: %s\n", CPLGetLastErrorMsg());
 		goto bad;
 	}
 
@@ -1722,26 +1722,26 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (phase_data) {	/* -Z+p: gmt_contours works on the grid offset by the current contour level,
 			 * so we need the original values kept aside and its edge-flag array */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Phase data (-Z+p): tracing the contours with gmt_contours so the 360-degree wrap is honored\n");
-		if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) {
-			gmt_M_free (GMT, cont);
-			Return (GMT_RUNTIME_ERROR); /* Original copy of grid used for contouring */
+		GMT_Report(API, GMT_MSG_INFORMATION, "Phase data (-Z+p): tracing the contours with gmt_contours so the 360-degree wrap is honored\n");
+		if ((G_orig = GMT_Duplicate_Data(API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) {
+			gmt_M_free(GMT, cont);
+			Return(GMT_RUNTIME_ERROR); /* Original copy of grid used for contouring */
 		}
-		edge = gmt_contour_edge_init (GMT, G->header, &n_edges);
+		edge = gmt_contour_edge_init(GMT, G->header, &n_edges);
 	}
 	else {	/* Trace all the contours with GDAL in one single pass over the grid.  The skip array flags
 		 * the levels that the loop below would throw away anyway, so we do not waste time tracing
 		 * those.  The grid itself is neither modified nor copied - the tracer reads it as it is. */
-		skip = gmt_M_memory (GMT, NULL, n_contours, bool);
+		skip = gmt_M_memory(GMT, NULL, n_contours, bool);
 		for (uc = 0; uc < n_contours; uc++)	/* Same two tests that open the contour loop below */
-			skip[uc] = (Ctrl->L.active && (cont[uc].val < Ctrl->L.low || cont[uc].val > Ctrl->L.high)) || (Ctrl->Q.zero && gmt_M_is_zero (cont[uc].val));
+			skip[uc] = (Ctrl->L.active && (cont[uc].val < Ctrl->L.low || cont[uc].val > Ctrl->L.high)) || (Ctrl->Q.zero && gmt_M_is_zero(cont[uc].val));
 
-		if ((Ctrs = grdcontour_gdal_contours (GMT, G, cont, n_contours, skip, small)) == NULL) {
-			gmt_M_free (GMT, skip);
-			gmt_M_free (GMT, cont);
-			Return (GMT_RUNTIME_ERROR);
+		if ((Ctrs = grdcontour_gdal_contours(GMT, G, cont, n_contours, skip, small)) == NULL) {
+			gmt_M_free(GMT, skip);
+			gmt_M_free(GMT, cont);
+			Return(GMT_RUNTIME_ERROR);
 		}
-		gmt_M_free (GMT, skip);
+		gmt_M_free(GMT, skip);
 	}
 
 	if (Ctrl->D.active) {
@@ -1846,7 +1846,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		else
 			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Drawing the %g contour\n", cval);
+		GMT_Report(API, GMT_MSG_INFORMATION, "Drawing the %g contour\n", cval);
 
 		if (phase_data) {	/* Prepare the grid for gmt_contours, which always looks for the zero-contour.
 				 * Because we are doing single-precision, we cannot subtract incrementally but must
@@ -1867,8 +1867,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		else if ((Ctrl->contour.font_label.set & 1) == 0) /* Did not specify a font color; fault to pen color */
 			gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, Ctrl->contour.line_pen.rgb);
-		while ((ns = (phase_data) ? gmt_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)
-					  : grdcontour_get_contour (GMT, Ctrs, uc, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, &x, &y)) > 0) {
+		while ((ns = (phase_data) ? gmt_contours(GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)
+					  : grdcontour_get_contour(GMT, Ctrs, uc, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, &x, &y)) > 0) {
 			n = (uint64_t)ns;
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 			is_closed = (closed != cont_is_not_closed);
@@ -1955,12 +1955,12 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, y);
 		}
 		if (ns < 0) {
-			grdcontour_trace_free (GMT, &Ctrs);
-			gmt_M_free (GMT, edge);
-			Return (-ns);
+			grdcontour_trace_free(GMT, &Ctrs);
+			gmt_M_free(GMT, edge);
+			Return(-ns);
 		}
 	}
-	grdcontour_trace_free (GMT, &Ctrs);
+	grdcontour_trace_free(GMT, &Ctrs);
 	gmt_M_free (GMT, edge);
 
 	if (make_plot && n_cont_attempts == 0) GMT_Report (API, GMT_MSG_INFORMATION, "No contours drawn, check your -A, -C, -L settings?\n");
@@ -2002,7 +2002,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
 		save = gmt_M_memory (GMT, save, n_save, struct GRDCONTOUR_SAVE);
 
-		grdcontour_sort_and_plot_ticks (GMT, PSL, save, n_save, (phase_data) ? G_orig : G, &Ctrl->T.info, label_mode, Ctrl->contour.Out);
+		grdcontour_sort_and_plot_ticks(GMT, PSL, save, n_save, (phase_data) ? G_orig : G, &Ctrl->T.info, label_mode, Ctrl->contour.Out);
 		for (i = 0; i < n_save; i++) {
 			gmt_M_free (GMT, save[i].x);
 			gmt_M_free (GMT, save[i].y);
@@ -2035,9 +2035,9 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (make_plot || Ctrl->contour.save_labels) gmt_contlabel_free (GMT, &Ctrl->contour);
 
 	if (phase_data) {	/* Only that path modifies G and keeps a copy of the original values around */
-		if (mem_G) gmt_M_memcpy (G->data, G_orig->data, G->header->size, gmt_grdfloat);	/* To avoid messing up an input memory grid */
-		if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to free G_orig\n");
+		if (mem_G) gmt_M_memcpy(G->data, G_orig->data, G->header->size, gmt_grdfloat);	/* To avoid messing up an input memory grid */
+		if (GMT_Destroy_Data(GMT->parent, &G_orig) != GMT_NOERROR) {
+			GMT_Report(API, GMT_MSG_ERROR, "Failed to free G_orig\n");
 		}
 	}
 	/* The GDAL path neither modifies nor copies the grid, so there is nothing to restore or free there */
