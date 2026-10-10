@@ -66,7 +66,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  GMT_TP_STANDARD },
 	GMT_W_PEN_KW,
 	{ 0, 'Z', "histtype|kind",
-	          "0,1,2,3,4,5",       "counts,freq,logcount,logfreq,log10count,log10freq",
+	          "0,1,2,3,4,5,6,7,8", "counts,freq,logcount,logfreq,log10count,log10freq,frequency,probability|proportion,density",
 	          "w",                 "weights",
 		  GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
