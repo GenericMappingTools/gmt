@@ -801,6 +801,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_max", &dummy[1])));
 		*/
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy));
+		{	/* DEBUG-WINDOWS (trend_xy_plot): do not merge */
+			double dbg[2] = {-99.0, -99.0};
+			int dbg_ret = nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dbg);
+			char dbg_var[NC_MAX_NAME+1] = {""};
+			nc_inq_varname (ncid, ids[HH->xy_dim[1]], dbg_var);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEBUG y1 %s: netcdf %s xy_dim[1]=%d y_id=%d name=%s n_rows=%u has_vector=%d has_range=%d nc_get_att_double=%d (%s) actual_range=%g %g dummy=%g %g\n",
+			            HH->name, nc_inq_libvers (), HH->xy_dim[1], ids[HH->xy_dim[1]], dbg_var, header->n_rows, has_vector, has_range, dbg_ret, nc_strerror (dbg_ret), dbg[0], dbg[1], dummy[0], dummy[1]);
+		}
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
 			threshold = (0.5+GMT_CONV5_LIMIT) * dy;
@@ -896,6 +904,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		header->inc[GMT_Y] = gmt_M_get_inc (GMT, dummy[0], dummy[1], header->n_rows, registration);
 		if (gmt_M_is_dnan(header->inc[GMT_Y]) || gmt_M_is_zero (header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 		if (header->n_rows == 1) registration = GMT_GRID_PIXEL_REG;	/* The only way to have a grid like that */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEBUG y2 %s: registration=%d header->registration=%d dummy=%g %g inc=%g\n",	/* DEBUG-WINDOWS */
+		            HH->name, registration, (int)header->registration, dummy[0], dummy[1], header->inc[GMT_Y]);
 
 #ifdef NC4_DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "y registration: %u\n", header->registration);
@@ -1461,6 +1471,9 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	else {
 		/* Must deal with a subregion */
 		double x;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEBUG prep_io %s: wesn=%g %g %g %g header wesn=%g %g %g %g inc=%g %g n=%u %u reg=%d\n",	/* DEBUG-WINDOWS */
+		            HH->name, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI],
+		            header->inc[GMT_X], header->inc[GMT_Y], header->n_columns, header->n_rows, (int)header->registration);
 		x = fabs (header->wesn[YLO] - wesn[YLO]);	/* if |x| < GMT_CONV4_LIMIT * header->inc[GMT_Y] we set wesn to the grid limit */
 		if (x > 0.0 && x < GMT_CONV4_LIMIT * header->inc[GMT_Y]) wesn[YLO] = header->wesn[YLO];	/* Avoid snafu */
 		x = fabs (header->wesn[YHI] - wesn[YHI]);	/* if |x| < GMT_CONV4_LIMIT * header->inc[GMT_Y] we set wesn to the grid limit */

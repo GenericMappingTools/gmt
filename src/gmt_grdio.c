@@ -1509,9 +1509,13 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, header);
 
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEBUG read_grd_info %s: before RI_verify n=%u %u wesn y=%g %g inc=%g %g reg=%d\n",	/* DEBUG-WINDOWS */
+	            file, header->n_columns, header->n_rows, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_X], header->inc[GMT_Y], (int)header->registration);
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 0), file);
 	n_columns = header->n_columns;	n_rows = header->n_rows;	/* Save copy */
 	gmt_set_grddim (GMT, header);	/* Set all integer dimensions and xy_off */
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEBUG read_grd_info %s: after set_grddim n=%u %u inc=%g %g\n",	/* DEBUG-WINDOWS */
+	            file, header->n_columns, header->n_rows, header->inc[GMT_X], header->inc[GMT_Y]);
 
 	/* Sanity check for grid that may have been created oddly.  Inspired by
 	 * Geomapapp output where -R was set to outside of pixel boundaries instead

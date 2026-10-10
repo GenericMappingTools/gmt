@@ -62,10 +62,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Linux
-            os: ubuntu-latest
-          - name: macOS
-            os: macos-15-intel # macos-14 use M1 chips, which causes many failures
           - name: Windows
             os: windows-latest
 
@@ -172,33 +168,25 @@ jobs:
         run: call ci/simple-gmt-tests.bat
         if: runner.os == 'Windows'
 
-      - name: Run full tests
+      - name: Debug trend_xy_plot (DO NOT MERGE)
         run: |
-          set -x -e
-          cd build
           # Disable MinGW's path conversion, see #1035.
           if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
-          # Run tests
-          ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
-          # show the slowest tests
-          sort -k3nr Testing/Temporary/CTestCostData.txt > /tmp/cost.txt
-          head -n 30 /tmp/cost.txt | awk 'NF==3 {printf("%50-s %d %5.1f\n", $1, $2, $3)}'
-        env:
-          CTEST_ARGS : "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
-
-      - name: Run DOS batch examples (Windows)
-        shell: cmd
-        run: |
-          cd doc/examples
-          call do_examples.bat
-        if: runner.os == 'Windows'
+          mkdir dbg && cd dbg
+          gmt grdmath -R-1.2/1.2/-0.2/0.2 -I0.4 -r 0.5 X ADD X X MUL ADD X 3 POW ADD = data.grd
+          gmt grdinfo -C data.grd -V || true
+          gmt grdtrend data.grd -N4+x -Ttrend.grd -V || true
+          cd ../build
+          ctest -R trend_xy_plot --output-on-failure --force-new-ctest-process || true
 
       - name: Upload build directory if failed
         uses: actions/upload-artifact@v7
         with:
           name: BuildDirectory-${{ runner.os }}
-          path: build/
-        if: failure()
+          path: |
+            build/
+            dbg/
+        if: always()
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v6.0.1
