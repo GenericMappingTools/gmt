@@ -801,14 +801,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_max", &dummy[1])));
 		*/
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy));
-		{	/* DEBUG-WINDOWS (trend_xy_plot): do not merge */
-			double dbg[2] = {-99.0, -99.0};
-			int dbg_ret = nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dbg);
-			char dbg_var[NC_MAX_NAME+1] = {""};
-			nc_inq_varname (ncid, ids[HH->xy_dim[1]], dbg_var);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEBUG y1 %s: netcdf %s xy_dim[1]=%d y_id=%d name=%s n_rows=%u has_vector=%d has_range=%d nc_get_att_double=%d (%s) actual_range=%g %g dummy=%g %g\n",
-			            HH->name, nc_inq_libvers (), HH->xy_dim[1], ids[HH->xy_dim[1]], dbg_var, header->n_rows, has_vector, has_range, dbg_ret, nc_strerror (dbg_ret), dbg[0], dbg[1], dummy[0], dummy[1]);
-		}
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEBUG y1 %s: n_rows=%u has_vector=%d has_range=%d dummy=%g %g\n",	/* DEBUG-WINDOWS */
+		            HH->name, header->n_rows, has_vector, has_range, dummy[0], dummy[1]);
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
 			threshold = (0.5+GMT_CONV5_LIMIT) * dy;
