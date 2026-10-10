@@ -168,6 +168,13 @@ jobs:
         run: call ci/simple-gmt-tests.bat
         if: runner.os == 'Windows'
 
+      - name: Debug A, trend_xy_plot alone (DO NOT MERGE)
+        run: |
+          cd build
+          # Disable MinGW's path conversion, see #1035.
+          if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
+          ctest -R trend_xy_plot --output-on-failure --force-new-ctest-process || true
+
       - name: Run full tests
         run: |
           set -x -e
@@ -181,6 +188,17 @@ jobs:
           head -n 30 /tmp/cost.txt | awk 'NF==3 {printf("%50-s %d %5.1f\n", $1, $2, $3)}'
         env:
           CTEST_ARGS : "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
+
+      - name: Debug B, re-read the grid of the failed test (DO NOT MERGE)
+        if: always()
+        run: |
+          # Disable MinGW's path conversion, see #1035.
+          if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
+          cd build/test/grdtrend/trend_xy_plot || exit 0
+          ls -l
+          gmt grdinfo -C data.grd -V || true
+          gmt grdinfo data.grd -V || true
+          gmt grdtrend data.grd -N4+x -Ttrend_dbg.grd -V || true
 
       - name: Run DOS batch examples (Windows)
         shell: cmd
