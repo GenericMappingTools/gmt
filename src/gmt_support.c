@@ -12230,6 +12230,19 @@ unsigned int *gmt_contour_edge_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADE
 }
 
 /*! . */
+int64_t gmt_smooth_contour(struct GMT_CTRL *GMT, double **x_in, double **y_in, uint64_t n, int sfactor, int stype) {
+	/* Public front to gmtsupport_smooth_contour so that modules that get their contours from
+	 * elsewhere (e.g., grdcontour, which traces them with GDAL) can still honor -S */
+	return (gmtsupport_smooth_contour(GMT, x_in, y_in, n, sfactor, stype));
+}
+
+/*! . */
+void gmt_orient_contour(struct GMT_GRID *G, double *x, double *y, uint64_t n, int orient) {
+	/* Public front to gmtsupport_orient_contour, for the same reason as gmt_smooth_contour above */
+	gmtsupport_orient_contour(G, x, y, n, orient);
+}
+
+/*! . */
 int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smooth_factor, unsigned int int_scheme, int orient, unsigned int *edge, bool *first, double **x, double **y) {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
