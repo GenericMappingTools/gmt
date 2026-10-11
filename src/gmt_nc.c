@@ -411,6 +411,9 @@ GMT_LOCAL int gmtnc_put_xy_vectors (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	return GMT_NOERROR;
 }
 
+#ifdef _MSC_VER
+#pragma optimize("", off)	/* DEBUG-WINDOWS: do not merge */
+#endif
 GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job, bool cube, uint64_t n_layers) {
 	/* Used when reading and writing 2-D grids and when writing 3-D data cubes */
 	int j, err, has_vector, has_range, registration, var_spacing = 0;
@@ -1158,6 +1161,9 @@ L100:
 	if (job != 'W') gmt_M_err_trap (gmt_nc_close (GMT, ncid));
 	return (GMT_NOERROR);
 }
+#ifdef _MSC_VER
+#pragma optimize("", on)	/* DEBUG-WINDOWS: do not merge */
+#endif
 
 /* Shift columns in a grid to the right (n_shift < 0) or to the left (n_shift < 0) */
 GMT_LOCAL void gmtnc_right_shift_grid (void *gridp, const unsigned n_cols, const unsigned n_rows, int n_shift, size_t cell_size) {
