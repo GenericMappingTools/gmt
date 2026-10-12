@@ -1980,6 +1980,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 EXTERN_MSC int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in);
 
+#define PSSCALE_MAX_B_OPT 64	/* Max number of separate -B option instances we will stash and replay [see comment below] */
+
 EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psscale task */
 	int error = 0;
@@ -1995,10 +1997,12 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D = NULL;
 
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	char *B_arg[PSSCALE_MAX_B_OPT];
+	unsigned int n_B = 0;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -2014,6 +2018,23 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	strcpy (GMT->current.setting.map_frame_axes, "WESN");
 	GMT->current.map.frame.draw = false;	/* No -B parsed explicitly yet */
+
+	/* psscale builds its own private linear (or time, if the CPT itself is a time CPT) x-axis for the
+	 * bar further below, once the CPT has been read and the actual bar dimensions are known [see the
+	 * "Must redo the -B parsing" logic further down]. However, if the user also passed a real -R (e.g.,
+	 * to overlay the bar on an existing time-axis map for positioning purposes), gmt_parse_R_option will,
+	 * as a side effect, flag the x-column as GMT_TIME even though that has nothing to do with the color
+	 * values annotated on the bar. If we let -B be parsed here as part of GMT_Parse_Common, it would then
+	 * incorrectly be validated as a time axis (e.g. rejecting a plain annotation stride of 500 with
+	 * "Time steps in seconds must be <= 60"). To avoid this we pull all -B option(s) out of the option
+	 * list now and parse them later, after the bar's own axis type has been established. */
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'B' && n_B < PSSCALE_MAX_B_OPT)
+			B_arg[n_B++] = strdup (opt->arg);
+	}
+	while ((opt = GMT_Find_Option (API, 'B', options)))
+		GMT_Delete_Option (API, opt, &options);
+
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -2157,22 +2178,21 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		if (GMT->current.plot.panel.active || GMT->current.plot.inset.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
 	}
 
-	if (!GMT->current.map.frame.draw && (PH = gmt_get_C_hidden (P)) && PH->auto_scale) {	/* No -B given yet we have raw auto-scaling */
-		gmtlib_parse_B_option (GMT, "af");
+	if (n_B == 0) {	/* No -B given by the user; if the CPT wants raw auto-scaling, apply -Baf now */
+		if ((PH = gmt_get_C_hidden (P)) && PH->auto_scale)
+			gmtlib_parse_B_option (GMT, "af");
 	}
-	else if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Must redo the -B parsing since projection has changed */
-		char p[GMT_LEN256] = {""}, group_sep[2] = {" "}, *tmp = NULL;
-		unsigned int pos = 0;
-		GMT_Report (API, GMT_MSG_DEBUG, "Clean re reparse -B settings\n");
-		group_sep[0] = GMT_ASCII_GS;
+	else {	/* Now that the bar's own (linear or time) axis type has been established, parse the -B
+		 * option(s) the user gave, which we deliberately withheld from the initial common-option
+		 * parsing above [see comment where B_arg[] was populated]. */
+		GMT_Report (API, GMT_MSG_DEBUG, "Parsing -B settings against the bar's own axis\n");
 		GMT->current.map.frame.init = false;	/* To ensure we reset B parameters */
-		for (i = GMT_PRIMARY; i <= GMT_SECONDARY; i++) {
-			if (!GMT->common.B.active[i]) continue;
-			tmp = strdup (GMT->common.B.string[i]);
-			while (gmt_strtok (tmp, group_sep, &pos, p))
-				gmtlib_parse_B_option (GMT, p);
-			gmt_M_str_free (tmp);
+		for (i = 0; i < n_B; i++) {
+			if (gmt_parse_common_options (GMT, "B", 'B', B_arg[i]))
+				error++;
 		}
+		for (i = 0; i < n_B; i++) gmt_M_str_free (B_arg[i]);
+		if (error) Return (GMT_PARSE_ERROR);
 	}
 
 	if (Ctrl->Z.active) {	/* Widths of slices per color is prescribed manually via this file */
