@@ -132,23 +132,18 @@ jobs:
           cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DVCPKG_APPLOCAL_DEPS=OFF
           cmake --build .
 
-      - name: Pull baseline image data from dvc remote
-        id: dvc-pull
+      - name: Download DVC cache from GitHub Artifacts
         continue-on-error: true
-        run: |
-          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-          dvc pull --remote origin --no-run-cache --force
-        env:
-          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-
-      - name: Download DVC cache from GitHub Artifacts and restore baseline image data
-        if: steps.dvc-pull.outcome == 'failure'
-        run: |
-          rm -rf .dvc/cache
-          gh run download -n dvc-cache -D .dvc/cache/
-          dvc checkout --force
+        run: gh run download -n dvc-cache -D .dvc/cache/
         env:
           GH_TOKEN: ${{ github.token }}
+
+      - name: Pull missing baseline image data from dvc remote
+        run: |
+          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
+          dvc pull --remote origin --no-run-cache --force || dvc checkout --force
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Install GMT
         run: |
