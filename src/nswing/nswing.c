@@ -466,15 +466,15 @@ struct NSWING_CTRL {
 	bool    append_z;
 	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file, *prog_file;
 	char   *nesteds[10];
-	char    hcum[256];
-	char    maregs[256];
-	char    stem[256];
-	char    fname_momentM[256];
-	char    fname_momentN[256];
-	char    fname_mask_lbeach[256];
-	char    fname_mask_sbeach[256];
-	char    tracers_infile[256];
-	char    tracers_outfile[256];
+	char    hcum[GMT_LEN512];
+	char    maregs[GMT_LEN512];
+	char    stem[GMT_LEN512];
+	char    fname_momentM[GMT_LEN512];
+	char    fname_momentN[GMT_LEN512];
+	char    fname_mask_lbeach[GMT_LEN512];
+	char    fname_mask_sbeach[GMT_LEN512];
+	char    tracers_infile[GMT_LEN512];
+	char    tracers_outfile[GMT_LEN512];
 	double  add_const, time_h, dxKb, dyKb, z_offset, kaba_xmin;
 	double  kaba_xmax, kaba_ymin, kaba_ymax, time_jump, dt, f_dip;
 	double  f_azim, f_rake, f_slip, f_length, f_width, f_topDepth;
@@ -517,21 +517,21 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	bool    out_maregs_velocity = false;
 	bool    E_append = false, S_append = false;
 	char   *bathy = NULL;
-	char    hcum[256] = "";
-	char    maregs[256] = "";
+	char    hcum[GMT_LEN512] = "";
+	char    maregs[GMT_LEN512] = "";
 	char   *fname_sww = NULL;
 	char   *basename_most = NULL;
 	char   *fname3D = NULL;
 	char   *fonte = NULL;
 	char   *bnc_file = NULL;
 	char   *prog_file = NULL;
-	char    fname_mask_lbeach[256] = "";
-	char    fname_mask_sbeach[256] = "";
-	char    tracers_infile[256] = "", tracers_outfile[256] = "";
-	char    stem[256] = "", str_tmp[128] = "", fname_momentM[256] = "", fname_momentN[256] = "";
+	char    fname_mask_lbeach[GMT_LEN512] = "";
+	char    fname_mask_sbeach[GMT_LEN512] = "";
+	char    tracers_infile[GMT_LEN512] = "", tracers_outfile[GMT_LEN512] = "";
+	char    stem[GMT_LEN512] = "", str_tmp[GMT_LEN512] = "", fname_momentM[GMT_LEN512] = "", fname_momentN[GMT_LEN512] = "";
 	char   *pch, *tok;
 	char   *nesteds[10] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-	char    txt[128];
+	char    txt[GMT_LEN512];
 	double  mareg_x = 0, mareg_y = 0;
 	double  add_const = 0, time_h = 0;
 	double  dxKb = 0, dyKb = 0;
@@ -623,7 +623,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 						k = 2;
 						do_Kaba++;		/* Signal kaba_source function that the above is actually x/y/nx/ny */
 					}
-					n = sscanf(&opt->arg[k], "%lf/%lf/%lf/%lf/%127s/%lf", &kaba_xmin, &kaba_xmax, &kaba_ymin, &kaba_ymax, txt, &dyKb);
+					n = sscanf(&opt->arg[k], "%lf/%lf/%lf/%lf/%511s/%lf", &kaba_xmin, &kaba_xmax, &kaba_ymin, &kaba_ymax, txt, &dyKb);
 					snprintf(kaba_str, GMT_LEN256, "XX%s", &opt->arg[k]);	/* decode_R() skips its own first 2 chars */
 					if (n > 4) {
 						pch = strchr(txt, 'x');
@@ -693,7 +693,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				else if (opt->arg[0] == 's' && opt->arg[1] == ',')	/* NOT YET. Maybe it will be -Hs,time_to_stop */
 					;
 				else {
-					sscanf(opt->arg, "%127s", str_tmp);
+					sscanf(opt->arg, "%511s", str_tmp);
 					if ((pch = strstr(str_tmp,",")) != NULL) {
 						pch[0] = '\0';
 						strcpy(fname_momentM, str_tmp);                         /* File names of moment M & N files */
@@ -711,7 +711,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				}
 				break;
 			case 'P':	/* Jumping options. Accept either -Pn, -P+m, -Pn+m or -Pn -P+m */
-				sscanf(opt->arg, "%127s", str_tmp);
+				sscanf(opt->arg, "%511s", str_tmp);
 				if ((pch = strstr(str_tmp,"+")) != NULL) {
 					sscanf((++pch), "%lf", &nest.run_jump_time);
 					pch--;
@@ -747,14 +747,14 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				if (opt->arg[0] == '-') {	/* Compute a mask with ones over the "dried beach" */
 					nest.do_long_beach = true;
 					if (opt->arg[1])
-						sscanf(&opt->arg[1], "%255s", fname_mask_lbeach);
+						sscanf(&opt->arg[1], "%511s", fname_mask_lbeach);
 					else
 						strcpy(fname_mask_lbeach, "long_beach.grd");
 				}
 				else if (opt->arg[0] == '+') {	/* Compute a mask with ones over the "innundated beach" */
 					nest.do_short_beach = true;
 					if (opt->arg[1])
-						sscanf(&opt->arg[1], "%255s", fname_mask_sbeach);
+						sscanf(&opt->arg[1], "%511s", fname_mask_sbeach);
 					else
 						strcpy(fname_mask_sbeach, "short_beach.grd");
 				}
@@ -831,7 +831,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					error++;
 					break;
 				}
-				sscanf(opt->arg, "%127s", str_tmp);
+				sscanf(opt->arg, "%511s", str_tmp);
 				if ((tok = strtok(str_tmp, "+")) == NULL || tok[0] == '\0') {
 					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name (or a x/y pair)\n");
 					error++;
@@ -863,7 +863,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				break;
 			case 'X':		/* Manning coeffs */
 				k = 0;
-				sscanf(opt->arg, "%127s", str_tmp);
+				sscanf(opt->arg, "%511s", str_tmp);
 				if ((pch = strstr(str_tmp,"+")) != NULL) {
 					nest.manning_depth = -atof(++pch);	/* Reverse sense right away because bat will be pos down */
 					pch--;	pch[0] = '\0';		/* Remove traces of this option in string */
@@ -1147,8 +1147,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	size_t	start0 = 0, count0 = 1, start1_A[2] = {0,0}, count1_A[2];
 	size_t  start1_M[3] = {0,0,0}, count1_M[3], start_Mar[3] = {0,0,0}, count_Mar[2];
 	char   *bathy   = NULL;              /* Name pointer for bathymetry file */
-	char   	hcum[256]   = "";            /* Name of the cumulative hight file */
-	char    maregs[256] = "";            /* Name of the maregraph positions file */
+	char   	hcum[GMT_LEN512]   = "";     /* Name of the cumulative hight file */
+	char    maregs[GMT_LEN512] = "";     /* Name of the maregraph positions file */
 	char  **mareg_names = NULL;          /* Array to hold optional maregraph names */
 	char   *fname_sww = NULL;            /* Name pointer for Anuga's .sww file */
 	char   *basename_most = NULL;        /* Name pointer for basename of MOST .nc files */
@@ -1157,10 +1157,10 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	char   *bnc_file = NULL;             /* Name pointer for a boundary condition file */
 	char   *prog_file = NULL;            /* Name pointer for the -W progress file */
 	FILE   *fp_prog = NULL;              /* ... and its handle, kept open for the whole run */
-	char    fname_mask_lbeach[256] = ""; /* Name pointer for the "long_beach" mask grid */
-	char    fname_mask_sbeach[256] = ""; /* Name pointer for the "short_beach" mask grid */
-	char    tracers_infile[256] = "", tracers_outfile[256] = "";	/* Names for in and out tracers files */
-	char    stem[256] = "", prenome[128] = "", fname_momentM[256] = "", fname_momentN[256] = "";
+	char    fname_mask_lbeach[GMT_LEN512] = ""; /* Name pointer for the "long_beach" mask grid */
+	char    fname_mask_sbeach[GMT_LEN512] = ""; /* Name pointer for the "short_beach" mask grid */
+	char    tracers_infile[GMT_LEN512] = "", tracers_outfile[GMT_LEN512] = "";	/* Names for in and out tracers files */
+	char    stem[GMT_LEN512] = "", prenome[GMT_LEN512] = "", fname_momentM[GMT_LEN512] = "", fname_momentN[GMT_LEN512] = "";
 	char    history[512] = {""};         /* To hold the full command call to be saved in nc files as History */
 	char   *nesteds[10] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 	char    txt[128];                    /* Auxiliary variable */
@@ -1968,10 +1968,18 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 			else {
 				if (k == 0) {		/* Write also the maregraphs coordinates (at grid nodes) */
 					int ix, iy, n;
-					char *txt[4], t0[16], t1[16], t2[16], t3[16], *txt_X, *txt_Y, fmt[8];	/* for the headers */
-					txt[0] = calloc((size_t)n_mareg, 16); txt[1] = calloc((size_t)n_mareg, 16);
-					txt[2] = calloc((size_t)n_mareg, 16); txt[3] = calloc((size_t)n_mareg, 16);
-					txt_X  = calloc((size_t)(n_mareg*10+4), 1);	txt_Y = calloc((size_t)(n_mareg*10+4), 1);
+					size_t len_name = 8, len_row;
+					char *txt[4], *t0, t1[GMT_LEN64], t2[GMT_LEN64], t3[GMT_LEN64], *txt_X, *txt_Y, fmt[8];	/* for the headers */
+					/* Size every row from what goes in it: a name can be any length (the caller names the gauges),
+					 * and a coordinate printed as "\t%.5f" (e.g. -179.12345) or "\t%.2f" (projected) can take more
+					 * than the 10 bytes per column the X/Y rows used to get. */
+					for (n = 0; n < n_mareg; n++)
+						if (mareg_names[n] && strlen(mareg_names[n]) > len_name) len_name = strlen(mareg_names[n]);
+					t0 = calloc(len_name + 1, 1);
+					txt[0] = calloc((size_t)n_mareg * len_name + 8, 1);
+					len_row = (size_t)n_mareg * GMT_LEN64 + 8;
+					txt[1] = calloc(len_row, 1);	txt[2] = calloc(len_row, 1);	txt[3] = calloc(len_row, 1);
+					txt_X  = calloc(len_row, 1);	txt_Y  = calloc(len_row, 1);
 					sprintf(txt[0], "#\t"); sprintf(txt[1], "#\t"); sprintf(txt[2], "#\t"); sprintf(txt[3], "#\t");
 					sprintf(txt_X, "# X\t");	sprintf(txt_Y, "# Y\t");
 					if (isGeog)
@@ -1981,16 +1989,16 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 					for (n = 0; n < n_mareg; n++) {
 						ix = lcum_p[n] % nest.hdr[writeLevel].n_columns;
 						iy = lcum_p[n] / nest.hdr[writeLevel].n_columns;
-						sprintf(t0, "%8s",  mareg_names[n]);
-						sprintf(t1, fmt, nest.hdr[writeLevel].wesn[XLO] + ix * nest.hdr[writeLevel].inc[GMT_X]);	/* Xs */
-						sprintf(t2, fmt, nest.hdr[writeLevel].wesn[YLO] + iy * nest.hdr[writeLevel].inc[GMT_Y]);	/* Ys */
-						sprintf(t3, "\t%.1f", nest.bat[writeLevel][lcum_p[n]]); 	/* Zs (from grid) */
+						snprintf(t0, len_name + 1, "%8s",  mareg_names[n]);
+						snprintf(t1, GMT_LEN64, fmt, nest.hdr[writeLevel].wesn[XLO] + ix * nest.hdr[writeLevel].inc[GMT_X]);	/* Xs */
+						snprintf(t2, GMT_LEN64, fmt, nest.hdr[writeLevel].wesn[YLO] + iy * nest.hdr[writeLevel].inc[GMT_Y]);	/* Ys */
+						snprintf(t3, GMT_LEN64, "\t%.1f", nest.bat[writeLevel][lcum_p[n]]); 	/* Zs (from grid) */
 						strcat(txt[0], t0);		strcat(txt[1], t1);		strcat(txt[2], t2);		strcat(txt[3], t3);
 						strcat(txt_X, t1);		strcat(txt_Y, t2);
 					}
 					fprintf(fp, "%s\n%s\n%s\n%s\n%s\n%s\n", txt[0], txt[1], txt[2], txt[3], txt_X, txt_Y);
 					fprintf(fp, ">XY\n");		/* So that the file can be opened directly with dag-n-drop to Mirone */
-					free(txt[0]);	free(txt[1]);	free(txt[2]);	free(txt[3]);	free(txt_X);	free(txt_Y);
+					free(txt[0]);	free(txt[1]);	free(txt[2]);	free(txt[3]);	free(txt_X);	free(txt_Y);	free(t0);
 				}
 				fprintf (fp, "%.3f", (time_h + dt/2));
 				if (out_maregs_velocity) {
