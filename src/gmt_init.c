@@ -16319,6 +16319,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (gmt_M_file_is_memory (opt->arg) || opt->arg[0] != '@') continue;	/* No remote file argument given */
+			/* An in-memory object followed by modifiers (e.g. nswing -T@GMTAPI@-...+o<file>+t<n>) fails the exact-length
+			 * test above but is still never a remote file: handing it to the gmt_remote_* parsers overran their buffers */
+			if (!strncmp(opt->arg, "@GMTAPI@-", GMTAPI_PREFIX_LEN)) continue;
 			if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET) {	/* Got a remote file to work on */
 				API->tile_inc = API->remote_info[k_data].d_inc;	/* In case rounding is needed elsewhere */
 				API->tile_reg = API->remote_info[k_data].reg;	/* So we can create a grid header without reading the tile data */

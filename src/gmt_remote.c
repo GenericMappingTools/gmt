@@ -375,7 +375,7 @@ GMT_LOCAL int gmtremote_wind_to_file (const char *file) {
 	return (k+1);
 }
 
-int gmt_remote_no_resolution_given (struct GMTAPI_CTRL *API, const char *rfile, int *registration) {
+int gmt_remote_no_resolution_given(struct GMTAPI_CTRL *API, const char *rfile, int *registration) {
 	/* Return first entry to a list of different resolutions for the
 	 * same data set. For instance, if file is "earth_relief" then we
 	 * return the ID to the first one listed. */
@@ -385,7 +385,7 @@ int gmt_remote_no_resolution_given (struct GMTAPI_CTRL *API, const char *rfile, 
 
 	if (rfile == NULL || rfile[0] == '\0') return GMT_NOTSET;	/* No file name given */
 	if (rfile[0] != '@') return GMT_NOTSET;	/* No remote file name given */
-	strcpy (file, &rfile[1]);	/* Make a copy but skipping leading @ character */
+	strncpy(file, &rfile[1], GMT_LEN128-1);	/* Make a copy but skipping leading @ character (bounded: rfile may carry long modifiers) */
 	if ((c = strchr (file, '+'))) c[0] = '\0';	/* Chop of modifiers such as in grdimage -I */
 	L = strlen (file);
 	if (!strncmp (&file[L-2], "_g", 2U)) {	/* Want a gridline-registered version */
@@ -423,7 +423,7 @@ struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const ch
 
 	if (rfile == NULL || rfile[0] == '\0') return NULL;	/* No file name given */
 	if (rfile[0] != '@') return NULL;	/* No remote file name given */
-	strcpy (file, &rfile[1]);	/* Make a copy but skipping leading @ character */
+	strncpy(file, &rfile[1], GMT_LEN128-1);	/* Make a copy but skipping leading @ character (bounded: rfile may carry long modifiers) */
 	if ((c = strchr (file, '+'))) c[0] = '\0';	/* Chop of modifiers such as in grdimage -I */
 	L = strlen (file);
 	if (!strncmp (&file[L-2], "_g", 2U)) {	/* Want a gridline-registered version */
