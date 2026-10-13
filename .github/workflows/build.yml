@@ -23,12 +23,12 @@ concurrency:
 jobs:
   changes:
     name: Detect relevant changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       relevant: ${{ steps.filter.outputs.relevant }}
     steps:
       # paths-filter needs a checkout for push events; on PRs it uses the API
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.1
 
       - uses: dorny/paths-filter@v4.0.3
         id: filter
@@ -74,7 +74,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.1
 
       - name: Setup vcpkg (Windows)
         run: gh run download -n vcpkg-cache -D C:/vcpkg/installed/
@@ -123,7 +123,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DVCPKG_APPLOCAL_DEPS=OFF
           cmake --build .
 
       - name: Install GMT
@@ -155,7 +155,7 @@ jobs:
     name: ${{ matrix.name }}
     needs: changes
     if: needs.changes.outputs.relevant != 'true' && github.event_name != 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     strategy:
       matrix:
         include:

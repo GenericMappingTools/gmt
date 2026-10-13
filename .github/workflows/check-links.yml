@@ -21,12 +21,12 @@ permissions:
 jobs:
   check_links:
     name: Check Links
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     if: github.repository == 'GenericMappingTools/gmt'
 
     steps:
     - name: Checkout the repository
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@v7.0.1
 
     - name: Link Checker
       id: lychee

@@ -23,12 +23,12 @@ concurrency:
 jobs:
   changes:
     name: Detect relevant changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       relevant: ${{ steps.filter.outputs.relevant }}
     steps:
       # paths-filter needs a checkout for push events; on PRs it uses the API
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.1
 
       - uses: dorny/paths-filter@v4.0.3
         id: filter
@@ -71,7 +71,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.1
 
       - name: Setup vcpkg (Windows)
         run: gh run download -n vcpkg-cache -D C:/vcpkg/installed/
@@ -129,26 +129,21 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DVCPKG_APPLOCAL_DEPS=OFF
           cmake --build .
 
-      - name: Pull baseline image data from dvc remote
-        id: dvc-pull
+      - name: Download DVC cache from GitHub Artifacts
         continue-on-error: true
-        run: |
-          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-          dvc pull --remote origin --no-run-cache --force
-        env:
-          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-
-      - name: Download DVC cache from GitHub Artifacts and restore baseline image data
-        if: steps.dvc-pull.outcome == 'failure'
-        run: |
-          rm -rf .dvc/cache
-          gh run download -n dvc-cache -D .dvc/cache/
-          dvc checkout --force
+        run: gh run download -n dvc-cache -D .dvc/cache/
         env:
           GH_TOKEN: ${{ github.token }}
+
+      - name: Pull missing baseline image data from dvc remote
+        run: |
+          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
+          dvc pull --remote origin --no-run-cache --force || dvc checkout --force
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Install GMT
         run: |
@@ -213,7 +208,7 @@ jobs:
     name: ${{ matrix.name }}
     needs: changes
     if: needs.changes.outputs.relevant != 'true' && github.event_name != 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     strategy:
       matrix:
         include:
