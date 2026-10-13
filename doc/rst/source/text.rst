@@ -138,7 +138,10 @@ Optional Arguments
       columns, one offset pair per text record, in the same order as the input
       data. Values are in the current length unit [:term:`PROJ_LENGTH_UNIT`].
     - **+v** - Draw a line from the original point to the shifted point;
-      append a *pen* to change the attributes for this line.  **Note**:
+      append a *pen* to change the attributes for this line.  To place an arrow
+      head at the original point, add the pen modifier **+vb**\ *vspecs* (e.g.,
+      **-D**\ 1c+v1p,red+vb0.3c+gred); a head at the text end is not supported.
+      See :ref:`Technical reference - Drawing of Vectors<reference/features:The Drawing of Vectors>`.  **Note**:
       The **-Dj**\|\ **J** selection cannot be used with paragraph mode (|-M|).
 
 .. _-F:

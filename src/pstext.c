@@ -145,6 +145,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->D.pen = C->W.pen = GMT->current.setting.map_default_pen;
+	C->D.pen.end[0].V = C->D.pen.end[1].V = NULL;	/* Do not share (and later free) any vector heads of the default pen */
 	C->C.dx = C->C.dy = GMT_TEXT_CLEARANCE;	/* 15% of font size is default clearance */
 	C->C.percent = true;
 	C->C.mode = 'o';	/* Rectangular box shape */
@@ -163,8 +164,22 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->D.file);
+	gmt_freepen (GMT, &C->D.pen);
 	gmt_M_str_free (C->F.text);
 	gmt_M_free (GMT, C);
+}
+
+GMT_LOCAL void pstext_draw_leader (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, double *xx, double *yy, char *text, double offset[]) {
+	/* Draw leader line from the data point (xx[0],yy[0]) to the text at (xx[1],yy[1]), with optional vector head at the data point */
+	double x[2] = {xx[0], xx[1]}, y[2] = {yy[0], yy[1]}, s, c;
+	bool head = (T->vecpen.end[0].V && hypot (x[1] - x[0], y[1] - y[0]) > T->vecpen.end[0].length);	/* Skip head if longer than the line */
+	if (head && T->vecpen.end[0].length > 0.0) {	/* Shorten the line so it stops at the base of the vector head */
+		sincosd (d_atan2d (y[0] - y[1], x[0] - x[1]), &s, &c);
+		x[0] -= c * T->vecpen.end[0].length;	y[0] -= s * T->vecpen.end[0].length;
+	}
+	gmt_setpen (GMT, &T->vecpen);
+	PSL_plotline_clipped_by_textbox (GMT->PSL, x[0], y[0], x[1], y[1], T->font.size, text, T->paragraph_angle, T->block_justify, offset);
+	if (head) gmt_plot_end_vectors (GMT, x, y, 2, &T->vecpen);
 }
 
 GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *Ctrl) {
@@ -186,8 +201,8 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	PSL_setfont (PSL, T->font.id);
 
 	if (T->boxflag & 32) {	/* Need to draw a vector from (x,y) to the offset text */
-		gmt_setpen (GMT, &(T->vecpen));
-		PSL_plotsegment (PSL, x, y, x + T->x_offset, y + T->y_offset);
+		double xx[2] = {x, x + T->x_offset}, yy[2] = {y, y + T->y_offset};
+		pstext_draw_leader (GMT, T, xx, yy, NULL, offset);
 	}
 	if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
 		gmt_smart_justify (GMT, T->block_justify, T->paragraph_angle, T->x_offset, T->y_offset, &x, &y, Ctrl->D.justify);
@@ -207,7 +222,7 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		}
 		if (T->boxflag & 1) gmt_setpen (GMT, &(T->boxpen));		/* Change current pen */
 		if (T->boxflag & 2) fill = &(T->boxfill);			/* Determine if fill or not */
-		if (T->boxflag & 3) gmt_setfill (GMT, fill, T->boxflag & 1);	/* Change current fill and/or outline */
+		gmt_setfill (GMT, fill, T->boxflag & 1);	/* Change current fill and/or outline (none if only a leader line) */
 		/* Compute text box, draw/fill it, and in the process store the text in the PS file for next command */
 		PSL_plotparagraphbox (PSL, x, y, T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
 		/* Passing NULL means we typeset using the last stored paragraph info */
@@ -357,7 +372,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
 		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Cannot be used with -M. Optional modifiers:");
 	GMT_Usage (API, 3, "+f: Read per-record offsets (dx dy) from <file> (two columns in current distance units); overrides fixed <dx>/<dy>.");
-	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s].", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s]. Add pen modifier +vb<specs> for a vector head at the point.", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Usage (API, 1, "\n-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
 	GMT_Usage (API, 3, "+a Specify baseline <angle> for all text [0].");
@@ -482,6 +497,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[j] == 'v') {	/* Want to draw a line from point to offset point */
 					Ctrl->D.line = true;
 					n_errors += gmt_M_check_condition(GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Option -D: Give pen after +v\n");
+					n_errors += gmt_M_check_condition(GMT, Ctrl->D.pen.end[1].V != NULL, "Option -D: A vector head can only be placed at the data point end of the line; use pen modifier +vb<specs>\n");
 					if (opt->arg[j-1] == '+')	/* New-style syntax */
 						opt->arg[j-1] = 0;
 					else
@@ -1006,10 +1022,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			offset[0] = T.x_space;
 			offset[1] = T.y_space;
 		}
-		if (T.boxflag & 32) {	/* Draw line from original point to shifted location, clipped at textbox edge */
-			gmt_setpen(GMT, &T.vecpen);
-			PSL_plotline_clipped_by_textbox(PSL, xx[0], yy[0], xx[1], yy[1], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset);
-		}
+		if (T.boxflag & 32)	/* Draw line from original point to shifted location, clipped at textbox edge */
+			pstext_draw_leader (GMT, &T, xx, yy, use_text, offset);
 		if (!Ctrl->G.mode && T.boxflag & 3) {	/* Plot the box beneath the text */
 			if (Ctrl->S.active) {	/* Lay down shaded box first */
 				PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
@@ -1485,10 +1499,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				offset[0] = T.x_space;
 				offset[1] = T.y_space;
 			}
-			if (T.boxflag & 32) {	/* Draw line from original point to shifted location, clipped at textbox edge */
-				gmt_setpen (GMT, &T.vecpen);
-				PSL_plotline_clipped_by_textbox(PSL, xx[0], yy[0], xx[1], yy[1], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset);
-			}
+			if (T.boxflag & 32)	/* Draw line from original point to shifted location, clipped at textbox edge */
+				pstext_draw_leader (GMT, &T, xx, yy, use_text, offset);
 			if (!Ctrl->G.mode && T.boxflag & 3) {	/* Plot the box beneath the text */
 				if (Ctrl->S.active) {	/* Lay down shaded box first */
 					PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
