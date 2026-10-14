@@ -145,7 +145,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->D.pen = C->W.pen = GMT->current.setting.map_default_pen;
-	C->D.pen.end[0].V = C->D.pen.end[1].V = NULL;	/* Do not share (and later free) any vector heads of the default pen */
+	gmt_M_memset (C->D.pen.end, 2, struct GMT_LINE_END);	/* Leader ignores the default pen trims and heads (and must not free its heads) */
 	C->C.dx = C->C.dy = GMT_TEXT_CLEARANCE;	/* 15% of font size is default clearance */
 	C->C.percent = true;
 	C->C.mode = 'o';	/* Rectangular box shape */
