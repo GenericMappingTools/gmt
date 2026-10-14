@@ -684,6 +684,14 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	/* To avoid having to check every row,col for being inside the grid we set
 	 * the boundary row/cols in the ID grid to 1. */
 
+	/* That sentinel border is the grid's own pad, i.e. grdfill wants a larger array to work in
+	 * rather than boundary conditions, so it must ask for a pad outright: with the halo held
+	 * outside the matrix there is no border to mark and the fill runs off the edge (issue #4358) */
+	if (Grid->header->pad[XLO] < 1 || Grid->header->pad[XHI] < 1 || Grid->header->pad[YLO] < 1 || Grid->header->pad[YHI] < 1) {
+		unsigned int pad2[4] = {2U, 2U, 2U, 2U};
+		gmt_grd_pad_on(GMT, Grid, pad2);
+	}
+
 	ID = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, char);
 	/* Set the top and bottom boundary rows to 1 */
 	offset = (uint64_t)(Grid->header->pad[YHI] + Grid->header->n_rows) * Grid->header->mx;

@@ -118,9 +118,8 @@ GMT_LOCAL unsigned int gmtbcr_reject (struct GMT_GRID_HEADER *h, double *xx, dou
 	return (0);	/* Good to use */
 }
 
-GMT_LOCAL uint64_t gmtbcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, double wx[], double wy[]) {
+GMT_LOCAL void gmtbcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, double wx[], double wy[], int *row_out, int *col_out) {
 	int col, row;
-	uint64_t ij;
 	double x, y, wp, wq, w, xi, yj;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
@@ -158,8 +157,11 @@ GMT_LOCAL uint64_t gmtbcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy,
 	   of the padding.
 	*/
 
-	/* Save the location of the upper left corner point of the convolution kernel */
-	ij = gmt_M_ijp (h, row, col);
+	/* Report the upper left corner of the convolution kernel as a (row,col) pair rather
+	   than as a node index: the kernel reaches into the halo, and where the halo lives
+	   is the caller's business, not ours.  See gmt_ghost.h. */
+	*row_out = row;
+	*col_out = col;
 
 	/* Build weights */
 
@@ -225,8 +227,6 @@ GMT_LOCAL uint64_t gmtbcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy,
 		wy[2] = 3 * wy[0] + y + wp;
 		break;
 	}
-
-	return (ij);
 }
 
 /*----------------------------------------------------------|
@@ -243,27 +243,26 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 	*/
 
 	unsigned int i, j;
-	uint64_t ij, node;
+	int row, col;
+	gmt_grdfloat *z = NULL;
 	double retval, wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
-	/* Determine nearest node ij and set weights wx, wy */
+	/* Determine the upper left node of the kernel and set weights wx, wy */
 
-	ij = gmtbcr_prep (G->header, xx, yy, wx, wy);
+	gmtbcr_prep (G->header, xx, yy, wx, wy, &row, &col);
 
 	retval = wsum = 0.0;
 	for (j = 0; j < HH->bcr_n; j++) {
 		for (i = 0; i < HH->bcr_n; i++) {
-			/* assure that index is inside bounds of the array G->data: */
-			node = ij + i;
-			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero except at that point. If so,
-			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
-			if (node >= G->header->size) continue;
+			/* The kernel may reach past the halo if xx, yy is exactly at a node and the
+			 * weights are zero everywhere but at that point.  Such a node contributes
+			 * nothing, so we skip it; calling assert would be too draconian */
+			if ((z = gmt_grd_node_ptr_checked (G->header, G->data, (int64_t)row + j, (int64_t)col + i)) == NULL) continue;
 			w = wx[i] * wy[j];
-			retval += G->data[node] * w;
+			retval += (*z) * w;
 			wsum += w;
 		}
-		ij += G->header->mx;
 	}
 	if ((wsum + GMT_CONV8_LIMIT - HH->bcr_threshold) > 0.0) {
 		retval /= wsum;
@@ -282,7 +281,8 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 	   B-spline or bicubic) at xx, yy. */
 
 	unsigned int i, j;
-	uint64_t ij, node;
+	int row, col;
+	gmt_grdfloat *z = NULL;
 	double retval, wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
@@ -290,25 +290,21 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 
 	if (gmtbcr_reject (G->header, &xx, &yy)) return (GMT->session.d_NaN);	/* NaNs or outside */
 
-	/* Determine nearest node ij and set weights wx, wy */
+	/* Determine the upper left node of the kernel and set weights wx, wy */
 
-	ij = gmtbcr_prep (G->header, xx, yy, wx, wy);
+	gmtbcr_prep (G->header, xx, yy, wx, wy, &row, &col);
 
 	retval = wsum = 0.0;
 	for (j = 0; j < HH->bcr_n; j++) {
 		for (i = 0; i < HH->bcr_n; i++) {
-			/* assure that index is inside bounds of the array G->data: */
-			node = ij + i;
-			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero except at that point. If so,
-			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
-			if (node >= G->header->size) continue;
-			if (!gmt_M_is_fnan (G->data[node])) {
+			/* See the note in gmt_bcr_get_z_fast on why a missing node is skipped */
+			if ((z = gmt_grd_node_ptr_checked (G->header, G->data, (int64_t)row + j, (int64_t)col + i)) == NULL) continue;
+			if (!gmt_M_is_fnan (*z)) {
 				w = wx[i] * wy[j];
-				retval += G->data[node] * w;
+				retval += (*z) * w;
 				wsum += w;
 			}
 		}
-		ij += G->header->mx;
 	}
 	if ((wsum + GMT_CONV8_LIMIT - HH->bcr_threshold) > 0.0) {
 		retval /= wsum;
@@ -329,6 +325,7 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, double xx, do
 
 	unsigned int i, j, b, nb = I->header->n_bands;
 	bool got_alpha = (I->alpha && (nb ==3 || nb == 1));
+	int row, col;
 	uint64_t ij, node;
 	double retval[4], wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);
@@ -337,9 +334,12 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, double xx, do
 
 	if (gmtbcr_reject (I->header, &xx, &yy)) return (1);	/* NaNs or outside */
 
-	/* Determine nearest node ij and set weights wx wy */
+	/* Determine nearest node ij and set weights wx wy.  Images are not part of the
+	   ghost-cell migration yet, so we keep the padded-array walk here and simply
+	   rebuild the node index from the (row,col) that gmtbcr_prep now reports. */
 
-	ij = gmtbcr_prep (I->header, xx, yy, wx, wy);
+	gmtbcr_prep (I->header, xx, yy, wx, wy, &row, &col);
+	ij = gmt_M_ijp (I->header, row, col);
 
 	gmt_M_memset (retval, 4, double);
 	wsum = 0.0;

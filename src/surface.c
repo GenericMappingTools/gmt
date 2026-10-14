@@ -2030,7 +2030,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 	if (!Ctrl->Q.as_is) {	/* Meaning we did not give -Qr to insist on the given -R */
 		struct GMT_GRID *G = NULL;
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
-			GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			GMT_GRID_NODE_REG, GMT_PAD_DEFAULT, NULL)) == NULL) Return (API->error);
 		if (surface_suggest_sizes (GMT, Ctrl, G, C.factors, G->header->n_columns-1, G->header->n_rows-1, GMT->common.R.registration == GMT_GRID_PIXEL_REG)) {	/* Yes, got one */
 			gmt_M_memcpy (wesn, Ctrl->Q.wesn, 4, double);		/* Save specified region */
 			Ctrl->Q.adjusted = true;	/* So we know we must do the same to any -L grids */
@@ -2046,9 +2046,11 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Destroy_Data (API, &G);	/* Delete the temporary grid */
 	}
 
-	/* Allocate the output grid with container only */
+	/* Allocate the output grid with container only.  surface uses the pad as working space -
+	 * it even widens it below to shrink the region - so it asks for one explicitly rather than
+	 * taking the session default, which may be zero (issue #4358) */
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
-            GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+            GMT_GRID_NODE_REG, GMT_PAD_DEFAULT, NULL)) == NULL) Return (API->error);
 
 	surface_init_parameters (&C, Ctrl);	/* Pass parameters from parsing control to surface information structure C */
 
@@ -2059,7 +2061,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		/* n_columns,n_rows remain the same for now but nodes are in "pixel" position.  We reset to original wesn and reduce n_columns,n_rows by 1 when we write result */
 		GMT_Destroy_Data (API, &C.Grid);	/* Delete the initial grid and recreate since wesn changed */
 		if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
-	                               GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+	                               GMT_GRID_NODE_REG, GMT_PAD_DEFAULT, NULL)) == NULL) Return (API->error);
 	}
 	if (Ctrl->A.mode) Ctrl->A.value = cosd (0.5 * (wesn[YLO] + wesn[YHI]));	/* Set cos of middle latitude as aspect ratio */
 

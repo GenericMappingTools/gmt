@@ -2100,7 +2100,9 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	if (!type[0] || gmt_strlcmp(type, "float32")) {
 		/* We have to shift the grid pointer in order to use the GDALRasterIO ability to extract a subregion. */
 		/* See: osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
-		to_GDALW->data = &grid[2 * header->mx + (header->pad[XLO] + first_col)+imag_offset];
+		/* The row term was hardwired to 2 * mx, i.e. it assumed the pad is always 2 deep.
+		 * Use the header's own pad so this also holds for a grid that has none (issue #4358). */
+		to_GDALW->data = &grid[header->pad[YHI] * header->mx + (header->pad[XLO] + first_col)+imag_offset];
 		to_GDALW->type = strdup("float32");
 		gmt_gdalwrite(GMT, HH->name, to_GDALW);
 		gmt_M_str_free (to_GDALW->driver);

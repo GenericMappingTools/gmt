@@ -747,7 +747,12 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		unsigned int N = n_layers;
 		struct GMT_GRID **G = NULL;
 
-		if ((G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file, &N, NULL)) == NULL)
+		/* These grids become the cube's layers and are copied in striding by the padded layer
+		 * size, so they must keep their pad (issue #4358) */
+		gmtlib_ghost_suspend (true);
+		G = GMT_Read_Group (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file, &N, NULL);
+		gmtlib_ghost_suspend (false);
+		if (G == NULL)
 			Return (EXIT_FAILURE);
 		if (!GMT->common.R.active[RSET])	/* Use current -R setting for subsets, if given */
 			gmt_M_memcpy (wesn, G[0]->header->wesn, 4, double);

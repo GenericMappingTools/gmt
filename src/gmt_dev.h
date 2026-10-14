@@ -158,6 +158,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
 #include "gmt_grd.h"            /* Define grd file header structure */
+#include "gmt_ghost.h"          /* Ghost cells: the grid halo held outside the data matrix */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
 #include "gmt_io.h"             /* Defines structures and macros for table i/o */
 #include "gmt_shore.h"          /* Defines structures used when reading shore database */
