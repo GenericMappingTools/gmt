@@ -183,8 +183,13 @@ GMT_LOCAL bool pstext_trim_leader (struct GMT_CTRL *GMT, double *x, double *y, s
 		double f = (double)k / (double)(n - 1);
 		xx[k] = x[0] + f * (x[1] - x[0]);	yy[k] = y[0] + f * (y[1] - y[0]);
 	}
-	for (uint64_t k = 0; k < n; k++)	/* gmt_trim_line works in input coordinates */
+	for (uint64_t k = 0; k < n; k++) {	/* gmt_trim_line works in input coordinates */
 		gmt_xy_to_geo (GMT, &xx[k], &yy[k], xx[k], yy[k]);
+		if (gmt_M_is_dnan (xx[k]) || gmt_M_is_dnan (yy[k])) {	/* Not invertible (e.g., corner outside the map domain): draw untrimmed */
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			return false;
+		}
+	}
 	if (gmt_trim_line (GMT, &xx, &yy, &n, &P)) {	/* Trimmed away completely */
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		return true;
@@ -394,7 +399,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
 		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Cannot be used with -M. Optional modifiers:");
 	GMT_Usage (API, 3, "+f: Read per-record offsets (dx dy) from <file> (two columns in current distance units); overrides fixed <dx>/<dy>.");
-	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s]. Add pen modifier +vb<specs> for a vector head at the point, and +o<offset> (as for plot -W) to stop the line short of it.", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s]. Add pen modifier +vb<specs> for a vector head at the point, and, before +vb, +o<offset> (as for plot -W) to stop the line short of it.", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Usage (API, 1, "\n-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
 	GMT_Usage (API, 3, "+a Specify baseline <angle> for all text [0].");

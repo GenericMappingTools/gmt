@@ -141,9 +141,10 @@ Optional Arguments
       append a *pen* to change the attributes for this line.  To place an arrow
       head at the original point, add the pen modifier **+vb**\ *vspecs* (e.g.,
       **-D**\ 1c+v1p,red+vb0.3c+gred); a head at the text end is not supported.
-      Append the pen modifier **+o**\ *offset* (as for |-W| in :doc:`plot`) to stop the line, and
-      its head, that distance short of the point, e.g., to clear a symbol drawn there.
-      Only the data-point end is affected.
+      Add the pen modifier **+o**\ *offset*, given *before* **+vb**\ (e.g., **-D**\ 1c+v1p,red+o0.1c+vb0.3c+gred),
+      to stop the line, and its head, that distance short of the point, e.g., to clear a symbol drawn there;
+      the offset is as for :ref:`line attributes <reference/features:Specifying line attributes>`
+      in :doc:`plot`. Only the data-point end is affected.
       See :ref:`Technical reference - Drawing of Vectors<reference/features:The Drawing of Vectors>`.  **Note**:
       The **-Dj**\|\ **J** selection cannot be used with paragraph mode (|-M|).
 
