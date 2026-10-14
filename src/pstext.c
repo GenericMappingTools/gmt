@@ -169,20 +169,39 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Dealloc
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void pstext_draw_leader (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, double *xx, double *yy, char *text, double offset[]) {
-	/* Draw leader line from the data point (xx[0],yy[0]) to the text at (xx[1],yy[1]), with optional trim (+o) and vector head at the data point */
-	double x[2] = {xx[0], xx[1]}, y[2] = {yy[0], yy[1]}, s, c, shift;
-	double trim = T->vecpen.end[0].offset, L = (T->vecpen.end[0].V) ? T->vecpen.end[0].length : 0.0, d = hypot (x[1] - x[0], y[1] - y[0]);
-	bool head = (T->vecpen.end[0].V && d > trim + L);	/* Skip head if it does not fit */
-	if (d <= trim) return;	/* Trimmed away the entire leader */
-	shift = trim + ((head) ? L : 0.0);	/* The line starts after the offset and, with a head, after the head */
-	if (shift > 0.0) {
-		sincosd (d_atan2d (y[0] - y[1], x[0] - x[1]), &s, &c);
-		x[0] -= c * shift;	y[0] -= s * shift;
+#define PSTEXT_LEADER_NP 101	/* Number of vertices used to trim the leader */
+
+GMT_LOCAL bool pstext_trim_leader (struct GMT_CTRL *GMT, double *x, double *y, struct GMT_PEN *pen) {
+	/* Trim the data-point end of the leader (x[0],y[0]) -> (x[1],y[1]), in inches, with the pen's +o and +v via gmt_trim_line as plot does.
+	 * The text end is never trimmed since the box clipping is relative to it.  Returns true if nothing is left to draw. */
+	uint64_t n = PSTEXT_LEADER_NP;
+	double *xx = gmt_M_memory (GMT, NULL, n, double), *yy = gmt_M_memory (GMT, NULL, n, double), xe, ye;
+	struct GMT_PEN P = *pen;	/* Shallow copy so we can skip the text end */
+
+	P.end[1].offset = 0.0;
+	for (uint64_t k = 0; k < n; k++) {	/* gmt_trim_line needs vertices to trim along, and treats reaching the last one as trimmed away */
+		double f = (double)k / (double)(n - 1);
+		xx[k] = x[0] + f * (x[1] - x[0]);	yy[k] = y[0] + f * (y[1] - y[0]);
 	}
+	for (uint64_t k = 0; k < n; k++)	/* gmt_trim_line works in input coordinates */
+		gmt_xy_to_geo (GMT, &xx[k], &yy[k], xx[k], yy[k]);
+	if (gmt_trim_line (GMT, &xx, &yy, &n, &P)) {	/* Trimmed away completely */
+		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+		return true;
+	}
+	gmt_geo_to_xy (GMT, xx[0], yy[0], &xe, &ye);	/* New start of the leader */
+	x[0] = xe;	y[0] = ye;
+	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+	return false;
+}
+
+GMT_LOCAL void pstext_draw_leader (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, double *xx, double *yy, char *text, double offset[]) {
+	/* Draw leader line from the data point (xx[0],yy[0]) to the text at (xx[1],yy[1]), with optional +o trim and vector head at the data point */
+	double x[2] = {xx[0], xx[1]}, y[2] = {yy[0], yy[1]};
+	if (gmt_trim_requested (GMT, &T->vecpen) && pstext_trim_leader (GMT, x, y, &T->vecpen)) return;
 	gmt_setpen (GMT, &T->vecpen);
 	PSL_plotline_clipped_by_textbox (GMT->PSL, x[0], y[0], x[1], y[1], T->font.size, text, T->paragraph_angle, T->block_justify, offset);
-	if (head) gmt_plot_end_vectors (GMT, x, y, 2, &T->vecpen);
+	gmt_plot_end_vectors (GMT, x, y, 2, &T->vecpen);
 }
 
 GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *Ctrl) {
@@ -375,7 +394,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
 		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Cannot be used with -M. Optional modifiers:");
 	GMT_Usage (API, 3, "+f: Read per-record offsets (dx dy) from <file> (two columns in current distance units); overrides fixed <dx>/<dy>.");
-	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s]. Add pen modifier +vb<specs> for a vector head at the point, and +o<offset> (c|i|p) to stop the line short of it.", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s]. Add pen modifier +vb<specs> for a vector head at the point, and +o<offset> (as for plot -W) to stop the line short of it.", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Usage (API, 1, "\n-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
 	GMT_Usage (API, 3, "+a Specify baseline <angle> for all text [0].");
@@ -500,8 +519,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[j] == 'v') {	/* Want to draw a line from point to offset point */
 					Ctrl->D.line = true;
 					n_errors += gmt_M_check_condition(GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Option -D: Give pen after +v\n");
-					n_errors += gmt_M_check_condition(GMT, Ctrl->D.pen.end[0].offset != 0.0 && Ctrl->D.pen.end[0].unit != 'C', "Option -D: Pen modifier +o must be given in plot units (c|i|p)\n");
-					n_errors += gmt_M_check_condition(GMT, Ctrl->D.pen.end[0].offset < 0.0, "Option -D: Pen modifier +o cannot be negative\n");
 					n_errors += gmt_M_check_condition(GMT, Ctrl->D.pen.end[1].V != NULL, "Option -D: A vector head can only be placed at the data point end of the line; use pen modifier +vb<specs>\n");
 					if (opt->arg[j-1] == '+')	/* New-style syntax */
 						opt->arg[j-1] = 0;
