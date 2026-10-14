@@ -170,12 +170,15 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Dealloc
 }
 
 GMT_LOCAL void pstext_draw_leader (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, double *xx, double *yy, char *text, double offset[]) {
-	/* Draw leader line from the data point (xx[0],yy[0]) to the text at (xx[1],yy[1]), with optional vector head at the data point */
-	double x[2] = {xx[0], xx[1]}, y[2] = {yy[0], yy[1]}, s, c;
-	bool head = (T->vecpen.end[0].V && hypot (x[1] - x[0], y[1] - y[0]) > T->vecpen.end[0].length);	/* Skip head if longer than the line */
-	if (head && T->vecpen.end[0].length > 0.0) {	/* Shorten the line so it stops at the base of the vector head */
+	/* Draw leader line from the data point (xx[0],yy[0]) to the text at (xx[1],yy[1]), with optional trim (+o) and vector head at the data point */
+	double x[2] = {xx[0], xx[1]}, y[2] = {yy[0], yy[1]}, s, c, shift;
+	double trim = T->vecpen.end[0].offset, L = (T->vecpen.end[0].V) ? T->vecpen.end[0].length : 0.0, d = hypot (x[1] - x[0], y[1] - y[0]);
+	bool head = (T->vecpen.end[0].V && d > trim + L);	/* Skip head if it does not fit */
+	if (d <= trim) return;	/* Trimmed away the entire leader */
+	shift = trim + ((head) ? L : 0.0);	/* The line starts after the offset and, with a head, after the head */
+	if (shift > 0.0) {
 		sincosd (d_atan2d (y[0] - y[1], x[0] - x[1]), &s, &c);
-		x[0] -= c * T->vecpen.end[0].length;	y[0] -= s * T->vecpen.end[0].length;
+		x[0] -= c * shift;	y[0] -= s * shift;
 	}
 	gmt_setpen (GMT, &T->vecpen);
 	PSL_plotline_clipped_by_textbox (GMT->PSL, x[0], y[0], x[1], y[1], T->font.size, text, T->paragraph_angle, T->block_justify, offset);
@@ -372,7 +375,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
 		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Cannot be used with -M. Optional modifiers:");
 	GMT_Usage (API, 3, "+f: Read per-record offsets (dx dy) from <file> (two columns in current distance units); overrides fixed <dx>/<dy>.");
-	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s]. Add pen modifier +vb<specs> for a vector head at the point.", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s]. Add pen modifier +vb<specs> for a vector head at the point, and +o<offset> (c|i|p) to stop the line short of it.", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Usage (API, 1, "\n-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
 	GMT_Usage (API, 3, "+a Specify baseline <angle> for all text [0].");
@@ -497,6 +500,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[j] == 'v') {	/* Want to draw a line from point to offset point */
 					Ctrl->D.line = true;
 					n_errors += gmt_M_check_condition(GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Option -D: Give pen after +v\n");
+					n_errors += gmt_M_check_condition(GMT, Ctrl->D.pen.end[0].offset != 0.0 && Ctrl->D.pen.end[0].unit != 'C', "Option -D: Pen modifier +o must be given in plot units (c|i|p)\n");
+					n_errors += gmt_M_check_condition(GMT, Ctrl->D.pen.end[0].offset < 0.0, "Option -D: Pen modifier +o cannot be negative\n");
 					n_errors += gmt_M_check_condition(GMT, Ctrl->D.pen.end[1].V != NULL, "Option -D: A vector head can only be placed at the data point end of the line; use pen modifier +vb<specs>\n");
 					if (opt->arg[j-1] == '+')	/* New-style syntax */
 						opt->arg[j-1] = 0;
