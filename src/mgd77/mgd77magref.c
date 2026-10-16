@@ -82,6 +82,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_M_str_free (C->CM4->CM4_M.path);
 	gmt_M_str_free (C->CM4->CM4_D.path);
+	gmt_M_str_free (C->CM4->CM4_D.dst);
 	gmt_M_str_free (C->CM4->CM4_I.path);
 	gmt_M_str_free (C->CM4);
 	gmt_M_free (GMT, C);
@@ -731,7 +732,6 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	}
 
 	gmt_M_free (GMT, Out);
-	gmt_M_str_free (Ctrl->CM4->CM4_D.dst);
 	gmt_M_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
 	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) gmt_M_free (GMT, time_years);
 	if (Ctrl->joint_IGRF_CM4) gmt_M_free (GMT, igrf_xyz);
