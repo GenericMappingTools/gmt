@@ -17,3 +17,8 @@ for i in 1 2 3; do
 	sed -n ${i}p multi.txt | gmt mgd77magref -A+y -Fxyz/3 -D8
 done > multi_one.txt || exit 1
 diff multi_all.txt multi_one.txt
+
+# A segment rejected for lying outside the Dst table must not break the next segment
+printf -- "> bad\n-30 45 0 1900.5\n-30 45 0 1900.6\n> good\n-30 45 0 2000.5\n" > seg.txt
+gmt mgd77magref seg.txt -A+y -Fxyz/3 -Vq > seg_out.txt || exit 1
+grep -v '^>' seg_out.txt | wc -l | grep -q '^ *1$'
