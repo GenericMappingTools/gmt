@@ -237,10 +237,10 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				j = 0;
-				if (opt->arg[j] == '-') j++;
+				j = (opt->arg[0] == '-') ? 1 : 0;
 				if ((opt->arg[j] > 47) && (opt->arg[j] < 58)) {	/* arg is numeric -> Dst Index */
-					Ctrl->CM4->CM4_D.dst[0] = atof (&opt->arg[j]);
+					if (Ctrl->CM4->CM4_D.dst == NULL) Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));
+					Ctrl->CM4->CM4_D.dst[0] = atof (opt->arg);
 					Ctrl->CM4->CM4_D.index = false;
 				}
 				else {
@@ -494,7 +494,7 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.fixed_alt) t_col = 2;	/* Since we are missing the altitude column */
 
-	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
+	if (Ctrl->CM4->CM4_D.dst == NULL) Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	if (!Ctrl->A.fixed_time)			/* Otherwise we don't print the time */
 		gmt_set_column_type (GMT, GMT_IO, t_col, GMT_IS_ABSTIME);
 

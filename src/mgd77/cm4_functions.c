@@ -459,7 +459,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		/* See if we are using a constant time or an array */
 		if (Ctrl->CM4_DATA.n_times > 1) {
 			date = p_date[n];
-			dst = Ctrl->CM4_D.dst[n];
+			dst = Ctrl->CM4_D.index ? Ctrl->CM4_D.dst[n] : Ctrl->CM4_D.dst[0];
 			mut_now = mut[n];
 		}
 		else {
