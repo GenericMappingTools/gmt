@@ -82,6 +82,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_M_str_free (C->CM4->CM4_M.path);
 	gmt_M_str_free (C->CM4->CM4_D.path);
+	gmt_M_str_free (C->CM4->CM4_D.dst);
 	gmt_M_str_free (C->CM4->CM4_I.path);
 	gmt_M_str_free (C->CM4);
 	gmt_M_free (GMT, C);
@@ -237,10 +238,10 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				j = 0;
-				if (opt->arg[j] == '-') j++;
+				j = (opt->arg[0] == '-') ? 1 : 0;
 				if ((opt->arg[j] > 47) && (opt->arg[j] < 58)) {	/* arg is numeric -> Dst Index */
-					Ctrl->CM4->CM4_D.dst[0] = atof (&opt->arg[j]);
+					if (Ctrl->CM4->CM4_D.dst == NULL) Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));
+					Ctrl->CM4->CM4_D.dst[0] = atof (opt->arg);
 					Ctrl->CM4->CM4_D.index = false;
 				}
 				else {
@@ -494,7 +495,7 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.fixed_alt) t_col = 2;	/* Since we are missing the altitude column */
 
-	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
+	if (Ctrl->CM4->CM4_D.dst == NULL) Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	if (!Ctrl->A.fixed_time)			/* Otherwise we don't print the time */
 		gmt_set_column_type (GMT, GMT_IO, t_col, GMT_IS_ABSTIME);
 
@@ -731,7 +732,6 @@ EXTERN_MSC int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	}
 
 	gmt_M_free (GMT, Out);
-	gmt_M_str_free (Ctrl->CM4->CM4_D.dst);
 	gmt_M_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
 	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) gmt_M_free (GMT, time_years);
 	if (Ctrl->joint_IGRF_CM4) gmt_M_free (GMT, igrf_xyz);
