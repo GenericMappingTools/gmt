@@ -75,6 +75,7 @@ jobs:
                 @N00E000.earth_relief_01m_p.nc \
                 @N00W180.earth_relief_01m_p.nc \
                 @S30W060.earth_relief_01m_p.nc \
+                @N30W030.earth_relief_01m_p.nc \
                 @S60W120.earth_relief_01m_g.nc \
                 @N30E120.earth_relief_01m_g.nc \
                 @N30W105.earth_relief_30s_p.nc \
