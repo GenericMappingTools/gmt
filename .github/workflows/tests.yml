@@ -62,8 +62,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Windows
+          - name: Windows-14.51
             os: windows-latest
+            toolset: ''
+          - name: Windows-14.44
+            os: windows-latest
+            toolset: '14.44'
 
     steps:
       - name: Checkout
@@ -118,7 +122,7 @@ jobs:
         uses: TheMrMilchmann/setup-msvc-dev@v4.1.0
         with:
           arch: x64
-          toolset: '14.44'
+          toolset: ${{ matrix.toolset }}
 
       - name: Compile GMT (Windows)
         if: runner.os == 'Windows'
@@ -164,24 +168,54 @@ jobs:
         run: call ci/simple-gmt-tests.bat
         if: runner.os == 'Windows'
 
-      - name: Debug, toolset and probes (DO NOT MERGE)
+      - name: Debug, assembly of gmt_nc.c for a compiler report (DO NOT MERGE)
         run: |
           # Disable MinGW's path conversion, see #1035.
-          if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
-          echo "=== compiler"
+          export MSYS_NO_PATHCONV=1
+          mkdir -p dbg
           echo "VCToolsVersion=$VCToolsVersion"
-          cmd /c "cl 2>&1" | head -3 || true
-          grep -E "CMAKE_C_COMPILER:|CMAKE_C_FLAGS_RELEASE:" build/CMakeCache.txt || true
-          echo "=== trend_xy_plot alone"
-          (cd build && ctest -R trend_xy_plot --output-on-failure --force-new-ctest-process) || true
-          echo "=== 1-row and 1-column grids"
-          mkdir -p dbg && cd dbg
-          gmt grdmath -R-1.2/1.2/-0.2/0.2 -I0.4 -r 0.5 X ADD X X MUL ADD X 3 POW ADD = row.grd || true
-          gmt grdmath -R-0.2/0.2/-1.2/1.2 -I0.4 -r 0.5 Y ADD Y Y MUL ADD Y 3 POW ADD = col.grd || true
-          echo "expect 6x1: -1.2 1.2 -0.2 0.2 ... 0.4 0.4 6 1"
-          gmt grdinfo -C row.grd || true
-          echo "expect 1x6: -0.2 0.2 -1.2 1.2 ... 0.4 0.4 1 6"
-          gmt grdinfo -C col.grd || true
+          cmd /c "cl 2>&1" | head -2 || true
+          cd build
+          python - <<'PYEOF'
+          import subprocess, re, os
+          src = os.path.join('..', 'src', 'gmt_nc.c')
+          lines = subprocess.run(['ninja', '-t', 'commands', 'src/CMakeFiles/gmtlib.dir/gmt_nc.c.obj'],
+                                 capture_output=True, text=True).stdout.strip().splitlines()
+          cmd = lines[-1]
+          print("COMPILE COMMAND:", cmd)
+          text = open(src).read()
+          start = text.index('GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT')
+          end = text.index('\n}\n', start) + 3
+          off = '#ifdef _MSC_VER\n#pragma optimize("", off)\n#endif\n'
+          on = '#ifdef _MSC_VER\n#pragma optimize("", on)\n#endif\n'
+          pragma_src = os.path.join('..', 'src', 'gmt_nc_pragma_dbg.c')
+          open(pragma_src, 'w').write(text[:start] + off + text[start:end] + on + text[end:])
+          def variant(name, fix, srcfile):
+              c = re.sub(r'/Fo\S+', lambda m: '/Fo..\\dbg\\%s.obj' % name, cmd)
+              c = re.sub(r'/Fd\S+', '', c)
+              c = c.replace('/showIncludes', '')
+              c = fix(c)
+              if srcfile != src:
+                  c = re.sub(r'\S*gmt_nc\.c\s*$', lambda m: os.path.abspath(srcfile), c)
+              c += ' /FAs /Fa..\\dbg\\%s.asm' % name
+              print("VARIANT", name, ":", c)
+              r = subprocess.run(c, shell=True)
+              print("VARIANT", name, "exit", r.returncode)
+          variant('O2', lambda c: c, src)
+          variant('Od', lambda c: c.replace('/O2', '/Od').replace('/Ob2', ''), src)
+          variant('O2_pragma', lambda c: c, pragma_src)
+          os.remove(pragma_src)
+          PYEOF
+          cd ..
+          ls -l dbg
+          for f in dbg/*.asm; do echo "$f: $(wc -l < $f) lines, actual_range refs: $(grep -c 'actual_range' $f)"; done
+
+      - name: Upload assembly
+        uses: actions/upload-artifact@v7
+        with:
+          name: asm-${{ matrix.name }}
+          path: dbg/
+        if: always()
 
       - name: Run DOS batch examples (Windows)
         shell: cmd
