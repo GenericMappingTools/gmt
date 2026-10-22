@@ -1161,11 +1161,15 @@ GMT_LOCAL int gmtmap_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double 
 	dx = x1 - x0;
 	if (fabs (dx) > map_half_size) {	/* Possible jump; let's see how far apart those longitudes really are */
 		/* This test on longitudes was added to deal with issue #672, also see test/psxy/nojump.sh */
-		double last_lon = 0.0, this_lon = 0.0, dummy = 0.0, dlon;
+		double last_lon = 0.0, this_lon = 0.0, dummy = 0.0, dlon, d0, d1;
 		gmt_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
 		gmt_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
 		gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
 		if (fabs (dlon) < half_lon_range) /* Not going the long way so we judge this to be no jump */
+			return (0);
+		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, last_lon, d0);	/* Longitudes relative to the central meridian */
+		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, this_lon, d1);
+		if (fabs (d1 - d0) < 180.0)	/* The straight path is the short way, so no jump */
 			return (0);
 		/* Jump it is */
 		if (dx > map_half_size)	return (-1);	/* Cross left/west boundary */
