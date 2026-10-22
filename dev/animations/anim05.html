@@ -169,7 +169,7 @@ data also have a few bad tracks which stand out in the solution. We also report
 the RMS misfit between the model and the data as the solution builds incrementally.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
 <span class="c1">#</span>
-<span class="c1"># Gridding via Green&#39;s splines allows to the selection of an approximate fit</span>
+<span class="c1"># Gridding via Green's splines allows to the selection of an approximate fit</span>
 <span class="c1"># by ignoring the smaller eigenvalues.  This way you can trade off misfit</span>
 <span class="c1"># against model complexity.  However, it is not easy to know how many</span>
 <span class="c1"># eigenvalues to include.  This animation illustrates gridding of bathymetry data</span>
@@ -188,7 +188,7 @@ the RMS misfit between the model and the data as the solution builds incremental
 <span class="c1"># time being used to solve for the cumulative and incremental grid components.</span>
 
 <span class="c1"># 1. Create files needed in the loop</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# Convert depth positive down to bathymetry positive up and decimate to a 1m lattice</span>
 <span class="s">	gmt convert -Em10 @geologists.txt -i0,1,2+s-1 -s | gmt blockmedian -R158:00W/156:58W/18:00N/19:40N -I1m &gt; geo.txt</span>
@@ -200,11 +200,11 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</s
 <span class="s">	gmt grdimage -JM8c -X0 -Y0 -R158:00W/156:58W/18:00N/19:40N @earth_relief_01m.grd -Cz.cpt -B0 -Ei -I+d</span>
 <span class="s">	gmt grdcontour @earth_relief_01m.grd -C200 -S8</span>
 <span class="s">	gmt plot geo.txt -Ss2p -Gblack</span>
-<span class="s">	gmt colorbar -Cz.cpt -DjTL+w4c+h+o11p/8p -Bxaf -By+l&quot;km&quot; -F+gwhite+p0.5p -W0.001</span>
+<span class="s">	gmt colorbar -Cz.cpt -DjTL+w4c+h+o11p/8p -Bxaf -By+l"km" -F+gwhite+p0.5p -W0.001</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# Plot current solution with contors in the center panel</span>
 <span class="s">	gmt grdimage -JM8c -X8c -Y0 geo_cum_${MOVIE_ITEM}.grd -Cz.cpt -B0 -Ei -I+d</span>
@@ -212,11 +212,11 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</
 <span class="s">	gmt plot geo.txt -Ss2p -Cz.cpt</span>
 <span class="s">	# Plot the increments in the right panel and add color bar at top</span>
 <span class="s">	gmt grdimage -X8c geo_inc_${MOVIE_ITEM}.grd -Cdz.cpt -B0 -Ei</span>
-<span class="s">	gmt colorbar -Cdz.cpt -DjTR+w4c+h+o19p/8p+e -Bxaf -By+l&quot;m&quot; -F+gwhite+p0.5p</span>
+<span class="s">	gmt colorbar -Cdz.cpt -DjTR+w4c+h+o19p/8p+e -Bxaf -By+l"m" -F+gwhite+p0.5p</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie and add two updating labels</span>
-gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-CHD<span class="w"> </span>-Nanim05<span class="w"> </span>-Tmisfit.txt<span class="w"> </span>-Fmp4<span class="w"> </span>-H8<span class="w"> </span>-Lf+jBR+f12p,Helvetica,white<span class="o">=</span>~2p+t<span class="s2">&quot;Eigenvalue %4.4d&quot;</span><span class="w"> </span>-Lc3+jTL+o8.15c/0.15c+gwhite+f12p+p0.25p+t<span class="s2">&quot;rms = %6.2lf m&quot;</span><span class="w"> </span>-V<span class="w"> </span>-W<span class="w"> </span>-Zs
+gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-CHD<span class="w"> </span>-Nanim05<span class="w"> </span>-Tmisfit.txt<span class="w"> </span>-Fmp4<span class="w"> </span>-H8<span class="w"> </span>-Lf+jBR+f12p,Helvetica,white<span class="o">=</span>~2p+t<span class="s2">"Eigenvalue %4.4d"</span><span class="w"> </span>-Lc3+jTL+o8.15c/0.15c+gwhite+f12p+p0.25p+t<span class="s2">"rms = %6.2lf m"</span><span class="w"> </span>-V<span class="w"> </span>-W<span class="w"> </span>-Zs
 </pre></div>
 </div>
 <div class="video_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
@@ -235,7 +235,7 @@ gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> 
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

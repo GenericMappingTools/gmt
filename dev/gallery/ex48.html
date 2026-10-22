@@ -203,7 +203,7 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex48
 <span class="w">	</span><span class="c1"># Make an arc of radius 11.5 cm from 45 to 135 degrees around map center and use it to place text</span>
 <span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T45/135/1<span class="w"> </span>T<span class="w"> </span>-C0<span class="w"> </span>COSD<span class="w"> </span>-C1<span class="w"> </span>SIND<span class="w"> </span>-Ca<span class="w"> </span><span class="m">11</span>.5<span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>path.txt
 <span class="w">	</span><span class="c1"># Move up 9 cm so origin is at the map center</span>
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R-9/9/0/18<span class="w"> </span>-Jx1c<span class="w"> </span>-Y9c<span class="w"> </span>path.txt<span class="w"> </span>-Sqn1:+l<span class="s2">&quot;IMPORTANT PACIFIC AIRPORTS&quot;</span>+v+f32p<span class="w"> </span>-Wfaint,white<span class="w"> </span>-N
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R-9/9/0/18<span class="w"> </span>-Jx1c<span class="w"> </span>-Y9c<span class="w"> </span>path.txt<span class="w"> </span>-Sqn1:+l<span class="s2">"IMPORTANT PACIFIC AIRPORTS"</span>+v+f32p<span class="w"> </span>-Wfaint,white<span class="w"> </span>-N
 <span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>airports.txt<span class="w"> </span>near_area.txt<span class="w"> </span>path.txt
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -228,7 +228,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

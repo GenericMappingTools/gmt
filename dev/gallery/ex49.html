@@ -196,7 +196,7 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex49
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cabyss<span class="w"> </span>-T0/7<span class="w"> </span>-H<span class="w"> </span>-I<span class="w"> </span>&gt;<span class="w"> </span>z.cpt
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x1<span class="w"> </span>-Fs15c/11.3c<span class="w"> </span>-Sc
 <span class="w">		</span><span class="c1"># Image depth distribution, modal depths, and competing predictions</span>
-<span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>density.nc<span class="w"> </span>-Q<span class="w"> </span>-Ct.cpt<span class="w"> </span>-JX15c/-11.3c<span class="w"> </span>-Bxaf+u<span class="s2">&quot; Myr&quot;</span><span class="w"> </span>-Byaf+u<span class="s2">&quot; km&quot;</span><span class="w"> </span>-c
+<span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>density.nc<span class="w"> </span>-Q<span class="w"> </span>-Ct.cpt<span class="w"> </span>-JX15c/-11.3c<span class="w"> </span>-Bxaf+u<span class="s2">" Myr"</span><span class="w"> </span>-Byaf+u<span class="s2">" km"</span><span class="w"> </span>-c
 <span class="w">		</span><span class="c1"># Compute Parsons &amp; Sclater [1977] depth-age curve (in km)</span>
 <span class="w">		</span><span class="c1"># depth(t) =   0.35 * sqrt(t) + 2.500, t &lt; 70 Myr</span>
 <span class="w">		</span><span class="c1">#	   =  6.4 - 3.2 exp (-t/62.8), t &gt; 70 Myr</span>
@@ -226,7 +226,7 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex49
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>depth_pixel.nc<span class="w"> </span>-R30W/5E/30S/5S<span class="w"> </span>-JM?<span class="w"> </span>-Cz.cpt<span class="w"> </span>-c
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-W1p<span class="w"> </span>@ridge_49.txt
 <span class="w">		</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>age_pixel.nc<span class="w"> </span>-A+f14p<span class="w"> </span>-Ct.cpt<span class="w"> </span>-Wa0.1p+c<span class="w"> </span>-GL30W/22S/5E/13S
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cz.cpt<span class="w"> </span>-DjTR+w4.7c/0.4c+h+r+o0.85c/0.35c<span class="w"> </span>-Baf+u<span class="s2">&quot; km&quot;</span><span class="w"> </span>-F+p1p+gbeige+s+c0p/10p/4p/4p
+<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cz.cpt<span class="w"> </span>-DjTR+w4.7c/0.4c+h+r+o0.85c/0.35c<span class="w"> </span>-Baf+u<span class="s2">" km"</span><span class="w"> </span>-F+p1p+gbeige+s+c0p/10p/4p/4p
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
 <span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>age_pixel.nc<span class="w"> </span>depth_pixel.nc<span class="w"> </span>age.bin<span class="w"> </span>depth.bin<span class="w"> </span>depth-age.bin<span class="w"> </span>density.nc<span class="w"> </span>modal.txt<span class="w"> </span>ps.txt<span class="w"> </span>ss.txt<span class="w"> </span>z.cpt<span class="w"> </span>t.cpt
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -252,7 +252,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

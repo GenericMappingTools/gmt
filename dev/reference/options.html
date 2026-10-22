@@ -1193,7 +1193,7 @@ optional. For this example we used <code class="docutils literal notranslate"><s
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_linear
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/12/0/0.95<span class="w"> </span>-JX7.5c/0.75c<span class="w"> </span>-Ba4f2g1+lFrequency+u<span class="s2">&quot; %&quot;</span><span class="w"> </span>-BS
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/12/0/0.95<span class="w"> </span>-JX7.5c/0.75c<span class="w"> </span>-Ba4f2g1+lFrequency+u<span class="s2">" %"</span><span class="w"> </span>-BS
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sv2p+e+a60<span class="w"> </span>-W0.5p<span class="w"> </span>-Gblack<span class="w"> </span>-Y0.25c<span class="w"> </span>-N<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">2 0 0 0.5</span>
 <span class="s">2 0 180 0.5</span>
@@ -1278,9 +1278,9 @@ values as exponents, with -Ba1f2g3p.</span><a class="headerlink" href="#id18" ti
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_log
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_GRID_PEN_PRIMARY<span class="w"> </span>thinnest,.
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1/1000/0/1<span class="w"> </span>-JX7.5cl/0.6c<span class="w"> </span>-B1f2g3p+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-B1f2g3l+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS<span class="w"> </span>-Y2.15c
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-B1f2g3+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS<span class="w"> </span>-Y2.15c
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1/1000/0/1<span class="w"> </span>-JX7.5cl/0.6c<span class="w"> </span>-B1f2g3p+l<span class="s2">"Axis Label"</span><span class="w"> </span>-BS
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-B1f2g3l+l<span class="s2">"Axis Label"</span><span class="w"> </span>-BS<span class="w"> </span>-Y2.15c
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-B1f2g3+l<span class="s2">"Axis Label"</span><span class="w"> </span>-BS<span class="w"> </span>-Y2.15c
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -1311,8 +1311,8 @@ uses the corresponding unprojected values, as in -Ba3f2g1p.</span><a class="head
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_pow
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_GRID_PEN_PRIMARY<span class="w"> </span>thinnest,.
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/100/0/0.9<span class="w"> </span>-JX3ip0.5/0.25i<span class="w"> </span>-Ba3f2g1p+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Ba20f10g5+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS<span class="w"> </span>-Y0.85i
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/100/0/0.9<span class="w"> </span>-JX3ip0.5/0.25i<span class="w"> </span>-Ba3f2g1p+l<span class="s2">"Axis Label"</span><span class="w"> </span>-BS
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Ba20f10g5+l<span class="s2">"Axis Label"</span><span class="w"> </span>-BS<span class="w"> </span>-Y0.85i
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -1347,7 +1347,7 @@ removes leading zeros from calendar items (e.g., 02 becomes 2).</p>
 </figure>
 <p>The next example shows two different ways to annotate an axis portraying 2 days in July 1969:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time2
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">&quot;o dd&quot;</span><span class="w"> </span>FORMAT_CLOCK_MAP<span class="w"> </span>hh:mm<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">"o dd"</span><span class="w"> </span>FORMAT_CLOCK_MAP<span class="w"> </span>hh:mm<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1969-7-21T/1969-7-23T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bpxa6Hf1h<span class="w"> </span>-Bsxa1K<span class="w"> </span>-BS
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Bpxa6Hf1h<span class="w"> </span>-Bsxa1D<span class="w"> </span>-BS<span class="w"> </span>-Y1.6c
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -1422,7 +1422,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 1996, and we have annotated each month with an abbreviated, upper case name and
 2-digit year. Only the primary axes information is specified.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time6
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">&quot;o yy&quot;</span><span class="w"> </span>FORMAT_TIME_PRIMARY_MAP<span class="w"> </span>Abbreviated
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">"o yy"</span><span class="w"> </span>FORMAT_TIME_PRIMARY_MAP<span class="w"> </span>Abbreviated
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1996T/1996-6T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bxa1Of1d<span class="w"> </span>-BS
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -1492,7 +1492,7 @@ cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt;| yannots.txt</span>
 <span class="s">EOF</span>
 
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_custom
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R416/542/0/6.2831852<span class="w"> </span>-JX-12c/6c<span class="w"> </span>-Bpx25f5g25+u<span class="s2">&quot; Ma&quot;</span><span class="w"> </span>-Bpycyannots.txt<span class="w"> </span>-Bsxcxannots.txt<span class="w"> </span>-BWS+glightblue<span class="w"> </span><span class="se">\</span>
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R416/542/0/6.2831852<span class="w"> </span>-JX-12c/6c<span class="w"> </span>-Bpx25f5g25+u<span class="s2">" Ma"</span><span class="w"> </span>-Bpycyannots.txt<span class="w"> </span>-Bsxcxannots.txt<span class="w"> </span>-BWS+glightblue<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>--MAP_ANNOT_OFFSET_SECONDARY<span class="o">=</span>10p<span class="w"> </span>--MAP_GRID_PEN_SECONDARY<span class="o">=</span>2p
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -1539,7 +1539,7 @@ environment variable <strong>TZ</strong> (generally local time).</p>
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/3/0/0.1<span class="w"> </span>-Jx1i<span class="w"> </span>-U<span class="s2">&quot;optional command string or text here&quot;</span><span class="w"> </span>-T<span class="w"> </span>-view<span class="w"> </span>GMT_-U
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/3/0/0.1<span class="w"> </span>-Jx1i<span class="w"> </span>-U<span class="s2">"optional command string or text here"</span><span class="w"> </span>-T<span class="w"> </span>-view<span class="w"> </span>GMT_-U
 </pre></div>
 </div>
 </div>
@@ -2023,7 +2023,7 @@ octal code for a comma (\054).</p>
 <p>A simple plot with two symbols can obtain a legend by using this option and modifiers and is shown in Figure
 <a class="reference internal" href="#auto-legend"><span class="std std-ref">Auto Legend</span></a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_autolegend
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/7.2/3/7.2<span class="w"> </span>-Jx2c<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-Sc0.35c<span class="w"> </span>-Glightgreen<span class="w"> </span>-Wfaint<span class="w"> </span>-lApples+H<span class="s2">&quot;LEGEND&quot;</span>+f16p+D
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/7.2/3/7.2<span class="w"> </span>-Jx2c<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-Sc0.35c<span class="w"> </span>-Glightgreen<span class="w"> </span>-Wfaint<span class="w"> </span>-lApples+H<span class="s2">"LEGEND"</span>+f16p+D
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-St0.35c<span class="w"> </span>-Gorange<span class="w"> </span>-B<span class="w"> </span>-BWStr<span class="w"> </span>-lOranges
 <span class="w">	</span>gmt<span class="w"> </span>legend<span class="w"> </span>-DjTR+w3c+o0.25c<span class="w"> </span>-F+p1p+ggray95+s
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -2285,7 +2285,7 @@ function of wavenumber <span class="math notranslate nohighlight">\(k_j\)</span>
 <span class="s">		EOF</span>
 <span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">1</span>
 <span class="w">		</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PS_SCALE_X<span class="w"> </span><span class="m">0</span>.6<span class="w"> </span>PS_SCALE_Y<span class="w"> </span><span class="m">0</span>.6<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>14p<span class="w"> </span>FONT_LABEL<span class="w"> </span>16p<span class="w"> </span>MAP_LABEL_OFFSET<span class="w"> </span><span class="m">0</span>
-<span class="w">		</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/0.5/0.001<span class="w"> </span>T<span class="w"> </span>PI<span class="w"> </span>MUL<span class="w"> </span><span class="nv">COS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/0.5/0/1.2<span class="w"> </span>-W2p<span class="w"> </span>-Bx1f+l<span class="s2">&quot;Wavenumber, @%6%k@%%&quot;</span><span class="w"> </span>-By1f+l<span class="s2">&quot;|@%6%T(k@-j@-)@%%|&quot;</span><span class="w"> </span>-BWS<span class="w"> </span>--MAP_FRAME_TYPE<span class="o">=</span>graph<span class="w"> </span>--MAP_GRID_PEN_PRIMARY<span class="o">=</span><span class="m">0</span>.25p,-
+<span class="w">		</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/0.5/0.001<span class="w"> </span>T<span class="w"> </span>PI<span class="w"> </span>MUL<span class="w"> </span><span class="nv">COS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/0.5/0/1.2<span class="w"> </span>-W2p<span class="w"> </span>-Bx1f+l<span class="s2">"Wavenumber, @%6%k@%%"</span><span class="w"> </span>-By1f+l<span class="s2">"|@%6%T(k@-j@-)@%%|"</span><span class="w"> </span>-BWS<span class="w"> </span>--MAP_FRAME_TYPE<span class="o">=</span>graph<span class="w"> </span>--MAP_GRID_PEN_PRIMARY<span class="o">=</span><span class="m">0</span>.25p,-
 <span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-N<span class="w"> </span>-F+f+j<span class="w"> </span><span class="s">&lt;&lt;- EOF</span>
 <span class="s">		0.5 -0.1 14p,Times-Italic TC k@-n/2@-</span>
 <span class="s">		EOF</span>
@@ -2424,7 +2424,7 @@ absolute time (unless already set separately).</p>
 <p>To demonstrate the use of <strong>-w</strong> we will make a few plots of the daily discharge rate of
 the Mississippi river during the 1930-1940 period.  A simple time series plot is created by</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_1
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-JX15cT/7c<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">&quot;10@+3@+ m@+3@+/s&quot;</span><span class="w"> </span>-BWSrt+t<span class="s2">&quot;Mississippi river daily discharge&quot;</span><span class="w"> </span>-W0.25p,red<span class="w"> </span>-i0,1+s1e-3
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-JX15cT/7c<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">"10@+3@+ m@+3@+/s"</span><span class="w"> </span>-BWSrt+t<span class="s2">"Mississippi river daily discharge"</span><span class="w"> </span>-W0.25p,red<span class="w"> </span>-i0,1+s1e-3
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -2439,7 +2439,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 yearly coordinate so that all the years are plotted on top of a single normalized year.
 We accomplish this feature via <strong>-wy</strong> and use the prescribed 0–1 year range.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_2
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R0/1/0/50<span class="w"> </span>-JX15c/7c<span class="w"> </span>-W0.25p,red<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">&quot;10@+3@+ m@+3@+/s&quot;</span><span class="w"> </span>-BWSrt+t<span class="s2">&quot;Mississippi river annual discharge&quot;</span><span class="w"> </span>-i0,1+s1e-3<span class="w"> </span>-wy
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R0/1/0/50<span class="w"> </span>-JX15c/7c<span class="w"> </span>-W0.25p,red<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">"10@+3@+ m@+3@+/s"</span><span class="w"> </span>-BWSrt+t<span class="s2">"Mississippi river annual discharge"</span><span class="w"> </span>-i0,1+s1e-3<span class="w"> </span>-wy
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -2461,7 +2461,7 @@ start of March normalized by the length of March, and then add 2.  Thus, all Mar
 any year will result in coordinates 2.00000–2.999999….. This allows us to easily make a
 histogram of monthly discharge shown in Figure <a class="reference internal" href="#gmt-cycle-3"><span class="std std-ref">Mississippi monthly discharge</span></a>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_3
-<span class="w">	</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R-3/9/0/8<span class="w"> </span>-JX15c/7c<span class="w"> </span>-T1<span class="w"> </span>-Gred<span class="w"> </span>-W1p<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">&quot;10@+6@+ m@+3@+/s&quot;</span><span class="w"> </span>-BWSrt+t<span class="s2">&quot;Average monthly discharge&quot;</span><span class="w"> </span>-Z0+w<span class="w"> </span>-i0,1+s1e-6<span class="w"> </span>-wa
+<span class="w">	</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R-3/9/0/8<span class="w"> </span>-JX15c/7c<span class="w"> </span>-T1<span class="w"> </span>-Gred<span class="w"> </span>-W1p<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">"10@+6@+ m@+3@+/s"</span><span class="w"> </span>-BWSrt+t<span class="s2">"Average monthly discharge"</span><span class="w"> </span>-Z0+w<span class="w"> </span>-i0,1+s1e-6<span class="w"> </span>-wa
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -2482,9 +2482,9 @@ Mississippi river data but read it in so that time is the <em>y</em> coordinate.
 script generates a subplot with two illustrations similar to the ones above but (basically)
 transposed:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_4
-<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>1x2<span class="w"> </span>-Fs8c/10c<span class="w"> </span>-BWSrt<span class="w"> </span>-T<span class="s2">&quot;Mississippi river annual discharge&quot;</span><span class="w"> </span>-A+jTR
-<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-i1+s1e-3,0<span class="w"> </span>-R0/50/0/1<span class="w"> </span>-W0.25p,blue<span class="w"> </span>-Byaf+l<span class="s2">&quot;Normalized year&quot;</span><span class="w"> </span>-Bxaf+l<span class="s2">&quot;10@+3@+ m@+3@+/s&quot;</span><span class="w"> </span>-wy+c1<span class="w"> </span>-c
-<span class="w">		</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R-3/9/0/8<span class="w"> </span>-T1<span class="w"> </span>-Gblue<span class="w"> </span>-W1p<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">&quot;10@+6@+ m@+3@+/s&quot;</span><span class="w"> </span>-Z0+w<span class="w"> </span>-i0,1+s1e-6<span class="w"> </span>-A<span class="w"> </span>-wa<span class="w"> </span>-c<span class="w">  </span>--FORMAT_TIME_PRIMARY_MAP<span class="o">=</span>a
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>1x2<span class="w"> </span>-Fs8c/10c<span class="w"> </span>-BWSrt<span class="w"> </span>-T<span class="s2">"Mississippi river annual discharge"</span><span class="w"> </span>-A+jTR
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-i1+s1e-3,0<span class="w"> </span>-R0/50/0/1<span class="w"> </span>-W0.25p,blue<span class="w"> </span>-Byaf+l<span class="s2">"Normalized year"</span><span class="w"> </span>-Bxaf+l<span class="s2">"10@+3@+ m@+3@+/s"</span><span class="w"> </span>-wy+c1<span class="w"> </span>-c
+<span class="w">		</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R-3/9/0/8<span class="w"> </span>-T1<span class="w"> </span>-Gblue<span class="w"> </span>-W1p<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">"10@+6@+ m@+3@+/s"</span><span class="w"> </span>-Z0+w<span class="w"> </span>-i0,1+s1e-6<span class="w"> </span>-A<span class="w"> </span>-wa<span class="w"> </span>-c<span class="w">  </span>--FORMAT_TIME_PRIMARY_MAP<span class="o">=</span>a
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -2502,7 +2502,7 @@ tables. Because of this, we can grid the data and make an image of the wrapped
 dataset:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_5
 <span class="w">	</span>gmt<span class="w"> </span>xyz2grd<span class="w"> </span>@mississippi.txt<span class="w"> </span>-i0,1+s1e-3,1+s1e-3<span class="w"> </span>-wy<span class="w"> </span>-R0/1/0/50<span class="w"> </span>-I50+n<span class="w"> </span>-r<span class="w"> </span>-Gtmp.grd
-<span class="w"> 	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>tmp.grd<span class="w"> </span>-JX15c/8c<span class="w"> </span>-BWSen<span class="w"> </span>-Bxaf+l<span class="s2">&quot;Normalized year&quot;</span><span class="w"> </span>-Byaf+l<span class="s2">&quot;Discharge (10@+3@+ m@+3@+/s)&quot;</span>
+<span class="w"> 	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>tmp.grd<span class="w"> </span>-JX15c/8c<span class="w"> </span>-BWSen<span class="w"> </span>-Bxaf+l<span class="s2">"Normalized year"</span><span class="w"> </span>-Byaf+l<span class="s2">"Discharge (10@+3@+ m@+3@+/s)"</span>
 <span class="w"> 	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJRM<span class="w"> </span>-Baf
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -2522,14 +2522,14 @@ and finally present an hourly histogram.  The figure caption under Figure <a cla
 discusses the four panels resulting from running the script below:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_6
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>TIME_WEEK_START<span class="w"> </span>Monday
-<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-Fs15c/8c<span class="w"> </span>-M14p/6p<span class="w"> </span>-A<span class="w"> </span>-T<span class="s2">&quot;Verrazzano-Narrows Bridge @%34%\337@%% Brooklyn Traffic [2018-2020]&quot;</span><span class="w"> </span>-BWSrt
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-Fs15c/8c<span class="w"> </span>-M14p/6p<span class="w"> </span>-A<span class="w"> </span>-T<span class="s2">"Verrazzano-Narrows Bridge @%34%\337@%% Brooklyn Traffic [2018-2020]"</span><span class="w"> </span>-BWSrt
 <span class="w"> 		</span><span class="c1"># Raw time-series</span>
-<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>@NY_traffic.txt<span class="w"> </span>-Wfaint,red<span class="w"> </span>-By+l<span class="s2">&quot;Vehicles/hour&quot;</span><span class="w"> </span>-gx21600<span class="w"> </span>-c
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>@NY_traffic.txt<span class="w"> </span>-Wfaint,red<span class="w"> </span>-By+l<span class="s2">"Vehicles/hour"</span><span class="w"> </span>-gx21600<span class="w"> </span>-c
 <span class="w">		</span><span class="c1"># Weekly wrapped time-series</span>
 <span class="w"> 		</span>gmt<span class="w"> </span>plot<span class="w"> </span>@NY_traffic.txt<span class="w"> </span>-R0/7/0/17000<span class="w"> </span>-Wfaint,red<span class="w"> </span>-ww<span class="w"> </span>-gx0.25<span class="w"> </span>-c
 <span class="w">		</span><span class="c1"># Weekly histogram normalized for number of hours for a weekday in the 3-year data</span>
 <span class="w">		</span><span class="nv">n_week_hours</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>convert<span class="w"> </span>@NY_traffic.txt<span class="w"> </span>-ww<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span><span class="k">select</span><span class="w"> </span>-Z0/0.999+c0<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>info<span class="w"> </span>-Fi<span class="w"> </span>-o2<span class="k">)</span>
-<span class="w"> 		</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@NY_traffic.txt<span class="w"> </span>-R0/7/2000/4000<span class="w"> </span>-Wthick<span class="w"> </span>-Gred<span class="w"> </span>-T1<span class="w"> </span>-Z0+w<span class="w"> </span>-By+l<span class="s2">&quot;Vehicles/hour&quot;</span><span class="w"> </span>-i0,1+d<span class="si">${</span><span class="nv">n_week_hours</span><span class="si">}</span><span class="w"> </span>-ww<span class="w"> </span>-c
+<span class="w"> 		</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@NY_traffic.txt<span class="w"> </span>-R0/7/2000/4000<span class="w"> </span>-Wthick<span class="w"> </span>-Gred<span class="w"> </span>-T1<span class="w"> </span>-Z0+w<span class="w"> </span>-By+l<span class="s2">"Vehicles/hour"</span><span class="w"> </span>-i0,1+d<span class="si">${</span><span class="nv">n_week_hours</span><span class="si">}</span><span class="w"> </span>-ww<span class="w"> </span>-c
 <span class="w">		</span><span class="c1"># Daily histogram normalized for number of days in the 3-year data</span>
 <span class="w">		</span><span class="nv">n_mondays</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>convert<span class="w"> </span>@NY_traffic.txt<span class="w"> </span>-wd<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span><span class="k">select</span><span class="w"> </span>-Z-0.5/0.5+c0<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>info<span class="w"> </span>-Fi<span class="w"> </span>-o2<span class="k">)</span>
 <span class="w"> 		</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@NY_traffic.txt<span class="w"> </span>-R0/24/0/8000<span class="w"> </span>-Wthick<span class="w"> </span>-Gred<span class="w"> </span>-T1<span class="w"> </span>-Z0+w<span class="w"> </span>-i0,1+d<span class="si">${</span><span class="nv">n_mondays</span><span class="si">}</span><span class="w"> </span>-wd<span class="w"> </span>-c
@@ -2637,7 +2637,7 @@ context they are considered “other”. Thus, when we refer to
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

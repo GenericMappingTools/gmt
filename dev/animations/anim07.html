@@ -185,7 +185,7 @@ The movie took ~2.5 hours to render on a 24-core MacPro 2013.</p>
 <span class="c1"># The higher resolution movie on YouTube used the 02m data set resolution.</span>
 
 <span class="c1"># 1. Create background plot and data files needed in the loop</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# Set view and sun longitudes</span>
 <span class="s">	gmt math -T-12/372/0.5 -I T 5 SUB = longitudes.txt</span>
@@ -196,7 +196,7 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</s
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up main script</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# Let HSV minimum value go to zero and faint map border</span>
 <span class="s">	gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint</span>
@@ -232,7 +232,7 @@ gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> 
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

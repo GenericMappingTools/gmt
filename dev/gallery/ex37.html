@@ -182,27 +182,27 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex37
 <span class="w">	</span><span class="nv">sclkm</span><span class="o">=</span><span class="m">1</span>.4e-2
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T-5000/-3000
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@<span class="si">${</span><span class="nv">T</span><span class="si">}</span>.nc<span class="w"> </span>-I+a0+nt1<span class="w"> </span>-R@<span class="si">${</span><span class="nv">T</span><span class="si">}</span>.nc<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">scl</span><span class="si">}</span>i<span class="w"> </span>-C<span class="w"> </span>-X1.474i<span class="w"> </span>-Y1i
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-84/75/-78/81<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i<span class="w"> </span>-Ba<span class="w"> </span>-BWSne+t<span class="s2">&quot;Multibeam bathymetry&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-84/75/-78/81<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i<span class="w"> </span>-Ba<span class="w"> </span>-BWSne+t<span class="s2">"Multibeam bathymetry"</span>
 
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T-50/25
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@<span class="si">${</span><span class="nv">G</span><span class="si">}</span>.nc<span class="w"> </span>-I+a0+nt1<span class="w"> </span>-R@<span class="si">${</span><span class="nv">G</span><span class="si">}</span>.nc<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">scl</span><span class="si">}</span>i<span class="w"> </span>-C<span class="w"> </span>-X3.25i
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-84/75/-78/81<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i<span class="w"> </span>-Ba<span class="w"> </span>-BWSne+t<span class="s2">&quot;Satellite gravity&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-84/75/-78/81<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i<span class="w"> </span>-Ba<span class="w"> </span>-BWSne+t<span class="s2">"Satellite gravity"</span>
 
 <span class="w">	</span>gmt<span class="w"> </span>grdfft<span class="w"> </span>@<span class="si">${</span><span class="nv">T</span><span class="si">}</span>.nc<span class="w"> </span>@<span class="si">${</span><span class="nv">G</span><span class="si">}</span>.nc<span class="w"> </span>-E+wk<span class="w"> </span>-N192/192+d+wtmp<span class="w"> </span>&gt;<span class="w"> </span>cross.txt
 
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T-1500/1500
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span><span class="si">${</span><span class="nv">T</span><span class="si">}</span>_tmp.nc<span class="w"> </span>-I+a0+nt1<span class="w"> </span>-R<span class="si">${</span><span class="nv">T</span><span class="si">}</span>_tmp.nc<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">scl</span><span class="si">}</span>i<span class="w"> </span>-X-3.474i<span class="w"> </span>-Y3i
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>bbox<span class="w"> </span>-L<span class="w"> </span>-W0.5p,-
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-100/91/-94/97<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i<span class="w"> </span>-Ba<span class="w"> </span>-BWSne+t<span class="s2">&quot;Detrended and extended&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-100/91/-94/97<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i<span class="w"> </span>-Ba<span class="w"> </span>-BWSne+t<span class="s2">"Detrended and extended"</span>
 
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T-40/40
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span><span class="si">${</span><span class="nv">G</span><span class="si">}</span>_tmp.nc<span class="w"> </span>-I+a0+nt1<span class="w"> </span>-R<span class="si">${</span><span class="nv">G</span><span class="si">}</span>_tmp.nc<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">scl</span><span class="si">}</span>i<span class="w"> </span>-C<span class="w"> </span>-X3.25i
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>bbox<span class="w"> </span>-L<span class="w"> </span>-W0.5p,-
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-100/91/-94/97<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i<span class="w"> </span>-Ba<span class="w"> </span>-BWSne+t<span class="s2">&quot;Detrended and extended&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-100/91/-94/97<span class="w"> </span>-Jx<span class="si">${</span><span class="nv">sclkm</span><span class="si">}</span>i<span class="w"> </span>-Ba<span class="w"> </span>-BWSne+t<span class="s2">"Detrended and extended"</span>
 
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_TITLE<span class="w"> </span>24p
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R2/160/0/1<span class="w"> </span>-JX-6il/2.5i<span class="w"> </span>-Bxa2f3g3+u<span class="s2">&quot; km&quot;</span><span class="w"> </span>-Byafg0.5+l<span class="s2">&quot;Coherency@+2@+&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">		</span>-BWsNe+t<span class="s2">&quot;Coherency between gravity and bathymetry&quot;</span><span class="w"> </span>-X-3.25i<span class="w"> </span>-Y3.3i<span class="w"> </span>cross.txt<span class="w"> </span>-i0,15<span class="w"> </span>-W0.5p
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R2/160/0/1<span class="w"> </span>-JX-6il/2.5i<span class="w"> </span>-Bxa2f3g3+u<span class="s2">" km"</span><span class="w"> </span>-Byafg0.5+l<span class="s2">"Coherency@+2@+"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">		</span>-BWsNe+t<span class="s2">"Coherency between gravity and bathymetry"</span><span class="w"> </span>-X-3.25i<span class="w"> </span>-Y3.3i<span class="w"> </span>cross.txt<span class="w"> </span>-i0,15<span class="w"> </span>-W0.5p
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>cross.txt<span class="w"> </span>-i0,15,16<span class="w"> </span>-Sc0.075i<span class="w"> </span>-Gred<span class="w"> </span>-W0.25p<span class="w"> </span>-Ey
 <span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>cross.txt<span class="w"> </span>*_tmp.nc<span class="w"> </span>?.cpt<span class="w"> </span>bbox
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -228,7 +228,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

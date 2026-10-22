@@ -184,13 +184,13 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex18
 <span class="w">	</span><span class="c1"># Use spherical gmt projection since SS data define on sphere</span>
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PROJ_ELLIPSOID<span class="w"> </span>Sphere<span class="w"> </span>FORMAT_FLOAT_OUT<span class="w"> </span>%g
 <span class="w">	</span><span class="c1"># Define location of Pratt seamount and the 400 km diameter</span>
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;-142.65 56.25 400&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>pratt.txt
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"-142.65 56.25 400"</span><span class="w"> </span>&gt;<span class="w"> </span>pratt.txt
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x1<span class="w"> </span>-A+JTL+o0.5c<span class="w"> </span>-Fs15c/9c<span class="w"> </span>-M0.5c/1c<span class="w"> </span>-R@AK_gulf_grav.nc<span class="w"> </span>-JM14c<span class="w"> </span>-B<span class="w"> </span>-BWSne
 <span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span>,0
 <span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T-60/60
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-I+d
 <span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Di<span class="w"> </span>-Ggray<span class="w"> </span>-Wthinnest
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJCB+o0/1c<span class="w"> </span>-Bxaf<span class="w"> </span>-By+l<span class="s2">&quot;mGal&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJCB+o0/1c<span class="w"> </span>-Bxaf<span class="w"> </span>-By+l<span class="s2">"mGal"</span>
 <span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>pratt.txt<span class="w"> </span>-D8p<span class="w"> </span>-F+f12p,Helvetica-Bold+jLB+tPratt
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>pratt.txt<span class="w"> </span>-SE-<span class="w"> </span>-Wthinnest
 <span class="w">		</span><span class="c1"># Then draw 10 mGal contours and overlay 50 mGal contour in green</span>
@@ -258,7 +258,7 @@ rm<span class="w"> </span>-f<span class="w"> </span>sm_*.txt<span class="w"> </s
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

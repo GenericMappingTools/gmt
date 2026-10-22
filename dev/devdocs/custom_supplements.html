@@ -401,13 +401,13 @@ mechanism integrated into a larger codebase.</p>
 <h2>Module source requirements (both paths)<a class="headerlink" href="#module-source-requirements-both-paths" title="Link to this heading"></a></h2>
 <p>Every module <code class="docutils literal notranslate"><span class="pre">.c</span></code> must define these macros near the top, before any
 <code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&quot;gmt_dev.h&quot;</span></code>:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define THIS_MODULE_CLASSIC_NAME  &quot;mymodule&quot;     </span><span class="cm">/* required */</span>
-<span class="cp">#define THIS_MODULE_MODERN_NAME   &quot;mymodule&quot;     </span><span class="cm">/* required */</span>
-<span class="cp">#define THIS_MODULE_LIB           &quot;mylib&quot;        </span><span class="cm">/* must equal DLL basename */</span>
-<span class="cp">#define THIS_MODULE_PURPOSE       &quot;One-line description&quot;</span>
-<span class="cp">#define THIS_MODULE_KEYS          &quot;&lt;G{,&gt;X}&quot;      </span><span class="cm">/* API key string; &quot;&quot; if none */</span>
-<span class="cp">#define THIS_MODULE_NEEDS         &quot;Jg&quot;           </span><span class="cm">/* projection requirements; &quot;&quot; if none */</span>
-<span class="cp">#define THIS_MODULE_OPTIONS       &quot;-&gt;BJKOPRUVXY&quot; </span><span class="cm">/* common options accepted */</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define THIS_MODULE_CLASSIC_NAME  "mymodule"     </span><span class="cm">/* required */</span>
+<span class="cp">#define THIS_MODULE_MODERN_NAME   "mymodule"     </span><span class="cm">/* required */</span>
+<span class="cp">#define THIS_MODULE_LIB           "mylib"        </span><span class="cm">/* must equal DLL basename */</span>
+<span class="cp">#define THIS_MODULE_PURPOSE       "One-line description"</span>
+<span class="cp">#define THIS_MODULE_KEYS          "&lt;G{,&gt;X}"      </span><span class="cm">/* API key string; "" if none */</span>
+<span class="cp">#define THIS_MODULE_NEEDS         "Jg"           </span><span class="cm">/* projection requirements; "" if none */</span>
+<span class="cp">#define THIS_MODULE_OPTIONS       "-&gt;BJKOPRUVXY" </span><span class="cm">/* common options accepted */</span>
 </pre></div>
 </div>
 <p>The legacy <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_NAME</span></code> (a single string used by very old GMT5
@@ -477,7 +477,7 @@ and friends are present.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

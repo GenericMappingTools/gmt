@@ -176,25 +176,25 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex38
 <span class="w">	</span>gmt<span class="w"> </span>grdcut<span class="w"> </span>@earth_relief_02m<span class="w"> </span>-R-60/-45/-20/-10<span class="w"> </span>-Gtopo_38.nc
 
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-Fs7c<span class="w"> </span>-A+jTR+gwhite+p1p+o0.2c/0.2c<span class="w"> </span>-M0.75c/1.2c<span class="w"> </span>-Rtopo_38.nc<span class="w"> </span>-JM7c<span class="w"> </span>-B5<span class="w"> </span>-BWSen<span class="w"> </span>-Y10c
-<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span><span class="w"> </span>-A<span class="s2">&quot;Original&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span><span class="w"> </span>-A<span class="s2">"Original"</span>
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>topo_38.nc<span class="w"> </span>-I+d<span class="w"> </span>-Ct.cpt
 
-<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>-A<span class="s2">&quot;Equalized&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>-A<span class="s2">"Equalized"</span>
 <span class="w">		</span>gmt<span class="w"> </span>grdhisteq<span class="w"> </span>topo_38.nc<span class="w"> </span>-Gout.nc<span class="w"> </span>-C16
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>out.nc<span class="w"> </span>-Cc.cpt
 
-<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>-A<span class="s2">&quot;Normalized&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>-A<span class="s2">"Normalized"</span>
 <span class="w">		</span>gmt<span class="w"> </span>grdhisteq<span class="w"> </span>topo_38.nc<span class="w"> </span>-Gout.nc<span class="w"> </span>-N
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>out.nc<span class="w"> </span>-Cn.cpt
 
-<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>-A<span class="s2">&quot;Quadratic&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>-A<span class="s2">"Quadratic"</span>
 <span class="w">		</span>gmt<span class="w"> </span>grdhisteq<span class="w"> </span>topo_38.nc<span class="w"> </span>-Gout.nc<span class="w"> </span>-Q
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>out.nc<span class="w"> </span>-Cq.cpt
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
 
 <span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJTC+w12c/0.4c+jTC+o0c/6c+h+e+n<span class="w"> </span>-Ct.cpt<span class="w"> </span>-Bxa500<span class="w"> </span>-By+lm
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJBC+w12c/0.4c+h+e+n<span class="w"> </span>-Cn.cpt<span class="w"> </span>-Bx1<span class="w"> </span>-By+l<span class="s2">&quot;z@-n@-&quot;</span>
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJBC+w12c/0.4c+h+e+n+o0c/2.5c<span class="w"> </span>-Cq.cpt<span class="w"> </span>-Bx1<span class="w"> </span>-By+l<span class="s2">&quot;z@-q@-&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJBC+w12c/0.4c+h+e+n<span class="w"> </span>-Cn.cpt<span class="w"> </span>-Bx1<span class="w"> </span>-By+l<span class="s2">"z@-n@-"</span>
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJBC+w12c/0.4c+h+e+n+o0c/2.5c<span class="w"> </span>-Cq.cpt<span class="w"> </span>-Bx1<span class="w"> </span>-By+l<span class="s2">"z@-q@-"</span>
 <span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>out.nc<span class="w"> </span>topo_38.nc<span class="w"> </span>?.cpt
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -219,7 +219,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

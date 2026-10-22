@@ -377,7 +377,14 @@ of using the single fixed <em>dx</em>[/<em>dy</em>] value. The file must have tw
 columns, one offset pair per text record, in the same order as the input
 data. Values are in the current length unit [<a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>].</p></li>
 <li><p><strong>+v</strong> - Draw a line from the original point to the shifted point;
-append a <em>pen</em> to change the attributes for this line.  <strong>Note</strong>:
+append a <em>pen</em> to change the attributes for this line.  To place an arrow
+head at the original point, add the pen modifier <strong>+vb</strong><em>vspecs</em> (e.g.,
+<strong>-D</strong>1c+v1p,red+vb0.3c+gred); a head at the text end is not supported.
+Add the pen modifier <strong>+o</strong><em>offset</em>, given <em>before</em> <strong>+vb</strong>(e.g., <strong>-D</strong>1c+v1p,red+o0.1c+vb0.3c+gred),
+to stop the line, and its head, that distance short of the point, e.g., to clear a symbol drawn there;
+the offset is as for <a class="reference internal" href="reference/features.html#specifying-line-attributes"><span class="std std-ref">line attributes</span></a>
+in <a class="reference internal" href="plot.html"><span class="doc">plot</span></a>. Only the data-point end is affected.
+See <a class="reference internal" href="reference/features.html#the-drawing-of-vectors"><span class="std std-ref">Technical reference - Drawing of Vectors</span></a>.  <strong>Note</strong>:
 The <strong>-Dj</strong>|<strong>J</strong> selection cannot be used with paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>).</p></li>
 </ul>
 </dd>
@@ -593,7 +600,7 @@ file text.txt on a Mercator plot with the given specifications, use:</p>
 </pre></div>
 </div>
 <p>To place a line containing a Latex equation, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s1">&#39;Use @[\Delta g = 2\pi\rho Gh@[&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-R0/6/0/6<span class="w"> </span>-JX15c<span class="w"> </span>-B<span class="w"> </span>-F+f32p+a30<span class="w"> </span>-pdf<span class="w"> </span>map
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s1">'Use @[\Delta g = 2\pi\rho Gh@['</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-R0/6/0/6<span class="w"> </span>-JX15c<span class="w"> </span>-B<span class="w"> </span>-F+f32p+a30<span class="w"> </span>-pdf<span class="w"> </span>map
 </pre></div>
 </div>
 <p>To place text with a surrounding box and an underlying, shifted shade, both using a rounded rectangle, try:</p>
@@ -666,7 +673,7 @@ trailing text.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

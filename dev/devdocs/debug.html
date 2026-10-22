@@ -375,11 +375,11 @@ If needed, you can edit the compiler path or add header files to the intellisens
 <li><p>Create a new file <code class="docutils literal notranslate"><span class="pre">.vscode/project.env</span></code> that will contain environment variables for your project. In VSCode, you can
 quickly create a new file by right-clicking on the <code class="docutils literal notranslate"><span class="pre">.vscode</span></code> folder in the file explorer and typing the file name.
 Add these contents to <code class="docutils literal notranslate"><span class="pre">project.env</span></code> and modify to fit your set-up (i.e., set <code class="docutils literal notranslate"><span class="pre">USER_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">REPO_DIR</span></code>):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SESSION_NAME</span><span class="o">=</span><span class="s2">&quot;vscodedebug&quot;</span>
-<span class="nv">USER_NAME</span><span class="o">=</span><span class="s2">&quot;&lt;your user name&gt;&quot;</span>
-<span class="nv">REPO_DIR</span><span class="o">=</span><span class="s2">&quot;&lt;path to the local GMT repository&gt;&quot;</span>
-<span class="nv">GMT_LIBRARY_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">REPO_DIR</span><span class="si">}</span><span class="s2">/vbuild/gmt6/lib&quot;</span>
-<span class="nv">GMT_SHARE_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">REPO_DIR</span><span class="si">}</span><span class="s2">/vbuild/gmt6/share&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SESSION_NAME</span><span class="o">=</span><span class="s2">"vscodedebug"</span>
+<span class="nv">USER_NAME</span><span class="o">=</span><span class="s2">"&lt;your user name&gt;"</span>
+<span class="nv">REPO_DIR</span><span class="o">=</span><span class="s2">"&lt;path to the local GMT repository&gt;"</span>
+<span class="nv">GMT_LIBRARY_PATH</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">REPO_DIR</span><span class="si">}</span><span class="s2">/vbuild/gmt6/lib"</span>
+<span class="nv">GMT_SHARE_PATH</span><span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">REPO_DIR</span><span class="si">}</span><span class="s2">/vbuild/gmt6/share"</span>
 <span class="nv">GMT_DATA_SERVER</span><span class="o">=</span>remotedata.generic-mapping-tools.org
 </pre></div>
 </div>
@@ -392,26 +392,26 @@ Add these contents to <code class="docutils literal notranslate"><span class="pr
 <li><p>Create a new <code class="docutils literal notranslate"><span class="pre">.vscode/tasks.json</span></code> file. Add these contents to <code class="docutils literal notranslate"><span class="pre">.vscode/tasks.json</span></code>
 and modify to fit your set-up (e.g., update the <code class="docutils literal notranslate"><span class="pre">CMAKE_OSX_DEPLOYMENT_TARGET</span></code> flag for your OS):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;version&quot;</span>:<span class="w"> </span><span class="s2">&quot;2.0.0&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;tasks&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="s2">"version"</span>:<span class="w"> </span><span class="s2">"2.0.0"</span>,
+<span class="w">    </span><span class="s2">"tasks"</span>:<span class="w"> </span><span class="o">[</span>
 <span class="w">        </span><span class="o">{</span>
-<span class="w">            </span><span class="s2">&quot;label&quot;</span>:<span class="w"> </span><span class="s2">&quot;ninja build&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;type&quot;</span>:<span class="w"> </span><span class="s2">&quot;shell&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;options&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">                </span><span class="s2">&quot;cwd&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">&quot;</span>,
-<span class="w">                </span><span class="s2">&quot;env&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">                    </span><span class="s2">&quot;ADD_FLAGS&quot;</span>:<span class="w"> </span><span class="s2">&quot;-DCMAKE_OSX_DEPLOYMENT_TARGET=12.1&quot;</span>
+<span class="w">            </span><span class="s2">"label"</span>:<span class="w"> </span><span class="s2">"ninja build"</span>,
+<span class="w">            </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"shell"</span>,
+<span class="w">            </span><span class="s2">"options"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">                </span><span class="s2">"cwd"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">"</span>,
+<span class="w">                </span><span class="s2">"env"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">                    </span><span class="s2">"ADD_FLAGS"</span>:<span class="w"> </span><span class="s2">"-DCMAKE_OSX_DEPLOYMENT_TARGET=12.1"</span>
 <span class="w">                </span><span class="o">}</span>
 <span class="w">            </span><span class="o">}</span>,
-<span class="w">            </span><span class="s2">&quot;command&quot;</span>:<span class="w"> </span><span class="s2">&quot;rm -rf vbuild; mkdir vbuild; cd vbuild; cmake -DCMAKE_INSTALL_PREFIX=\&quot;</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/vbuild/gmt6\&quot; -DCMAKE_BUILD_TYPE=Debug </span><span class="si">${</span><span class="nv">ADD_FLAGS</span><span class="si">}</span><span class="s2"> -G \&quot;Ninja\&quot; ..; ninja; ninja install; mkdir debug; cp </span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/.vscode/project.env debug/project.env&quot;</span>
+<span class="w">            </span><span class="s2">"command"</span>:<span class="w"> </span><span class="s2">"rm -rf vbuild; mkdir vbuild; cd vbuild; cmake -DCMAKE_INSTALL_PREFIX=\"</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/vbuild/gmt6\" -DCMAKE_BUILD_TYPE=Debug </span><span class="si">${</span><span class="nv">ADD_FLAGS</span><span class="si">}</span><span class="s2"> -G \"Ninja\" ..; ninja; ninja install; mkdir debug; cp </span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/.vscode/project.env debug/project.env"</span>
 <span class="w">        </span><span class="o">}</span>,
 <span class="w">        </span><span class="o">{</span>
-<span class="w">            </span><span class="s2">&quot;label&quot;</span>:<span class="w"> </span><span class="s2">&quot;ninja rebuild&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;type&quot;</span>:<span class="w"> </span><span class="s2">&quot;shell&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;options&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">                </span><span class="s2">&quot;cwd&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">            </span><span class="s2">"label"</span>:<span class="w"> </span><span class="s2">"ninja rebuild"</span>,
+<span class="w">            </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"shell"</span>,
+<span class="w">            </span><span class="s2">"options"</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">                </span><span class="s2">"cwd"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">"</span>
 <span class="w">            </span><span class="o">}</span>,
-<span class="w">            </span><span class="s2">&quot;command&quot;</span>:<span class="w"> </span><span class="s2">&quot;cd vbuild; ninja; ninja install; mkdir debug; cp </span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/.vscode/project.env debug/project.env&quot;</span>
+<span class="w">            </span><span class="s2">"command"</span>:<span class="w"> </span><span class="s2">"cd vbuild; ninja; ninja install; mkdir debug; cp </span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/.vscode/project.env debug/project.env"</span>
 <span class="w">        </span><span class="o">}</span>
 <span class="w">    </span><span class="o">]</span>
 <span class="o">}</span>
@@ -429,46 +429,46 @@ command+shift+p, selecting <code class="docutils literal notranslate"><span clas
 <ol class="arabic">
 <li><p>Create a new <code class="docutils literal notranslate"><span class="pre">.vscode/launch.json</span></code> file. Add these contents and modify to fit your needs:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;version&quot;</span>:<span class="w"> </span><span class="s2">&quot;2.0.0&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;configurations&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="s2">"version"</span>:<span class="w"> </span><span class="s2">"2.0.0"</span>,
+<span class="w">    </span><span class="s2">"configurations"</span>:<span class="w"> </span><span class="o">[</span>
 <span class="w">        </span><span class="o">{</span>
-<span class="w">            </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;begin&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;type&quot;</span>:<span class="w"> </span><span class="s2">&quot;cppdbg&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;request&quot;</span>:<span class="w"> </span><span class="s2">&quot;launch&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;program&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;args&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;begin&quot;</span>,<span class="s2">&quot;test&quot;</span>,<span class="s2">&quot;png&quot;</span><span class="o">]</span>,
-<span class="w">            </span><span class="s2">&quot;stopAtEntry&quot;</span>:<span class="w"> </span>false,
-<span class="w">            </span><span class="s2">&quot;cwd&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;environment&quot;</span>:<span class="w"> </span><span class="o">[]</span>,
-<span class="w">            </span><span class="s2">&quot;envFile&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;externalConsole&quot;</span>:<span class="w"> </span>false,
-<span class="w">            </span><span class="s2">&quot;MIMode&quot;</span>:<span class="w"> </span><span class="s2">&quot;lldb&quot;</span>
+<span class="w">            </span><span class="s2">"name"</span>:<span class="w"> </span><span class="s2">"begin"</span>,
+<span class="w">            </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"cppdbg"</span>,
+<span class="w">            </span><span class="s2">"request"</span>:<span class="w"> </span><span class="s2">"launch"</span>,
+<span class="w">            </span><span class="s2">"program"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt"</span>,
+<span class="w">            </span><span class="s2">"args"</span>:<span class="w"> </span><span class="o">[</span><span class="s2">"begin"</span>,<span class="s2">"test"</span>,<span class="s2">"png"</span><span class="o">]</span>,
+<span class="w">            </span><span class="s2">"stopAtEntry"</span>:<span class="w"> </span>false,
+<span class="w">            </span><span class="s2">"cwd"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/"</span>,
+<span class="w">            </span><span class="s2">"environment"</span>:<span class="w"> </span><span class="o">[]</span>,
+<span class="w">            </span><span class="s2">"envFile"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env"</span>,
+<span class="w">            </span><span class="s2">"externalConsole"</span>:<span class="w"> </span>false,
+<span class="w">            </span><span class="s2">"MIMode"</span>:<span class="w"> </span><span class="s2">"lldb"</span>
 <span class="w">        </span><span class="o">}</span>,
 <span class="w">        </span><span class="o">{</span>
-<span class="w">            </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;basemap&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;type&quot;</span>:<span class="w"> </span><span class="s2">&quot;cppdbg&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;request&quot;</span>:<span class="w"> </span><span class="s2">&quot;launch&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;program&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;args&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;basemap&quot;</span>,<span class="s2">&quot;-R0/120/-90/-45&quot;</span>,<span class="s2">&quot;-Bfg&quot;</span>,<span class="s2">&quot;-JS0/-90/10c&quot;</span><span class="o">]</span>,
-<span class="w">            </span><span class="s2">&quot;stopAtEntry&quot;</span>:<span class="w"> </span>true,
-<span class="w">            </span><span class="s2">&quot;cwd&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;environment&quot;</span>:<span class="w"> </span><span class="o">[]</span>,
-<span class="w">            </span><span class="s2">&quot;envFile&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;externalConsole&quot;</span>:<span class="w"> </span>false,
-<span class="w">            </span><span class="s2">&quot;MIMode&quot;</span>:<span class="w"> </span><span class="s2">&quot;lldb&quot;</span>
+<span class="w">            </span><span class="s2">"name"</span>:<span class="w"> </span><span class="s2">"basemap"</span>,
+<span class="w">            </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"cppdbg"</span>,
+<span class="w">            </span><span class="s2">"request"</span>:<span class="w"> </span><span class="s2">"launch"</span>,
+<span class="w">            </span><span class="s2">"program"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt"</span>,
+<span class="w">            </span><span class="s2">"args"</span>:<span class="w"> </span><span class="o">[</span><span class="s2">"basemap"</span>,<span class="s2">"-R0/120/-90/-45"</span>,<span class="s2">"-Bfg"</span>,<span class="s2">"-JS0/-90/10c"</span><span class="o">]</span>,
+<span class="w">            </span><span class="s2">"stopAtEntry"</span>:<span class="w"> </span>true,
+<span class="w">            </span><span class="s2">"cwd"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/"</span>,
+<span class="w">            </span><span class="s2">"environment"</span>:<span class="w"> </span><span class="o">[]</span>,
+<span class="w">            </span><span class="s2">"envFile"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env"</span>,
+<span class="w">            </span><span class="s2">"externalConsole"</span>:<span class="w"> </span>false,
+<span class="w">            </span><span class="s2">"MIMode"</span>:<span class="w"> </span><span class="s2">"lldb"</span>
 <span class="w">        </span><span class="o">}</span>,
 <span class="w">        </span><span class="o">{</span>
-<span class="w">            </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;end&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;type&quot;</span>:<span class="w"> </span><span class="s2">&quot;cppdbg&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;request&quot;</span>:<span class="w"> </span><span class="s2">&quot;launch&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;program&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;args&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;end&quot;</span>,<span class="s2">&quot;show&quot;</span><span class="o">]</span>,
-<span class="w">            </span><span class="s2">&quot;stopAtEntry&quot;</span>:<span class="w"> </span>false,
-<span class="w">            </span><span class="s2">&quot;cwd&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;environment&quot;</span>:<span class="w"> </span><span class="o">[]</span>,
-<span class="w">            </span><span class="s2">&quot;envFile&quot;</span>:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env&quot;</span>,
-<span class="w">            </span><span class="s2">&quot;externalConsole&quot;</span>:<span class="w"> </span>false,
-<span class="w">            </span><span class="s2">&quot;MIMode&quot;</span>:<span class="w"> </span><span class="s2">&quot;lldb&quot;</span>
+<span class="w">            </span><span class="s2">"name"</span>:<span class="w"> </span><span class="s2">"end"</span>,
+<span class="w">            </span><span class="s2">"type"</span>:<span class="w"> </span><span class="s2">"cppdbg"</span>,
+<span class="w">            </span><span class="s2">"request"</span>:<span class="w"> </span><span class="s2">"launch"</span>,
+<span class="w">            </span><span class="s2">"program"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt"</span>,
+<span class="w">            </span><span class="s2">"args"</span>:<span class="w"> </span><span class="o">[</span><span class="s2">"end"</span>,<span class="s2">"show"</span><span class="o">]</span>,
+<span class="w">            </span><span class="s2">"stopAtEntry"</span>:<span class="w"> </span>false,
+<span class="w">            </span><span class="s2">"cwd"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/"</span>,
+<span class="w">            </span><span class="s2">"environment"</span>:<span class="w"> </span><span class="o">[]</span>,
+<span class="w">            </span><span class="s2">"envFile"</span>:<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env"</span>,
+<span class="w">            </span><span class="s2">"externalConsole"</span>:<span class="w"> </span>false,
+<span class="w">            </span><span class="s2">"MIMode"</span>:<span class="w"> </span><span class="s2">"lldb"</span>
 <span class="w">        </span><span class="o">}</span>
 <span class="w">    </span><span class="o">]</span>
 <span class="o">}</span>
@@ -512,7 +512,7 @@ debugging with CLI commands.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

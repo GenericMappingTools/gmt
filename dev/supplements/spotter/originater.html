@@ -375,13 +375,13 @@ likely hotspot candidates for each seamount, run</p>
 <p>To determine the predicted age of a seamount, distances to the closest
 hotspot, and echo the observed age given its location, observed age, and
 a rotation model, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;1.55 -8.43 52.3&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>originater<span class="w"> </span>-FONeill_2005_hotspots.txt<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"1.55 -8.43 52.3"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>originater<span class="w"> </span>-FONeill_2005_hotspots.txt<span class="w"> </span><span class="se">\</span>
 -EOMS2005_APM_fixed.txt<span class="w"> </span>-Q1/120<span class="w"> </span>-Lt
 </pre></div>
 </div>
 <p>where 52.3 Ma is observed age. The output is 70 -95.486 52.3. To repeat
 the same exercise with a moving hotspot model, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;1.55 -8.43 52.3&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>originater<span class="w"> </span>-FONeill_2005_hotspots.txt+d<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"1.55 -8.43 52.3"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>originater<span class="w"> </span>-FONeill_2005_hotspots.txt+d<span class="w"> </span><span class="se">\</span>
 -EOMS2005_APM_smooth.txt<span class="w"> </span>-Q1/120<span class="w"> </span>-Lt
 </pre></div>
 </div>
@@ -425,7 +425,7 @@ To use an alternate rotation file, create an environmental parameters named
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

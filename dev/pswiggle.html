@@ -455,7 +455,7 @@ see if this is the problem, you should do this:</p>
 </div></blockquote>
 <p>Then if these numbers jump around a lot, you may do this:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>awk<span class="w"> </span><span class="s1">&#39;{ print NR, $0 }&#39;</span><span class="w"> </span>yourdata.xyz<span class="w"> </span><span class="p">|</span><span class="w"> </span>filter1d<span class="w"> </span>-Fb5<span class="w"> </span>-N4/0<span class="w"> </span><span class="se">\</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>awk<span class="w"> </span><span class="s1">'{ print NR, $0 }'</span><span class="w"> </span>yourdata.xyz<span class="w"> </span><span class="p">|</span><span class="w"> </span>filter1d<span class="w"> </span>-Fb5<span class="w"> </span>-N4/0<span class="w"> </span><span class="se">\</span>
 --FORMAT_FLOAT_OUT<span class="o">=</span>%.12g<span class="w"> </span>&gt;<span class="w"> </span>smoothed.xyz
 </pre></div>
 </div>
@@ -483,7 +483,7 @@ see if this is the problem, you should do this:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

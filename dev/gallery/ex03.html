@@ -186,25 +186,25 @@ page, with an auto-generated legend. Thus, the complete automated script reads:<
 <span class="c1"># 		spectrum1d, plot, subplot, legend, math</span>
 <span class="c1"># Unix progs:	rm</span>
 <span class="c1">#</span>
-<span class="c1"># This example begins with data files &quot;ship_03.txt&quot; and &quot;sat_03.txt&quot; which</span>
-<span class="c1"># are measurements of a quantity &quot;g&quot; (a &quot;gravity anomaly&quot; which is an</span>
+<span class="c1"># This example begins with data files "ship_03.txt" and "sat_03.txt" which</span>
+<span class="c1"># are measurements of a quantity "g" (a "gravity anomaly" which is an</span>
 <span class="c1"># anomalous increase or decrease in the magnitude of the acceleration</span>
-<span class="c1"># of gravity at sea level).  g is measured at a sequence of points &quot;x,y&quot;</span>
-<span class="c1"># which in this case are &quot;longitude,latitude&quot;.  The &quot;sat_03.txt&quot; data were</span>
+<span class="c1"># of gravity at sea level).  g is measured at a sequence of points "x,y"</span>
+<span class="c1"># which in this case are "longitude,latitude".  The "sat_03.txt" data were</span>
 <span class="c1"># obtained by a satellite and the sequence of points lies almost along</span>
-<span class="c1"># a great circle.  The &quot;ship_03.txt&quot; data were obtained by a ship which</span>
-<span class="c1"># tried to follow the satellite&#39;s path but deviated from it in places.</span>
+<span class="c1"># a great circle.  The "ship_03.txt" data were obtained by a ship which</span>
+<span class="c1"># tried to follow the satellite's path but deviated from it in places.</span>
 <span class="c1"># Thus the two data sets are not measured at the same of points,</span>
 <span class="c1"># and we use various GMT tools to facilitate their comparison.</span>
 <span class="c1">#</span>
 
 gmt<span class="w"> </span>begin<span class="w"> </span>ex03
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_FFT<span class="w"> </span>kiss
-<span class="w">	</span><span class="c1"># First, we use &quot;gmt fitcircle&quot; to find the parameters of a great circle</span>
-<span class="w">	</span><span class="c1"># most closely fitting the x,y points in &quot;sat_03.txt&quot;:</span>
+<span class="w">	</span><span class="c1"># First, we use "gmt fitcircle" to find the parameters of a great circle</span>
+<span class="w">	</span><span class="c1"># most closely fitting the x,y points in "sat_03.txt":</span>
 <span class="w">	</span><span class="nv">cpos</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>fitcircle<span class="w"> </span>@sat_03.txt<span class="w"> </span>-L2<span class="w"> </span>-Fm<span class="w"> </span>--IO_COL_SEPARATOR<span class="o">=</span>/<span class="k">)</span>
 <span class="w">	</span><span class="nv">ppos</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>fitcircle<span class="w"> </span>@sat_03.txt<span class="w"> </span>-L2<span class="w"> </span>-Fn<span class="w"> </span>--IO_COL_SEPARATOR<span class="o">=</span>/<span class="k">)</span>
-<span class="w">	</span><span class="c1"># Now we use &quot;gmt project&quot; to project the data in both sat_03.txt and ship_03.txt</span>
+<span class="w">	</span><span class="c1"># Now we use "gmt project" to project the data in both sat_03.txt and ship_03.txt</span>
 <span class="w">	</span><span class="c1"># into data.pg, where g is the same and p is the oblique longitude around</span>
 <span class="w">	</span><span class="c1"># the great circle.  We use -Q to get the p distance in kilometers, and -S</span>
 <span class="w">	</span><span class="c1"># to sort the output into increasing p values.</span>
@@ -224,13 +224,13 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex03
 <span class="w">	</span>gmt<span class="w"> </span>convert<span class="w"> </span>-A<span class="w"> </span>samp_ship.pg<span class="w"> </span>samp_sat.pg<span class="w"> </span>-o1,3<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>spectrum1d<span class="w"> </span>-S256<span class="w"> </span>-D1<span class="w"> </span>-W<span class="w"> </span>-C<span class="w"> </span>-T
 <span class="w">	</span><span class="c1"># Time to plot spectra, use -l to build a legend</span>
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_TAG<span class="w"> </span>18p,Helvetica-Bold
-<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x1<span class="w"> </span>-M0.3c<span class="w"> </span>-Scb+l<span class="s2">&quot;Wavelength (km)&quot;</span><span class="w"> </span>-T<span class="s2">&quot;Ship and Satellite Gravity&quot;</span><span class="w"> </span>-Fs10c<span class="w"> </span>-A+jTR+o8p<span class="w"> </span>-BWeSn+g240/255/240
-<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span>,0<span class="w"> </span>-A<span class="s2">&quot;Input Power&quot;</span>
-<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>spectrum.xpower<span class="w"> </span>-JX-?l/?l<span class="w"> </span>-Bxa1f3p<span class="w"> </span>-Bya1f3p+l<span class="s2">&quot;Power (mGal@+2@+km)&quot;</span><span class="w"> </span>-Gred<span class="w"> </span>-ST5p<span class="w"> </span>-R1/1000/0.1/10000<span class="w"> </span>-Ey+p0.5p<span class="w"> </span>-lShip
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x1<span class="w"> </span>-M0.3c<span class="w"> </span>-Scb+l<span class="s2">"Wavelength (km)"</span><span class="w"> </span>-T<span class="s2">"Ship and Satellite Gravity"</span><span class="w"> </span>-Fs10c<span class="w"> </span>-A+jTR+o8p<span class="w"> </span>-BWeSn+g240/255/240
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span>,0<span class="w"> </span>-A<span class="s2">"Input Power"</span>
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>spectrum.xpower<span class="w"> </span>-JX-?l/?l<span class="w"> </span>-Bxa1f3p<span class="w"> </span>-Bya1f3p+l<span class="s2">"Power (mGal@+2@+km)"</span><span class="w"> </span>-Gred<span class="w"> </span>-ST5p<span class="w"> </span>-R1/1000/0.1/10000<span class="w"> </span>-Ey+p0.5p<span class="w"> </span>-lShip
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>spectrum.ypower<span class="w"> </span>-Gblue<span class="w"> </span>-Sc5p<span class="w"> </span>-Ey+p0.5p<span class="w"> </span>-lSatellite
 <span class="w">		</span>gmt<span class="w"> </span>legend<span class="w"> </span>-DjBL+o0.5c<span class="w"> </span>-F+gwhite+pthicker<span class="w"> </span>--FONT_ANNOT_PRIMARY<span class="o">=</span>14p,Helvetica-Bold
-<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">1</span>,0<span class="w"> </span>-A<span class="s2">&quot;Coherency@+2@+&quot;</span>
-<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>spectrum.coh<span class="w"> </span>-JX-?l/?<span class="w"> </span>-Bxa1f3p<span class="w"> </span>-Bya0.25f0.05+l<span class="s2">&quot;Coherency@+2@+&quot;</span><span class="w"> </span>-R1/1000/0/1<span class="w"> </span>-Sc5p<span class="w"> </span>-Gpurple<span class="w"> </span>-Ey+p0.5p
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">1</span>,0<span class="w"> </span>-A<span class="s2">"Coherency@+2@+"</span>
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>spectrum.coh<span class="w"> </span>-JX-?l/?<span class="w"> </span>-Bxa1f3p<span class="w"> </span>-Bya0.25f0.05+l<span class="s2">"Coherency@+2@+"</span><span class="w"> </span>-R1/1000/0/1<span class="w"> </span>-Sc5p<span class="w"> </span>-Gpurple<span class="w"> </span>-Ey+p0.5p
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
 gmt<span class="w"> </span>end<span class="w"> </span>show
 rm<span class="w"> </span>-f<span class="w"> </span>samp*<span class="w"> </span>*.pg<span class="w"> </span>spectrum.*
@@ -260,7 +260,7 @@ improves dramatically for wavelengths &gt; 20 km.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

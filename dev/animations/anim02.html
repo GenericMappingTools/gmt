@@ -174,7 +174,7 @@ gridded data. The red arrow points to where the light source is located.</p>
 <span class="c1"># The movie took 1 minute 45 seconds to render on a 24-core MacPro 2013.</span>
 
 <span class="c1"># 1. Create files needed in the loop</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt math -T0/360/1 T -o0 = angles.txt</span>
 <span class="s">	gmt makecpt -Coleron -T500/4500 -H &gt; main.cpt</span>
@@ -182,7 +182,7 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</s
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	width=$(gmt math -Q ${MOVIE_WIDTH} 1.5c SUB =)</span>
 <span class="s">	gmt grdimage topo.nc -I+a${MOVIE_COL0}+nt2 -JM${width} -Cmain.cpt \</span>
@@ -213,7 +213,7 @@ gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> 
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

@@ -696,21 +696,21 @@ that are inside the specified area, and make the output binary:</p>
 <p>To extract the locations of depths exceeding 9000 meter that were not
 interpolated (<strong>btc</strong> != 1) from all the cruises listed in the file
 cruises.lis:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77list<span class="w"> </span><span class="sb">`</span>cat<span class="w"> </span>cruises.lis<span class="sb">`</span><span class="w"> </span>-F<span class="s2">&quot;depth,DEPTH&gt;9000,BTC!=1&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>really_deep.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77list<span class="w"> </span><span class="sb">`</span>cat<span class="w"> </span>cruises.lis<span class="sb">`</span><span class="w"> </span>-F<span class="s2">"depth,DEPTH&gt;9000,BTC!=1"</span><span class="w"> </span>&gt;<span class="w"> </span>really_deep.txt
 </pre></div>
 </div>
 <p>To extract dist, faa, and grav12_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
 all the MGD77+ netCDF files whose cruise ids are listed in the file
 cruises.lis, we try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77list<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>cruises.lis<span class="k">)</span><span class="w"> </span>-E<span class="w"> </span>-Ia<span class="w"> </span>-F<span class="s2">&quot;dist,faa,grav12_2,depth&lt;3000&quot;</span><span class="w"> </span>&gt;<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77list<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>cruises.lis<span class="k">)</span><span class="w"> </span>-E<span class="w"> </span>-Ia<span class="w"> </span>-F<span class="s2">"dist,faa,grav12_2,depth&lt;3000"</span><span class="w"> </span>&gt;<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>shallow_grav.txt
 </pre></div>
 </div>
 <p>To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
 whose cruise ids are listed in the file cruises.lis, but only retrieve
 records whose bitflag for faa indicates BAD values, we try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77list<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>cruises.lis<span class="k">)</span><span class="w"> </span>-E<span class="w"> </span>-Ia<span class="w"> </span>-F<span class="s2">&quot;dist,faa,grav12_2:+faa&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>bad_grav.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77list<span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>cruises.lis<span class="k">)</span><span class="w"> </span>-E<span class="w"> </span>-Ia<span class="w"> </span>-F<span class="s2">"dist,faa,grav12_2:+faa"</span><span class="w"> </span>&gt;<span class="w"> </span>bad_grav.txt
 </pre></div>
 </div>
 <p>To output <em>lon, lat, mag</em>, and <em>faa</em> from all the cruises listed in the file
@@ -816,7 +816,7 @@ corrected by a strange dependency on ship heading and latitude, and
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

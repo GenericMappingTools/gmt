@@ -215,8 +215,8 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex32
 <span class="w">	</span>gmt<span class="w"> </span>grdcut<span class="w"> </span>@earth_mask_30s_p<span class="w"> </span><span class="nv">$Rflag</span><span class="w"> </span>-Gmask_32.nc<span class="o">=</span>ns
 <span class="w">	</span>gmt<span class="w"> </span>grdmath<span class="w"> </span>topo_32.nc<span class="w"> </span>mask_32.nc<span class="w"> </span><span class="m">0</span><span class="w"> </span>GT<span class="w"> </span><span class="m">0</span><span class="w"> </span>NAN<span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>topo_32.nc
 
-<span class="w">	</span><span class="c1"># The color map assigns &quot;Reflex Blue&quot; to the lower half of the 0-255 range and</span>
-<span class="w">	</span><span class="c1"># &quot;Yellow&quot; to the upper half.</span>
+<span class="w">	</span><span class="c1"># The color map assigns "Reflex Blue" to the lower half of the 0-255 range and</span>
+<span class="w">	</span><span class="c1"># "Yellow" to the upper half.</span>
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-C0/51/153,255/204/0<span class="w"> </span>-T0,127,255<span class="w"> </span>-N
 
 <span class="w">	</span><span class="c1"># The next step is the plotting of the image.</span>
@@ -226,12 +226,12 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex32
 <span class="w">	</span><span class="nv">Rplot</span><span class="o">=</span><span class="nv">$Rflag</span>/-10/790
 <span class="w">	</span>gmt<span class="w"> </span>grdview<span class="w"> </span>topo_32.nc<span class="w"> </span>-JM13c<span class="w"> </span><span class="nv">$Rplot</span><span class="w"> </span>-C<span class="w"> </span>-G@euflag.nc<span class="w"> </span>-I+a0/270+ne0.6<span class="w"> </span>-Qc<span class="w"> </span>-JZ1c<span class="w"> </span>-p157.5/30
 
-<span class="w">	</span><span class="c1"># We now add borders. Because we have a 3-D plot, we want them to be plotted &quot;at elevation&quot;.</span>
+<span class="w">	</span><span class="c1"># We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".</span>
 <span class="w">	</span><span class="c1"># So we write out the borders, pipe them through grdtrack and then plot them with plot3d.</span>
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span><span class="nv">$Rflag</span><span class="w"> </span>-Df<span class="w"> </span>-M<span class="w"> </span>-N1<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>grdtrack<span class="w"> </span>-Gtopo_32.nc<span class="w"> </span>-s+a<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot3d<span class="w"> </span><span class="nv">$Rplot</span><span class="w"> </span>-JZ<span class="w"> </span>-p<span class="w"> </span>-W1p,white
 
 <span class="w">	</span><span class="c1"># Finally, we add dots and names for three cities.</span>
-<span class="w">	</span><span class="c1"># Again, gmt grdtrack is used to put the dots &quot;at elevation&quot;.</span>
+<span class="w">	</span><span class="c1"># Again, gmt grdtrack is used to put the dots "at elevation".</span>
 <span class="w">	</span>cat<span class="w"> </span><span class="s">&lt;&lt;- EOF &gt; cities.txt</span>
 <span class="s">	05:41:27 50:51:05 Maastricht</span>
 <span class="s">	04:21:00 50:51:00 Bruxelles</span>
@@ -266,7 +266,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 

@@ -932,7 +932,7 @@ as QuickTime Player, iMovie, MovieMaker, and other commercial programs to make a
 how the movie is put together from all the still images.  If you kept all the frame images then
 you do not have to rerun the whole render process.  Assuming you want a MP4 movie and that you
 want to rerun just the ffmpeg command, here is an example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ffmpeg<span class="w"> </span>-loglevel<span class="w"> </span>warning<span class="w"> </span>-f<span class="w"> </span>image2<span class="w"> </span>-framerate<span class="w"> </span><span class="m">24</span><span class="w"> </span>-y<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;mydir/myimages_%04d.png&quot;</span><span class="w"> </span>-vcodec<span class="w"> </span>libx264<span class="w"> </span>-pix_fmt<span class="w"> </span>yuv420p<span class="w"> </span>mymovie.mp4
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ffmpeg<span class="w"> </span>-loglevel<span class="w"> </span>warning<span class="w"> </span>-f<span class="w"> </span>image2<span class="w"> </span>-framerate<span class="w"> </span><span class="m">24</span><span class="w"> </span>-y<span class="w"> </span>-i<span class="w"> </span><span class="s2">"mydir/myimages_%04d.png"</span><span class="w"> </span>-vcodec<span class="w"> </span>libx264<span class="w"> </span>-pix_fmt<span class="w"> </span>yuv420p<span class="w"> </span>mymovie.mp4
 </pre></div>
 </div>
 <p>This command is also written out when movie performs this step.
@@ -992,7 +992,7 @@ for various solutions.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 22, 2026.
       </span></p>
   </div>
 
