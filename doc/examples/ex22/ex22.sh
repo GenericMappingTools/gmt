@@ -63,7 +63,6 @@ gmt begin ex22
 
 	# Put together a reasonable legend text, and add logo and user's name:
 	cat <<- END >> neis.legend
-	G 0.25l
 	P
 	T USGS/NEIS most recent earthquakes for the last month.  The data were
 	T obtained automatically from the USGS Earthquake Hazards Program page at
@@ -78,7 +77,7 @@ gmt begin ex22
 	END
 
 	# OK, now we can actually run gmt legend.  We center the legend below the map.
-	# Trial and error shows that 1.7i is a good legend height:
+	# Trial and error shows that 4.2c is a good legend height:
 	gmt legend -DJBC+o0/1c+w18c/4.2c -F+p+glightyellow neis.legend --FONT_ANNOT_PRIMARY=10p,Helvetica
 
 	rm neis.legend usgs_quakes_22.txt
