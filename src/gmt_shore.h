@@ -94,6 +94,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int ns;			/* Number of segments to use in current bin */
 	unsigned char node_level[4];
 	unsigned char node_level_g[4];	/* Levels if gronding line Antarctica is used */
+	bool node_riverlake[4];	/* true if the polygon that sets this node is a riverlake (decides how a lake bin is filled) */
 	struct GMT_SHORE_SEGMENT *seg;	/* Array of these segments */
 	struct GSHHS_SIDE *side[4];	/* Has position & id for each side exit/entry */
 	int nside[4];		/* Number of entries per side, including corner */
