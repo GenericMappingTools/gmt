@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# GMT_KNOWN_FAILURE
 # Tests gmt mgd77magref against the values of the original FORTRAN version
 # Because the second term (lithospheric) does not agree it is not included in the comparison
+# The Dst index is fixed (-D-8, the Dst the Fortran version saw) because
+# the Dst values in share/mgd77/Dst_all.wdc were revised in 2019 and the primary and induced
+# magnetospheric terms (Mag_pri, Mag_ind) depend on them
 
 data=2000.08700533
 
 rm -f test_cm4.dat
 for val in 1 2 3 4 5 6 7; do
-	echo -30 45 0 $data | gmt mgd77magref -A+y -Fxyz/$val -Sc1/15 | gmt convert --FORMAT_FLOAT_OUT=%20.10f >> test_cm4.dat
+	echo -30 45 0 $data | gmt mgd77magref -A+y -Fxyz/$val -Sc1/15 -D-8 | gmt convert --FORMAT_FLOAT_OUT=%20.10f >> test_cm4.dat
 done
 
 # Output from the Fortran version
