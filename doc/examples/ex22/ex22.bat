@@ -78,7 +78,7 @@ gmt begin ex22
 	echo L 12p,Times-Italic LB %me% >> neis.legend
 
 	REM OK, now we can actually run gmt legend.  We center the legend below the map.
-	REM Trial and error shows that 4.2.7i is a good legend height:
+	REM Trial and error shows that 4.2c is a good legend height:
 	gmt legend -DJBC+o0/1c+w18c/4.2c -F+p+glightyellow neis.legend
 
 	del neis.legend usgs_quakes_22.txt
