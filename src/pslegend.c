@@ -717,14 +717,18 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 
 						case 'D':	/* Delimiter record: D offset pen [-|=|+] */
 							txt_c[0] = '\0';
-							sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
+							n = sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
+							if (n == 2 && strchr ("-=+", txt_b[0])) strcpy (txt_c, txt_b);	/* Offset was skipped: D pen flag */
 							if (!(txt_c[0] == '-' || txt_c[0] == '=')) height += quarter_line_spacing;
 							if (!(txt_c[0] == '+' || txt_c[0] == '=')) height += quarter_line_spacing;
 							column_number = 0;
 							break;
 
 						case 'G':	/* Gap record */
-							sscanf (&line[2], "%s", txt_a);
+							if (strlen (line) < 3 || sscanf (&line[2], "%s", txt_a) != 1) {
+								GMT_Report (API, GMT_MSG_ERROR, "Not enough arguments given to G operator\n");
+								Return (GMT_RUNTIME_ERROR);
+							}
 							height += (txt_a[strlen(txt_a)-1] == 'l') ? atof (txt_a) * one_line_spacing : gmt_M_to_inch (GMT, txt_a);
 							column_number = 0;
 							break;
@@ -1239,7 +1243,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							break;
 
 						case 'G':	/* Gap record: G gap (will be filled with current fill[0] setting if active) */
-							sscanf (&line[2], "%s", txt_a);
+							if (strlen (line) < 3 || sscanf (&line[2], "%s", txt_a) != 1) {
+								GMT_Report (API, GMT_MSG_ERROR, "Not enough arguments given to G operator\n");
+								Return (GMT_RUNTIME_ERROR);
+							}
 							row_height = (txt_a[strlen(txt_a)-1] == 'l') ? atof (txt_a) * one_line_spacing : gmt_M_to_inch (GMT, txt_a);
 							pslegend_fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 							row_base_y -= row_height;
