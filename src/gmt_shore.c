@@ -808,6 +808,13 @@ GMT_LOCAL void gmtshore_flag_riverlake_nodes (struct GMT_SHORE *c, int node_ID[]
 		c->node_riverlake[k] = (c->node_level[k] == 2 && node_ID[k] >= 0 && c->GSHHS_area[node_ID[k]] < 0.0);
 }
 
+GMT_LOCAL void gmtshore_cap_node_ID (struct GMT_SHORE *c, int node_ID[], int level[]) {
+	/* If max_level capped a node level, move node_ID up to the polygon that sets the capped level */
+	int k, n;
+	for (k = 0; k < 4; k++)
+		for (n = level[k]; n > (int)c->node_level[k] && node_ID[k] >= 0; n--) node_ID[k] = c->GSHHS_parent[node_ID[k]];
+}
+
 GMT_LOCAL bool gmtshore_lake_skipped (struct GMT_SHORE *c, bool riverlake) {
 	/* True if -A+l (no riverlakes) or -A+r (no lakes) excludes this kind of lake */
 	return ((c->flag == GSHHS_NO_LAKES && !riverlake) || (c->flag == GSHHS_NO_RIVERLAKES && riverlake));
@@ -820,7 +827,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 /* max_level: Polygons with higher levels are ignored */
 	size_t start[1], count[1];
 	int *seg_info = NULL, *seg_start = NULL, *seg_ID = NULL;
-	int s, i, k, ny, err, level, inc[4], ll_node, node, ID, node_ID[4], *seg_skip = NULL;
+	int s, i, k, ny, err, level, inc[4], ll_node, node, ID, node_ID[4], node_lev[4], node_lev_g[4], *seg_skip = NULL;
 	bool may_shrink = false;
 	unsigned short corner[4], bitshift[4] = {9, 6, 3, 0};
 	signed char *seg_info_ANT = NULL;
@@ -828,8 +835,10 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 
 	for (k = 0; k < 4; k++) {	/* Extract node corner levels */
 		corner[k] = ((unsigned short)c->bin_info[b] >> bitshift[k]) & 7;
+		node_lev[k] = corner[k];	/* Stored level, before any max_level cap */
 		c->node_level[k] = (unsigned char)MIN (corner[k], c->max_level);
 		corner[k] = ((unsigned short)c->bin_info_g[b] >> bitshift[k]) & 7;
+		node_lev_g[k] = corner[k];
 		c->node_level_g[k] = (unsigned char)MIN (corner[k], c->max_level);
 	}
 	dx = c->bin_size / 60.0;
@@ -853,6 +862,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	for (k = 0; k < 4; k++) node_ID[k] = c->GSHHS_node[ll_node + inc[k]];	/* GSHHS Id of the polygon that determined the level of each node */
 
 	if (c->bin_nseg[b] == 0) {	/* No segments, but the bin may be entirely inside a riverlake */
+		gmtshore_cap_node_ID (c, node_ID, node_lev);
 		gmtshore_flag_riverlake_nodes (c, node_ID);
 		return (GMT_NOERROR);
 	}
@@ -876,18 +886,20 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		for (k = 0; k < 4; k++) {	/* Visit all four nodes defining this bin, going counter-clockwise from lower-left bin */
 			node = ll_node + inc[k];	/* Current node index */
 			ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
-			while (ID >= 0 && c->node_level[k] && fabs (c->GSHHS_area[ID]) < c->min_area) {	/* Polygon must be skipped and node level reset */
+			while (ID >= 0 && node_lev[k] && fabs (c->GSHHS_area[ID]) < c->min_area) {	/* Polygon must be skipped and node level reset */
 				ID = c->GSHHS_parent[ID];	/* Pick the parent polygon since that is the next polygon up */
 				if (c->lat_sw < -60.0) {	/* Special check for Antarctica due to the two versions of the continent */
-					if (c->node_level[k] != c->node_level_g[k])
-						c->node_level[k]--;		/* ...and drop down one level to that of the parent polygon */
+					if (node_lev[k] != node_lev_g[k])
+						node_lev[k]--;		/* ...and drop down one level to that of the parent polygon */
 				}
 				else	/* Not in Antarctica and we need to drop the level as we lost that polygon that covered this node */
-					c->node_level[k]--;		/* ...and drop down one level to that of the parent polygon */
+					node_lev[k]--;		/* ...and drop down one level to that of the parent polygon */
 			}	/* Keep doing this until the polygon containing the node is "too big to fail" or we are in the ocean */
 			node_ID[k] = ID;	/* The polygon that now determines the level of this node */
+			c->node_level[k] = (unsigned char)MIN (node_lev[k], c->max_level);	/* The cap is applied after the walk so it does not drop a level twice */
 		}
 	}
+	gmtshore_cap_node_ID (c, node_ID, node_lev);
 
 	/* Here the node_level has been properly set but any polygons to be skipped have not been skipped yet; this happens below */
 
