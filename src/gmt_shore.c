@@ -739,17 +739,16 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 		return (err);
 	}
-	if (c->min_area > 0.0 || (info->flag & GSHHS_NO_RIVERLAKES) || (info->flag & GSHHS_NO_LAKES)) {	/* Want to exclude small polygons so we need info about the node polygons, or need info about lakes */
-	        if ((err = nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes))) {
-			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
-			return (err);
-		}
-		if ((c->GSHHS_node = gmt_M_memory (GMT, NULL, c->n_nodes, int)) == NULL) return GMT_MEMORY_ERROR;
-		count[0] = c->n_nodes;
-		if ((err = nc_get_vara_int (c->cdfid, c->GSHHS_node_id, start, count, c->GSHHS_node))) {
-			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
-			return (err);
-		}
+	/* Always need the node polygons: to exclude small polygons or lakes, and to tell if a bin inside a lake is inside a riverlake */
+	if ((err = nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes))) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		return (err);
+	}
+	if ((c->GSHHS_node = gmt_M_memory (GMT, NULL, c->n_nodes, int)) == NULL) return GMT_MEMORY_ERROR;
+	count[0] = c->n_nodes;
+	if ((err = nc_get_vara_int (c->cdfid, c->GSHHS_node_id, start, count, c->GSHHS_node))) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		return (err);
 	}
 
 	/* Get bin variables, then extract only those corresponding to the bins to use */
@@ -802,6 +801,20 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL void gmtshore_flag_riverlake_nodes (struct GMT_SHORE *c, int ll_node, int inc[]) {
+	/* Flag the bin nodes inside a riverlake since that sets how a lake bin is filled */
+	int k, ID;
+	for (k = 0; k < 4; k++) {
+		ID = c->GSHHS_node[ll_node + inc[k]];	/* Polygon that determined the level of this node */
+		c->node_riverlake[k] = (c->node_level[k] == 2 && ID >= 0 && c->GSHHS_area[ID] < 0.0);
+	}
+}
+
+GMT_LOCAL bool gmtshore_lake_skipped (struct GMT_SHORE *c, bool riverlake) {
+	/* True if -A+l (no riverlakes) or -A+r (no lakes) excludes this kind of lake */
+	return ((c->flag == GSHHS_NO_LAKES && !riverlake) || (c->flag == GSHHS_NO_RIVERLAKES && riverlake));
+}
+
 int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c) {
 /* b: index number into c->bins */
 /* min_area: Polygons with area less than this are ignored */
@@ -836,10 +849,13 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	e = w + dx;
 	c->leftmost_bin = ((w <= GMT->common.R.wesn[XLO]) && (e > GMT->common.R.wesn[XLO]));
 
-	if (c->bin_nseg[b] == 0) return (GMT_NOERROR);
-
 	ll_node = ((c->bins[b] / c->bin_nx) + 1) * (c->bin_nx + 1) + (c->bins[b] % c->bin_nx);		/* lower-left node in current bin */
 	inc[0] = 0;	inc[1] = 1;	inc[2] = 1 - (c->bin_nx + 1);	inc[3] = -(c->bin_nx + 1);	/* Relative incs to other nodes */
+
+	if (c->bin_nseg[b] == 0) {	/* No segments, but the bin may be entirely inside a riverlake */
+		gmtshore_flag_riverlake_nodes (c, ll_node, inc);
+		return (GMT_NOERROR);
+	}
 
 	/* Trying to address issue https://github.com/GenericMappingTools/gmt/issues/1295.
 	 * It only happens for very large -A values, such as -A8000.  I am trying a fix where
@@ -873,6 +889,8 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	}
 
 	/* Here the node_level has been properly set but any polygons to be skipped have not been skipped yet; this happens below */
+
+	gmtshore_flag_riverlake_nodes (c, ll_node, inc);
 
 	start[0] = c->bin_firstseg[b];
 	count[0] = c->bin_nseg[b];
@@ -933,7 +951,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	}
 	if (c->skip_feature) {	/* Must ensure that we skip all features contained by a skipped riverlake/lake */
 		int j, feature;
-		if (c->flag == GSHHS_NO_LAKES && c->node_level[0] == c->node_level[1] && c->node_level[2] == c->node_level[3] && c->node_level[0] == c->node_level[3] && c->node_level[0] == 2) {	/* Bin is entirely inside a lake */
+		if (c->node_level[0] == c->node_level[1] && c->node_level[2] == c->node_level[3] && c->node_level[0] == c->node_level[3] && c->node_level[0] == 2 && gmtshore_lake_skipped (c, c->node_riverlake[0])) {	/* Bin is entirely inside a lake or riverlake to be skipped */
 			for (i = 0; i < c->bin_nseg[b]; i++) seg_skip[i] = true;	/* Must skip all segments in the lake */
 			c->node_level[0] = c->node_level[1] = c->node_level[2] = c->node_level[3] = 1;	/* Bin is now entirely inside land */
 		}
@@ -1279,8 +1297,8 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 
 	if (completely_inside && use_this_level) {	/* Must include path of this bin's outline as our first polygon, e.g., there may be no segments here but we are in the middle of a continent (or lake) */
 		p[0].n = (int)gmt_graticule_path (GMT, &p[0].lon, &p[0].lat, dir, true, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
-		p[0].level = (c->node_level[0] == 2 && c->flag == GSHHS_NO_LAKES) ? 1 : c->node_level[0];	/* Any corner will do */
-		p[0].fid = p[0].level;	/* Override: Assumes no riverlake is that big to contain an entire bin */
+		p[0].level = (c->node_level[0] == 2 && gmtshore_lake_skipped (c, c->node_riverlake[0])) ? 1 : c->node_level[0];	/* Any corner will do */
+		p[0].fid = (p[0].level == 2 && c->node_riverlake[0]) ? RIVERLAKE : p[0].level;	/* A bin entirely inside a riverlake must be filled as one */
 		p[0].interior = false;
 		P = 1;
 	}
@@ -1303,7 +1321,7 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 		p[P].lon = gmt_M_memory (GMT, NULL, n_alloc, double);
 		p[P].lat = gmt_M_memory (GMT, NULL, n_alloc, double);
 		n = gmtshore_copy_to_shore_path (p[P].lon, p[P].lat, c, id);			/* Creates a lon-lat path from the segment */
-		if ((int)c->seg[id].level < low_level) low_level = c->seg[id].level;	/* Update the lowest level involved */
+		if ((int)c->seg[id].level < low_level) {low_level = c->seg[id].level; fid = c->seg[id].fid;}	/* Update the lowest level involved and how to fill it */
 		more = true;	/* Until we are done with all segments */
 		first_pos = gmtshore_get_position (start_side, c->seg[id].dx[0], c->seg[id].dy[0]);	/* This is the relative starting position (0-65535) on the start side for current segment */
 		/* Remember, the segments have been sorted along each side according to entry position */
@@ -1324,7 +1342,7 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 					n += add;
 				}
 				next_side = ((id + 4) + dir + 4) % 4;	/* This will go to the next side either CCW or CW, depending on dir */
-				if ((int)c->node_level[nid] < low_level) low_level = c->node_level[nid];	/* Update lowest level involved */
+				if ((int)c->node_level[nid] < low_level) {low_level = c->node_level[nid]; fid = (low_level == 2 && c->node_riverlake[nid]) ? RIVERLAKE : low_level;}	/* Update lowest level involved and how to fill it */
 			}
 			else {	/* Found a segment to add to our polygon */
 				gmtshore_to_degree (c, c->seg[id].dx[0], c->seg[id].dy[0], &plon, &plat);	/* Get lon,lat of start of segment */
@@ -1346,7 +1364,7 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 					p[P].lat = gmt_M_memory (GMT, p[P].lat, n_alloc, double);
 					n += gmtshore_copy_to_shore_path (&p[P].lon[n], &p[P].lat[n], c, id);
 					next_side = c->seg[id].exit;	/* Update which side we are on after adding the segment */
-					if ((int)c->seg[id].level < low_level) low_level = c->seg[id].level;	/* Update lowest level involved */
+					if ((int)c->seg[id].level < low_level) {low_level = c->seg[id].level; fid = c->seg[id].fid;}	/* Update lowest level involved and how to fill it */
 				}
 			}
 			if (add) {	/* Free temporary variables if used */
@@ -1564,7 +1582,7 @@ void gmt_shore_cleanup (struct GMT_CTRL *GMT, struct GMT_SHORE *c) {
 	gmt_M_free (GMT, c->bin_firstseg);
 	gmt_M_free (GMT, c->GSHHS_area);
 	gmt_M_free (GMT, c->GSHHS_area_fraction);
-	if (c->min_area > 0.0) gmt_M_free (GMT, c->GSHHS_node);
+	gmt_M_free (GMT, c->GSHHS_node);
 	gmt_M_free (GMT, c->GSHHS_parent);
 	gmt_nc_close (GMT, c->cdfid);
 }
