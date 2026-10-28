@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Added after issue #672 which exposed a map jump that should not happen
 # Fixed in r14052 but we keep this test in case it resurfaces
-# Well, bottom panel plots the wrong closed polygon
 ps=nojump.ps
 cat << EOF > t.txt
 115 -20
