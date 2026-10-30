@@ -1529,7 +1529,7 @@ void gmt_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsigned int mo
 	 * By default, path_mode = GMT_RESAMPLE_PATH = 0. */
 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Geographic data: Default is to resample along great circles unless -A given */
-		if (active && mode == GMT_STAIRS_OFF) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
+		if (active && mode == GMT_STAIRS_OFF) GMT->current.map.path_mode = GMT_STRAIGHT_PATH;	/* Turn off resampling and join points by straight lines on the map */
 	}
 	else {	/* Cartesian data: Default is to leave alone unless -Ax|y was set */
 		if (!active) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */

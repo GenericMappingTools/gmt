@@ -134,6 +134,9 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+/* With -A geographic points are joined by straight lines on the map, so these are never split or wrapped */
+#define gmtmap_straight_path(GMT) (GMT->current.map.path_mode == GMT_STRAIGHT_PATH && gmt_M_is_geographic (GMT, GMT_IN) && (gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT)))
+
 /* We put all the declaration of external functions from gmt_proj.h here since
  * (a) they are only called in gmt_map.c so no need to go in gmt_internals.h
  * (b) this will change completely when proj4 is relacing gmt_proj in GMT 6.
@@ -658,7 +661,10 @@ GMT_LOCAL bool gmtmap_wesn_outside (struct GMT_CTRL *GMT, double lon, double lat
 	 * 360 degrees. In that case GMT->current.map.lon_wrap will be temporarily set to false.
 	 */
 
-	if (GMT->current.map.lon_wrap) {
+	if (gmtmap_straight_path (GMT)) {	/* Straight lines on the map: use the longitude as it is plotted */
+		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon, lon);	lon += GMT->current.proj.central_meridian;
+	}
+	else if (GMT->current.map.lon_wrap) {
 		while (lon < GMT->common.R.wesn[XLO] && (lon + GMT->current.map.lon_wrap_range) <= GMT->common.R.wesn[XHI]) lon += GMT->current.map.lon_wrap_range;
 		while (lon > GMT->common.R.wesn[XHI] && (lon - GMT->current.map.lon_wrap_range) >= GMT->common.R.wesn[XLO]) lon -= GMT->current.map.lon_wrap_range;
 	}
@@ -806,7 +812,11 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 	 * then move the western-most point east if it is further than 180 degrees away.
 	 * This may cause the points to span the eastern boundary */
 
-	if (GMT->current.map.lon_wrap) {
+	if (gmtmap_straight_path (GMT)) {	/* Straight lines on the map: use the longitudes as they are plotted, no short-way wrapping */
+		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon0, lon0);	lon0 += GMT->current.proj.central_meridian;
+		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon1, lon1);	lon1 += GMT->current.proj.central_meridian;
+	}
+	else if (GMT->current.map.lon_wrap) {
 		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += GMT->current.map.lon_wrap_range;
 		while (lon0 > GMT->common.R.wesn[XHI]) lon0 -= GMT->current.map.lon_wrap_range;
 		while (lon1 < GMT->common.R.wesn[XLO]) lon1 += GMT->current.map.lon_wrap_range;
@@ -855,7 +865,7 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 	}
 
 	/* Now adjust the longitudes so that they might span the western boundary */
-	if (GMT->current.map.lon_wrap && MAX(lon0, lon1) > GMT->common.R.wesn[XHI]) {
+	if (GMT->current.map.lon_wrap && !gmtmap_straight_path (GMT) && MAX(lon0, lon1) > GMT->common.R.wesn[XHI]) {
 		lon0 -= GMT->current.map.lon_wrap_range; lon1 -= GMT->current.map.lon_wrap_range;
 	}
 	else if (GMT->current.map.lat_wrap && MAX(lat0, lat1) > GMT->common.R.wesn[YHI]) {
@@ -1150,6 +1160,8 @@ GMT_LOCAL int gmtmap_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double 
 	/* true if x-distance between points exceeds 1/2 map width at this y value */
 	double dx, map_half_size, half_lon_range;
 
+	if (gmtmap_straight_path (GMT)) return (0);	/* Straight lines are never split */
+
 	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with periodic boundaries may apply */
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
@@ -1183,6 +1195,8 @@ GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double
 	/* true if x- or y-distance between points exceeds 1/2 map width at this y value or map height */
 	bool periodic;
 	double dx, dy, map_half_width, map_half_height;
+
+	if (gmtmap_straight_path (GMT)) return (0);	/* Straight lines are never split */
 
 	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with periodic boundaries may apply */
 
@@ -1804,7 +1818,7 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		}
 	}
 	else {	/* Don't let points be > 180 from center longitude */
-		double mid_lon = 0.5 * (border[GMT_LEFT] + border[GMT_RIGHT]), diff;
+		double mid_lon = (gmtmap_straight_path (GMT)) ? GMT->current.proj.central_meridian : 0.5 * (border[GMT_LEFT] + border[GMT_RIGHT]), diff;
 		for (i = 0; i < n; i++) {
 			diff = lon[i] - mid_lon;
 			if (diff > 180.0) lon[i] -= 360.0;
@@ -2223,9 +2237,15 @@ GMT_LOCAL bool gmtmap_rect_overlap (struct GMT_CTRL *GMT, double lon0, double la
 /*! . */
 GMT_LOCAL bool gmtmap_wesn_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1) {
 	/* Return true if either of the points (lon0,lat0) and (lon1,lat1) is inside (not on) the rectangular lon/lat boundaries */
+	bool straight = gmtmap_straight_path (GMT);
+	if (straight) {	/* Straight lines on the map: use the longitudes as they are plotted, no short-way wrapping */
+		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon0, lon0);	lon0 += GMT->current.proj.central_meridian;
+		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon1, lon1);	lon1 += GMT->current.proj.central_meridian;
+	}
 	if (lon0 > lon1) gmt_M_double_swap (lon0, lon1);
 	if (lat0 > lat1) gmt_M_double_swap (lat0, lat1);
-	if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV8_LIMIT) {
+	if (straight) { /* Nothing */ }
+	else if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV8_LIMIT) {
 		lon0 += 360.0;
 		lon1 += 360.0;
 	}
@@ -5649,7 +5669,7 @@ GMT_LOCAL bool gmtmap_will_it_wrap_x (struct GMT_CTRL *GMT, double *x, double *y
 	bool wrap;
 	double w_last, w_this;
 
-	if (!GMT->current.map.is_world) return (false);
+	if (!GMT->current.map.is_world || gmtmap_straight_path (GMT)) return (false);
 	//if (!GMT->current.map.is_world)
 	//	f = (2.0 - GMT_CONV8_LIMIT);
 	w_this = gmt_half_map_width (GMT, y[0]);
@@ -8286,7 +8306,7 @@ GMT_LOCAL bool gmtmap_accept_the_jump (struct GMT_CTRL *GMT, double lon1, double
 	double dlon0, dlon1, dlon;
 	int xm, ym;
 	gmt_M_unused(xx);
-	if (cartesian) return true;	/* No wrap issues if Cartesian x,y */
+	if (cartesian || gmtmap_straight_path (GMT)) return true;	/* No wrap issues if Cartesian x,y or straight lines */
 	xm = GMT->current.map.this_x_status - GMT->current.map.prev_x_status;
 	ym = GMT->current.map.this_y_status - GMT->current.map.prev_y_status;
 	gmt_M_set_delta_lon (lon0, GMT->current.proj.central_meridian, dlon0);
@@ -8371,7 +8391,7 @@ uint64_t gmt_geo_to_xy_line(struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		}
 
 		if ((nx = gmtmap_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Do nothing if we get crossings*/ }
-		else if (GMT->current.map.is_world &&	/* Check global wrapping if 360 range */
+		else if (GMT->current.map.is_world && !gmtmap_straight_path (GMT) &&	/* Check global wrapping if 360 range */
 			!(gmt_M_is_azimuthal (GMT) && !gmt_M_is_perspective (GMT)))	/* Azimuthal projections (except ortho/genper) have a closed boundary; cylindrical wrap check makes spurious chord crossings (#8684) */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 
