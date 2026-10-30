@@ -1,16 +1,26 @@
 **-A**\ [**x**\|\ **y**]
-    By default, geographic line segments are drawn as great circle arcs by resampling
-    coarse input data along such arcs. To disable this sampling and draw them as
-    straight lines, use the |-A| flag.  For Cartesian data, points are simply connected.
-    To adjust these behaviors, append a directive:
+    Control how consecutive geographic points are connected:
 
-    - **x** - First follow *x*, then *y* for staircase curves.
-    - **y** - First follow *y*, then *x* for staircase curves.
+    - Without |-A|, two points are joined along the shorter great circle arc (e.g., from
+      longitude 0 to 181 the line passes through the western hemisphere).  To follow the
+      longer arc instead, add an intermediate point on that side.  Antipodal points have no
+      unique great circle and cause an error.
+    - With |-A|, the points are joined by straight lines on the map, as in a Cartesian
+      plot, so the result depends on the map projection and region (e.g., rhumb lines on a
+      Mercator map).  These lines are not split at the map edges, so for data that cross the
+      east or west edge of a global map (e.g., tracks across the Dateline) either omit |-A|,
+      center the map on the data, or split the data at that edge.
+
+    For Cartesian data, points are simply connected by straight lines.  For either kind of
+    data, append a directive to draw staircase curves instead:
+
+    - **x** - First follow *x*, then *y*.
+    - **y** - First follow *y*, then *x*.
 
     Here, *x* and *y* have the following meanings:
 
     - For Cartesian projections, *x* and *y* are the X- and Y-axis.
-    - For gragraphic projections, *x* and *y* are parallels and meridians.
+    - For geographic projections, *x* and *y* are parallels and meridians.
     - For polar projections, *x* and *y* are theta and radius.
 
     When used together with |-S|\ **v** (Cartesian vectors), the **x** and **y**
