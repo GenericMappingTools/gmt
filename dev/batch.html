@@ -543,15 +543,15 @@ are all completed we determine the standard deviation in the results.  To replic
 <span class="s">    gmt grdcut -R-10/20/-10/20 @earth_relief_02m -Gdata.grd</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">    gmt grdfilter data.grd -Fg${BATCH_COL0}+h -G${BATCH_NAME}.grd -D2</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; post.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; post.sh</span>
 <span class="s">gmt begin ${BATCH_PREFIX} pdf</span>
 <span class="s">    gmt grdmath ${BATCH_PREFIX}_*.grd -S STD = ${BATCH_PREFIX}_std.grd</span>
-<span class="s">    gmt grdimage ${BATCH_PREFIX}_std.grd -B -B+t&quot;STD of Gaussians residuals&quot; -Chot</span>
+<span class="s">    gmt grdimage ${BATCH_PREFIX}_std.grd -B -B+t"STD of Gaussians residuals" -Chot</span>
 <span class="s">    gmt coast -Wthin,white</span>
 <span class="s">gmt end show</span>
 <span class="s">EOF</span>
@@ -576,17 +576,17 @@ the EOF tag in quotes which prevent the un-escaped variables from being interpre
 <span class="s">    gmt coast -E=EU+l &gt; countries.txt</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">gmt begin ${BATCH_NAME} pdf</span>
-<span class="s">    gmt coast -R${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t&quot;${BATCH_WORD1}&quot; -E${BATCH_WORD0}+gred+p0.5p</span>
+<span class="s">    gmt coast -R${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t"${BATCH_WORD1}" -E${BATCH_WORD0}+gred+p0.5p</span>
 <span class="s">    echo ${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; post.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; post.sh</span>
 <span class="s">gmt psconvert -TF -F${BATCH_PREFIX} ${BATCH_PREFIX}_*.pdf</span>
 <span class="s">rm -f ${BATCH_PREFIX}_*.pdf</span>
 <span class="s">EOF</span>
-gmt<span class="w"> </span>batch<span class="w"> </span>main.sh<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-Sfpost.sh<span class="w"> </span>-Tcountries.txt+w<span class="s2">&quot;\t&quot;</span><span class="w"> </span>-Ncountries<span class="w"> </span>-V<span class="w"> </span>-W<span class="w"> </span>-Z
+gmt<span class="w"> </span>batch<span class="w"> </span>main.sh<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-Sfpost.sh<span class="w"> </span>-Tcountries.txt+w<span class="s2">"\t"</span><span class="w"> </span>-Ncountries<span class="w"> </span>-V<span class="w"> </span>-W<span class="w"> </span>-Z
 </pre></div>
 </div>
 <p>&lt;Here, the postflight script may not even be a GMT script. In our case we simply run psconvert (which just calls gs
@@ -621,7 +621,7 @@ for various solutions.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

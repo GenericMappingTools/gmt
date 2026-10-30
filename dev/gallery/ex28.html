@@ -194,7 +194,7 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex28
 <span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="m">155</span>:16:20W<span class="w"> </span><span class="m">19</span>:26:20N<span class="w"> </span>KILAUEA<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p,Helvetica-Bold+jCB
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>--FONT_ANNOT_PRIMARY<span class="o">=</span>9p<span class="w"> </span>-LjRB+c19:23N+f+w5k+l1:160,000+u+o0.5c<span class="w"> </span>--FONT_LABEL<span class="o">=</span>10p
 <span class="w">	</span><span class="c1"># Annotate in km but append ,000m to annotations to get customized meter labels</span>
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R@Kilauea.utm.nc+Uk<span class="w"> </span>-Jx1:160<span class="w"> </span>-B5g5+u<span class="s2">&quot;@:8:000m@::&quot;</span><span class="w"> </span>-BWSne<span class="w"> </span>--FONT_ANNOT_PRIMARY<span class="o">=</span>10p<span class="w"> </span><span class="se">\</span>
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R@Kilauea.utm.nc+Uk<span class="w"> </span>-Jx1:160<span class="w"> </span>-B5g5+u<span class="s2">"@:8:000m@::"</span><span class="w"> </span>-BWSne<span class="w"> </span>--FONT_ANNOT_PRIMARY<span class="o">=</span>10p<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>--MAP_GRID_CROSS_SIZE_PRIMARY<span class="o">=</span><span class="m">0</span>.25c<span class="w"> </span>--FONT_LABEL<span class="o">=</span>10p
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -219,7 +219,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

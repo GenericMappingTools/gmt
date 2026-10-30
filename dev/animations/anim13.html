@@ -184,14 +184,14 @@ includes a source map and some metadata, plus a timer and progress indicator.</p
 <span class="c1"># The 66-sec, 1561 frame movie took ~15 minutes to render on a 24-core MacPro 2013.</span>
 
 <span class="c1"># 0. Create an include file with key parameters</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; inc.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; inc.sh</span>
 <span class="s">TIME_RANGE=2020-10-06T05:55:10/2020-10-06T05:56:15</span>
 <span class="s">PLOT_DOMAIN=2020-10-06T05:55:10/2020-10-06T05:56:15/-2.6/2.8</span>
 <span class="s">DPI=200i</span>
 <span class="s">SPLINE=linear</span>
 <span class="s">EOF</span>
 <span class="c1"># 1. Create a dense point-file from the waveform data</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# 1a. Create dense point-files from the waveform data components so we can animate the lines</span>
 <span class="s">	gmt events @waveform_AV.DOL.txt -R${PLOT_DOMAIN} -JX20cT/3.5c -Ar${DPI} -i0,1+s1e-6,0 -f2T --GMT_INTERPOLANT=${SPLINE} &gt; E.txt</span>
@@ -201,11 +201,11 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</s
 <span class="s">	gmt math -T${TIME_RANGE}/24+i -o0 T --TIME_UNIT=s --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx = times.txt</span>
 <span class="s">	# 1c. Lay down the static part of the subplot</span>
 <span class="s">	gmt subplot begin 3x1 -Fs18.25c/3.5c -A -M0 -R${PLOT_DOMAIN} -X5.5c -Y0.75c</span>
-<span class="s">		gmt subplot set 0 -A&quot;Z&quot;</span>
+<span class="s">		gmt subplot set 0 -A"Z"</span>
 <span class="s">		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWsrt -W0.5p,darkgray -i0,3+s1e-6</span>
-<span class="s">		gmt subplot set 1 -A&quot;N&quot;</span>
+<span class="s">		gmt subplot set 1 -A"N"</span>
 <span class="s">		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWsrt -W0.5p,darkgray -i0,2+s1e-6</span>
-<span class="s">		gmt subplot set 2 -A&quot;E&quot;</span>
+<span class="s">		gmt subplot set 2 -A"E"</span>
 <span class="s">		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,1+s1e-6</span>
 <span class="s">	gmt subplot end</span>
 <span class="s">	# 1d. Create location map and metadata</span>
@@ -225,21 +225,21 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</s
 gmt<span class="w"> </span>end
 EOF
 <span class="c1"># 2. Set up main movie script</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">gmt begin</span>
-<span class="s">	gmt set FORMAT_DATE_MAP &quot;o dd yyyy&quot; FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p TIME_INTERVAL_FRACTION 0.01 FORMAT_CLOCK_MAP hh:mm:ss</span>
+<span class="s">	gmt set FORMAT_DATE_MAP "o dd yyyy" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p TIME_INTERVAL_FRACTION 0.01 FORMAT_CLOCK_MAP hh:mm:ss</span>
 <span class="s">	gmt subplot begin 3x1 -Fs18.25c/3.5c -D -M0 -R${PLOT_DOMAIN} -X5.5c -Y0.75c</span>
 <span class="s">		gmt events Z.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T${MOVIE_COL0} -c</span>
-<span class="s">		printf &quot;%s -2.6\n%s 2.8\n&quot; ${MOVIE_COL0} ${MOVIE_COL0} | gmt plot -W0.5p</span>
+<span class="s">		printf "%s -2.6\n%s 2.8\n" ${MOVIE_COL0} ${MOVIE_COL0} | gmt plot -W0.5p</span>
 <span class="s">		gmt events N.txt -Sc0.5p -Ggreen -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T${MOVIE_COL0} -c</span>
-<span class="s">		printf &quot;%s -2.6\n%s 2.8\n&quot; ${MOVIE_COL0} ${MOVIE_COL0} | gmt plot -W0.5p</span>
+<span class="s">		printf "%s -2.6\n%s 2.8\n" ${MOVIE_COL0} ${MOVIE_COL0} | gmt plot -W0.5p</span>
 <span class="s">		gmt events E.txt -Sc0.5p -Gblue -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T${MOVIE_COL0} -c</span>
-<span class="s">		printf &quot;%s -2.6\n%s 2.8\n&quot; ${MOVIE_COL0} ${MOVIE_COL0} | gmt plot -W0.5p</span>
+<span class="s">		printf "%s -2.6\n%s 2.8\n" ${MOVIE_COL0} ${MOVIE_COL0} | gmt plot -W0.5p</span>
 <span class="s">	gmt subplot end</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie</span>
-gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> </span>-Iinc.sh<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-CHD<span class="w"> </span>-Ttimes.txt<span class="w"> </span>-Nanim13<span class="w"> </span>-Lc0+jTR+o0.25/0.25c<span class="w"> </span>-Ls<span class="s2">&quot;Station: Dolgoi Island, Mount Dutton, Alaska&quot;</span>+jTL+o5.5c/0.25c<span class="w"> </span>-H8<span class="w"> </span>-Pb+w0.4c+jBR<span class="w"> </span>-Fmp4<span class="w"> </span>-V<span class="w"> </span>-W<span class="w"> </span>-Zs<span class="w"> </span>-M500,png<span class="w"> </span>--FORMAT_DATE_MAP<span class="o">=</span>-
+gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> </span>-Iinc.sh<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-CHD<span class="w"> </span>-Ttimes.txt<span class="w"> </span>-Nanim13<span class="w"> </span>-Lc0+jTR+o0.25/0.25c<span class="w"> </span>-Ls<span class="s2">"Station: Dolgoi Island, Mount Dutton, Alaska"</span>+jTL+o5.5c/0.25c<span class="w"> </span>-H8<span class="w"> </span>-Pb+w0.4c+jBR<span class="w"> </span>-Fmp4<span class="w"> </span>-V<span class="w"> </span>-W<span class="w"> </span>-Zs<span class="w"> </span>-M500,png<span class="w"> </span>--FORMAT_DATE_MAP<span class="o">=</span>-
 </pre></div>
 </div>
 <div class="video_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
@@ -258,7 +258,7 @@ gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> 
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

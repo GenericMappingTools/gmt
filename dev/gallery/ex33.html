@@ -167,7 +167,7 @@ profile, showed above the map, with the gray area representing the
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
 <span class="c1">#               GMT EXAMPLE 33</span>
 <span class="c1">#</span>
-<span class="c1"># Purpose:      Illustrate grdtrack&#39;s new cross-track and stacking options</span>
+<span class="c1"># Purpose:      Illustrate grdtrack's new cross-track and stacking options</span>
 <span class="c1"># GMT modules:  grdcut, makecpt, convert, grdimage, grdtrack, text, plot</span>
 <span class="c1"># Unix progs:   cat, rm</span>
 <span class="c1">#</span>
@@ -190,8 +190,8 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex33
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-W0.5p<span class="w"> </span>table.txt
 <span class="w">	</span><span class="c1"># Show upper/lower 2-sigma confidence bounds encountered as an envelope</span>
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R-200/200/-3500/-2000<span class="w"> </span>-JX15c/7.5c<span class="w"> </span>-W3p<span class="w"> </span>stack.txt<span class="w"> </span>-i0,1,5,6<span class="w"> </span>-L+b<span class="w"> </span>-Glightgray<span class="w"> </span>-Yh+3c
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w">  </span>-Bxafg1000+l<span class="s2">&quot;Distance from ridge (km)&quot;</span><span class="w"> </span>-Byaf+l<span class="s2">&quot;Depth (m)&quot;</span><span class="w"> </span>-BWSne
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MEDIAN STACKED PROFILE&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-Gwhite<span class="w"> </span>-F+cTC+f14p<span class="w"> </span>-Dj8p
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w">  </span>-Bxafg1000+l<span class="s2">"Distance from ridge (km)"</span><span class="w"> </span>-Byaf+l<span class="s2">"Depth (m)"</span><span class="w"> </span>-BWSne
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"MEDIAN STACKED PROFILE"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-Gwhite<span class="w"> </span>-F+cTC+f14p<span class="w"> </span>-Dj8p
 <span class="w">	</span><span class="c1"># cleanup</span>
 <span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>ridge.txt<span class="w"> </span>table.txt<span class="w"> </span>stack.txt<span class="w"> </span>spac_33.nc
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -217,7 +217,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

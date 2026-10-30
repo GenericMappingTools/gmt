@@ -181,14 +181,14 @@ in a future version.</p>
 <span class="c1"># The movie took ~9 minute to render on a 24-core MacPro 2013.</span>
 
 <span class="c1"># 1. Create files needed in the loop</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; pre.sh</span>
 <span class="s"># Set up flight path</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt project -C-73.8333/40.75 -E-80.133/25.75 -G1 -Q &gt; flight_path.txt</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt grdimage -JG${MOVIE_COL0}/${MOVIE_COL1}/${MOVIE_WIDTH}+du+z160+a210+t55+v36 \</span>
 <span class="s">	-Rg @earth_night -Xc -Y-5c</span>
@@ -214,7 +214,7 @@ gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> 
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

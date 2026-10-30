@@ -173,9 +173,9 @@ by Federico D. Esteban, University of Buenos Aires, Argentina.</p>
 <span class="c1"># Data: @GCMT_1976-2017_meca.gmt </span>
 <span class="c1">#</span>
 <span class="c1"># The original data file jan76_dec17.ndk can be downloaded and rearranged to a gmt format with the following commands:</span>
-<span class="c1"># URL=&quot;https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/jan76_dec17.ndk&quot;</span>
+<span class="c1"># URL="https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/jan76_dec17.ndk"</span>
 <span class="c1"># gmt which $URL -G </span>
-<span class="c1"># gawk &#39;/^PDE/ {Date=$2; Time=$3; Lat=$4; Long=$5; Depth=$6; getline; Name=$1; getline; getline; Exp=$1; getline; mant=$11; strike1=$12; dip1=$13; rake1=$14; strike2=$15; dip2=$16; rake2=$17; print Long, Lat, Depth, strike1, dip1, rake1, strike2, dip2, rake2, mant, Exp, Date &quot;T&quot; Time, Name}&#39; jan76_dec17.ndk | sed &#39;s/\//-/g&#39; &gt; meca.gmt</span>
+<span class="c1"># gawk '/^PDE/ {Date=$2; Time=$3; Lat=$4; Long=$5; Depth=$6; getline; Name=$1; getline; getline; Exp=$1; getline; mant=$11; strike1=$12; dip1=$13; rake1=$14; strike2=$15; dip2=$16; rake2=$17; print Long, Lat, Depth, strike1, dip1, rake1, strike2, dip2, rake2, mant, Exp, Date "T" Time, Name}' jan76_dec17.ndk | sed 's/\//-/g' &gt; meca.gmt</span>
 <span class="c1"># gmt select meca.gmt -R-75.1/-63/-34.44/-30.35 &gt; GCMT_1976-2017_meca.gmt</span>
 <span class="c1"># The GCMT_1976-2017_meca.gmt file is in the GMT Dataserver cache and can be accessed via @GCMT_1976-2017_meca.gmt</span>
 <span class="c1"># The finished movie is available in our YouTube channel as well:</span>
@@ -211,7 +211,7 @@ gmt<span class="w"> </span><span class="k">select</span><span class="w"> </span>
 <span class="nv">KM</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$Long1</span><span class="w"> </span><span class="nv">$Lat1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>mapproject<span class="w"> </span>-G<span class="nv">$Long2</span>/<span class="nv">$Lat2</span>+uk<span class="w"> </span>-o2<span class="k">)</span>
 <span class="nv">DepthMax</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>info<span class="w"> </span>coupe_I.gmt<span class="w"> </span>-C<span class="w"> </span>-o5<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span>STDIN<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
 <span class="nv">VE</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$KM</span><span class="w"> </span><span class="nv">$H</span><span class="w"> </span>MUL<span class="w"> </span><span class="nv">$W</span><span class="w"> </span>DIV<span class="w"> </span><span class="nv">$DepthMax</span><span class="w"> </span><span class="nv">DIV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>--FORMAT_FLOAT_OUT<span class="o">=</span>%.2g<span class="k">)</span>
-gmt<span class="w"> </span>math<span class="w"> </span>-T<span class="nv">$Angles</span><span class="w"> </span>T<span class="w"> </span>SIND<span class="w"> </span>-o0,1,0<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>math<span class="w"> </span>STDIN<span class="w"> </span>-T<span class="w"> </span>-C0<span class="w"> </span><span class="nv">COSD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gawk<span class="w"> </span><span class="s1">&#39;$0=$0&quot;@.&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>angles.txt
+gmt<span class="w"> </span>math<span class="w"> </span>-T<span class="nv">$Angles</span><span class="w"> </span>T<span class="w"> </span>SIND<span class="w"> </span>-o0,1,0<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>math<span class="w"> </span>STDIN<span class="w"> </span>-T<span class="w"> </span>-C0<span class="w"> </span><span class="nv">COSD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gawk<span class="w"> </span><span class="s1">'$0=$0"@."'</span><span class="w"> </span>&gt;<span class="w"> </span>angles.txt
 <span class="nv">Ha</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$H</span><span class="w"> </span><span class="m">0</span>.7c<span class="w"> </span><span class="nv">SUB</span><span class="w"> </span><span class="o">=</span><span class="k">)</span><span class="w"> </span><span class="c1"># Height of inset with angles</span>
 <span class="nv">Wa</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$Ha</span><span class="w"> </span><span class="nv">$VE</span><span class="w"> </span><span class="nv">DIV</span><span class="w"> </span><span class="o">=</span><span class="k">)</span><span class="w"> </span><span class="c1"># Width of inset with angles (calculated from vertical exaggeration to have same deformation as the profile)</span>
 <span class="c1"># 1. Create background plot and data files needed in the loop</span>
@@ -223,7 +223,7 @@ cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">	# 1b. Create cpt to paint the focal mechanism</span>
 <span class="s">	gmt makecpt -T0/$DepthMax -Chot -I -H &gt; q.cpt</span>
 <span class="s">	# 1c. Draw profile</span>
-<span class="s">	gmt basemap -R0/$KM/0/$DepthMax -JX$W/-$H -Bg25 -BwESn -Bxaf+l&quot;Distance (km)&quot; -Byaf+l&quot;Depth (km)&quot; -X$X -Y$Y</span>
+<span class="s">	gmt basemap -R0/$KM/0/$DepthMax -JX$W/-$H -Bg25 -BwESn -Bxaf+l"Distance (km)" -Byaf+l"Depth (km)" -X$X -Y$Y</span>
 <span class="s">	gmt inset begin -DjLB+w$Wa/$Ha+o0.1c/0.2c -F+p+gwhite+s+r -C0.15c</span>
 <span class="s">		gmt plot angles.txt -Wthinnest,red -Bnw -Bg -R0/1/0/1 -JX?/-? --MAP_FRAME_TYPE=graph -Fr0/0 -i0-1+s0.9</span>
 <span class="s">		gmt text angles.txt -F+f6 -N</span>
@@ -236,7 +236,7 @@ cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">	gmt coast -Df -N1/0.5p -Bf</span>
 <span class="s">	gmt plot tmp_profile -W2p,red</span>
 <span class="s">	gmt plot tmp_profile -Sc0.25c -Gred</span>
-<span class="s">	gmt colorbar -Cq.cpt -DjBR+o1.75c/0.6c+w-6c/0.5c -Baf+l&quot;Focal Depth (km)&quot; -F+p+gwhite+s+r</span>
+<span class="s">	gmt colorbar -Cq.cpt -DjBR+o1.75c/0.6c+w-6c/0.5c -Baf+l"Focal Depth (km)" -F+p+gwhite+s+r</span>
 <span class="s">	gmt inset begin -DjTL+w3.5c+o-0.08c</span>
 <span class="s">		gmt coast -Rg -JG-68.025/-32.01/? -Da -Gwhite -A5000 -Bg -W1/faint -Sdodgerblue2 -C- -N1</span>
 <span class="s">		gmt basemap -R$REGION -J$PROJ -A | gmt plot -Wthin,darkred </span>
@@ -247,9 +247,9 @@ cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt set TIME_UNIT d</span>
-<span class="s">	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R0/$KM/0/$DepthMax -JX$W/-$H -Y$Y -X$X -Z&quot;coupe -Aa$Long1/$Lat1/$Long2/$Lat2+w$Dist -Q -Sc0.3c+f0&quot; -Cq.cpt </span>
-<span class="s">	gmt events coupe_O.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z&quot;meca -Sc0.3c+f0&quot; -Yh+0.3c</span>
-<span class="s">	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z&quot;meca -Sc0.3c+f0&quot; -Cq.cpt</span>
+<span class="s">	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R0/$KM/0/$DepthMax -JX$W/-$H -Y$Y -X$X -Z"coupe -Aa$Long1/$Lat1/$Long2/$Lat2+w$Dist -Q -Sc0.3c+f0" -Cq.cpt </span>
+<span class="s">	gmt events coupe_O.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sc0.3c+f0" -Yh+0.3c</span>
+<span class="s">	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sc0.3c+f0" -Cq.cpt</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie</span>
@@ -274,7 +274,7 @@ rm<span class="w"> </span>coupe_*.gmt<span class="w"> </span>tmp_profile<span cl
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

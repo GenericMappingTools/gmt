@@ -179,7 +179,7 @@ P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.</p>
 <span class="c1">#</span>
 <span class="c1"># Animation of a simulated fly-over of the Pacific basin mid-ocean ridge system.</span>
 <span class="c1"># It uses a premade flight path that originally was derived from a data file</span>
-<span class="c1"># of the world&#39;s ridges, then filtered and manipulated to give the equidistant</span>
+<span class="c1"># of the world's ridges, then filtered and manipulated to give the equidistant</span>
 <span class="c1"># path to simulate a constant velocity at the given altitude, with synthetic</span>
 <span class="c1"># banking as we turn to follow the path.  We use the 30 arc second global relief</span>
 <span class="c1"># grid and overlay a few labels for named features.</span>
@@ -196,14 +196,14 @@ P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.</p>
 <span class="c1"># The movie took ~2 hours to render on a 10-core M1 MacBook Pro 2021.</span>
 
 <span class="c1"># 0. A set of parameters needed by all frames</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; inc.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; inc.sh</span>
 <span class="s">ALTITUDE=1000</span>
 <span class="s">TILT=55</span>
 <span class="s">WIDTH=36</span>
 <span class="s">HEIGHT=34</span>
 <span class="s">EOF</span>
 <span class="c1"># 1. Pre-script: Runs once to produce files needed for all frames</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; pre.sh</span>
 <span class="s">#!/usr/bin/env bash</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt grdcut -Rd @earth_relief_30s -Gearth_relief_30s.nc</span>
@@ -213,7 +213,7 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</s
 <span class="s">EOF</span>
 <span class="c1"># 2. Main frame script that makes a single frame given the location and twist from the data file</span>
 <span class="c1"># and the other view parameters from the include file.</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">#!/usr/bin/env bash</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt grdimage -Rg -JG${MOVIE_COL0}/${MOVIE_COL1}/${MOVIE_WIDTH}+z${ALTITUDE}+a${MOVIE_COL2}+t${TILT}+w${MOVIE_COL3}+v${WIDTH}/${HEIGHT} \</span>
@@ -243,7 +243,7 @@ rm<span class="w"> </span>-f<span class="w"> </span>gmt.conf
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

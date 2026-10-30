@@ -427,12 +427,12 @@ the format, as shown in Table <a class="reference internal" href="#tbl-projectsp
 </table>
 <p>Sample projection strings are:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @Je4326 @JgX @Jp&quot;+proj=longlat +ellps=WGS84+datum=WGS84 +no_defs&quot;</span>
-<span class="c1"># @Jw&quot;GEOGCS[\&quot;WGS84\&quot;,DATUM[\&quot;WGS_1984\&quot;,SPHEROID\&quot;WGS84\&quot;,6378137,\</span>
-<span class="m">298</span>.257223563,AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">7030</span><span class="se">\&quot;</span><span class="o">]]</span>,TOWGS84<span class="o">[</span><span class="m">0</span>,0,0,0,0,0,0<span class="o">]</span>,
-AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">6326</span><span class="se">\&quot;</span><span class="o">]]</span>,PRIMEM<span class="o">[</span><span class="se">\&quot;</span>Greenwich<span class="se">\&quot;</span>,0,<span class="se">\</span>
-AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">8901</span><span class="se">\&quot;</span><span class="o">]]</span>,UNIT<span class="o">[</span><span class="se">\&quot;</span>degree<span class="se">\&quot;</span>,0.01745329251994328,<span class="se">\</span>
-AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">9122</span><span class="se">\&quot;</span><span class="o">]]</span>,AUTHORITY<span class="o">[</span><span class="se">\&quot;</span>EPSG<span class="se">\&quot;</span>,<span class="se">\&quot;</span><span class="m">4326</span><span class="se">\&quot;</span><span class="o">]]</span><span class="s2">&quot;</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @Je4326 @JgX @Jp"+proj=longlat +ellps=WGS84+datum=WGS84 +no_defs"</span>
+<span class="c1"># @Jw"GEOGCS[\"WGS84\",DATUM[\"WGS_1984\",SPHEROID\"WGS84\",6378137,\</span>
+<span class="m">298</span>.257223563,AUTHORITY<span class="o">[</span><span class="se">\"</span>EPSG<span class="se">\"</span>,<span class="se">\"</span><span class="m">7030</span><span class="se">\"</span><span class="o">]]</span>,TOWGS84<span class="o">[</span><span class="m">0</span>,0,0,0,0,0,0<span class="o">]</span>,
+AUTHORITY<span class="o">[</span><span class="se">\"</span>EPSG<span class="se">\"</span>,<span class="se">\"</span><span class="m">6326</span><span class="se">\"</span><span class="o">]]</span>,PRIMEM<span class="o">[</span><span class="se">\"</span>Greenwich<span class="se">\"</span>,0,<span class="se">\</span>
+AUTHORITY<span class="o">[</span><span class="se">\"</span>EPSG<span class="se">\"</span>,<span class="se">\"</span><span class="m">8901</span><span class="se">\"</span><span class="o">]]</span>,UNIT<span class="o">[</span><span class="se">\"</span>degree<span class="se">\"</span>,0.01745329251994328,<span class="se">\</span>
+AUTHORITY<span class="o">[</span><span class="se">\"</span>EPSG<span class="se">\"</span>,<span class="se">\"</span><span class="m">9122</span><span class="se">\"</span><span class="o">]]</span>,AUTHORITY<span class="o">[</span><span class="se">\"</span>EPSG<span class="se">\"</span>,<span class="se">\"</span><span class="m">4326</span><span class="se">\"</span><span class="o">]]</span><span class="s2">"</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -521,7 +521,7 @@ separator, (e.g., #&#64;D|||). A Sample header
 and corresponding data line for points are</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOINT @Nname|depth|id @Tstring|double|integer</span>
-<span class="c1"># @D&quot;Point 1&quot;|-34.5|1</span>
+<span class="c1"># @D"Point 1"|-34.5|1</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -529,7 +529,7 @@ and corresponding data line for points are</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOLYGON @Nname|depth|id @Tstring|double|integer</span>
 &gt;
-<span class="c1"># @D&quot;Area 1&quot;|-34.5|1</span>
+<span class="c1"># @D"Area 1"|-34.5|1</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -566,11 +566,11 @@ point file:</p>
 <span class="c1"># @Tstring|double|integer</span>
 <span class="c1"># @R178.43/178.5/-57.98/-34.5</span>
 <span class="c1"># @Je4326</span>
-<span class="c1"># @Jp&quot;+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs&quot;</span>
+<span class="c1"># @Jp"+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs"</span>
 <span class="c1"># FEATURE_DATA</span>
-<span class="c1"># @D&quot;point 1&quot;|-34.5|1</span>
+<span class="c1"># @D"point 1"|-34.5|1</span>
 <span class="m">178</span>.5<span class="w"> </span>-45.7
-<span class="c1"># @D&quot;Point 2&quot;|-57.98|2</span>
+<span class="c1"># @D"Point 2"|-57.98|2</span>
 <span class="m">178</span>.43<span class="w"> </span>-46.8
 ...
 </pre></div>
@@ -581,16 +581,16 @@ point file:</p>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GLINESTRING @Nname|depth|id</span>
 <span class="c1"># @Tstring|double|integer</span>
 <span class="c1"># @R178.1/178.6/-48.7/-45.6</span>
-<span class="c1"># @Jp&quot;+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs&quot;</span>
+<span class="c1"># @Jp"+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs"</span>
 <span class="c1"># FEATURE_DATA</span>
 &gt;<span class="w"> </span>-W0.25p
-<span class="c1"># @D&quot;Line 1&quot;|-50|1</span>
+<span class="c1"># @D"Line 1"|-50|1</span>
 <span class="m">178</span>.5<span class="w"> </span>-45.7
 <span class="m">178</span>.6<span class="w"> </span>-48.2
 <span class="m">178</span>.4<span class="w"> </span>-48.7
 <span class="m">178</span>.1<span class="w"> </span>-45.6
 &gt;<span class="w"> </span>-W0.25p
-<span class="c1"># @D&quot;Line 2&quot;|-57.98|$</span>
+<span class="c1"># @D"Line 2"|-57.98|$</span>
 <span class="m">178</span>.43<span class="w"> </span>-46.8
 ...
 </pre></div>
@@ -600,11 +600,11 @@ point file:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOLYGON @Npolygonname|substrate|id @Tstring|string|integer</span>
 <span class="c1"># @R178.1/178.6/-48.7/-45.6</span>
-<span class="c1"># @Jj@Jp&quot;+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs&quot;</span>
+<span class="c1"># @Jj@Jp"+proj=longlat +ellps=WGS84 +datum=WGS84+no_defs"</span>
 <span class="c1"># FEATURE_DATA</span>
 &gt;<span class="w"> </span>-Gblue<span class="w"> </span>-W0.25p
 <span class="c1"># @P</span>
-<span class="c1"># @D&quot;Area 1&quot;|finesand|1</span>
+<span class="c1"># @D"Area 1"|finesand|1</span>
 <span class="m">178</span>.1<span class="w"> </span>-45.6
 <span class="m">178</span>.1<span class="w"> </span>-48.2
 <span class="m">178</span>.5<span class="w"> </span>-48.2
@@ -641,7 +641,7 @@ point file:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

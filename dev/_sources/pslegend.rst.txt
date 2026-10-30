@@ -57,7 +57,7 @@ specifications, use::
     D 0.2i 1p
     N 2
     V 0 1p
-    S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
+    S 0.1i c 0.15i p12+r300 0.25p 0.3i This circle is hachured
     S 0.1i e 0.15i yellow 0.25p 0.3i This ellipse is yellow
     S 0.1i w 0.15i green 0.25p 0.3i This wedge is green
     S 0.1i f 0.25i blue 0.25p 0.3i This is a fault

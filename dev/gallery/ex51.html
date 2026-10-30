@@ -196,15 +196,15 @@ with <a class="reference internal" href="../gmtselect.html"><span class="doc">se
 
 
 <span class="c1"># First we convert the shapefile to something more GMT friendly. Here we make it</span>
-<span class="c1"># into a large ASCII file. Human-readable but not very efficient. GDAL&#39;s ogr2ogr</span>
-<span class="c1"># is used with the &quot;-f OGR_GMT&quot; option indicating that the output should have</span>
+<span class="c1"># into a large ASCII file. Human-readable but not very efficient. GDAL's ogr2ogr</span>
+<span class="c1"># is used with the "-f OGR_GMT" option indicating that the output should have</span>
 <span class="c1"># the native GMT format. Input is the downloaded land_polygons.shp, and the</span>
 <span class="c1"># output is named land_polygons_osm_planet.gmt. The resulting file is very</span>
 <span class="c1"># large (&gt;1 GB) but already usable. But wait, there is more ...</span>
 
 ogr2ogr<span class="w"> </span>-f<span class="w"> </span>OGR_GMT<span class="w"> </span>land_polygons_osm_planet.gmt<span class="w"> </span>land_polygons.shp
 
-<span class="c1"># Resorting to GMT&#39;s convert program we take our very large ASCII file and</span>
+<span class="c1"># Resorting to GMT's convert program we take our very large ASCII file and</span>
 <span class="c1"># reduce it to about a third of its original size by converting it to a binary</span>
 <span class="c1"># file. Lets have a closer look at -bo2f: </span>
 <span class="c1"># -bo selects native binary output</span>
@@ -276,7 +276,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

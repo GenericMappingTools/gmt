@@ -473,7 +473,7 @@ E.g., if your <code class="docutils literal notranslate"><span class="pre">gmt.c
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_Defaults_1a
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>fancy<span class="w"> </span>FORMAT_GEO_MAP<span class="w"> </span>ddd:mm:ssF<span class="w"> </span>MAP_GRID_CROSS_SIZE_PRIMARY<span class="w"> </span><span class="m">0</span>.1i<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+8p
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-X2i<span class="w"> </span>-R-60/-30/-10/10<span class="w"> </span>-JM2.25i<span class="w"> </span>-Ba10f5g5<span class="w"> </span>-BWSne+t<span class="s2">&quot;Plot Title&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-X2i<span class="w"> </span>-R-60/-30/-10/10<span class="w"> </span>-JM2.25i<span class="w"> </span>-Ba10f5g5<span class="w"> </span>-BWSne+t<span class="s2">"Plot Title"</span>
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-N<span class="w"> </span>-F+f7p,Helvetica-Bold,blue+j<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">-62  -7 RT MAP_FRAME_TYPE</span>
 <span class="s">-38 -14 RT MAP_ANNOT_OFFSET_PRIMARY</span>
@@ -563,10 +563,10 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_Defaults_1c
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>plain<span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">&quot;o dd&quot;</span><span class="w"> </span>FORMAT_CLOCK_MAP<span class="w"> </span>hh<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+8p
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R2001-9-11T/2001-9-13T/0.01/100<span class="w"> </span>-JX2.25iT/2.25il<span class="w"> </span>-Bpxa6Hf1hg6h+l<span class="s2">&quot;x-axis label&quot;</span><span class="w"> </span>-Bpya1g3p+l<span class="s2">&quot;y-axis label&quot;</span><span class="w"> </span>-BWSne<span class="w"> </span><span class="se">\</span>
-<span class="w">		</span>-X2i<span class="w"> </span>-Bsxa1D<span class="w"> </span>-U<span class="s2">&quot;Dazed and Confused&quot;</span>+o-0.75i/-0.85i<span class="w"> </span>--GMT_LANGUAGE<span class="o">=</span>pt<span class="w"> </span><span class="se">\</span>
-<span class="w">		</span>--FORMAT_TIME_STAMP<span class="o">=</span><span class="s2">&quot;2011 Jun 13 22:10:02&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>plain<span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">"o dd"</span><span class="w"> </span>FORMAT_CLOCK_MAP<span class="w"> </span>hh<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+8p
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R2001-9-11T/2001-9-13T/0.01/100<span class="w"> </span>-JX2.25iT/2.25il<span class="w"> </span>-Bpxa6Hf1hg6h+l<span class="s2">"x-axis label"</span><span class="w"> </span>-Bpya1g3p+l<span class="s2">"y-axis label"</span><span class="w"> </span>-BWSne<span class="w"> </span><span class="se">\</span>
+<span class="w">		</span>-X2i<span class="w"> </span>-Bsxa1D<span class="w"> </span>-U<span class="s2">"Dazed and Confused"</span>+o-0.75i/-0.85i<span class="w"> </span>--GMT_LANGUAGE<span class="o">=</span>pt<span class="w"> </span><span class="se">\</span>
+<span class="w">		</span>--FORMAT_TIME_STAMP<span class="o">=</span><span class="s2">"2011 Jun 13 22:10:02"</span>
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-R0/2.25/0/2.25<span class="w"> </span>-Jx1i<span class="w"> </span>-N<span class="w"> </span>-F+f7p,Helvetica-Bold,blue+j<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">-0.4   2.1 RM MAP_ANNOT_ORTHO</span>
 <span class="s">-0.4   1.9 RM MAP_FRAME_AXES</span>
@@ -915,7 +915,7 @@ this check is only performed no more often than once a day.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_SRTM
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>plain
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R-180/180/-60/60<span class="w"> </span>-JQ0/15c<span class="w"> </span>-B<span class="w"> </span>-BWStr<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-Glightgray<span class="w"> </span>--FORMAT_GEO_MAP<span class="o">=</span>dddF
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;1	red 2 red&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>t.cpt
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"1	red 2 red"</span><span class="w"> </span>&gt;<span class="w"> </span>t.cpt
 <span class="w">	</span>gmt<span class="w"> </span>grdmath<span class="w"> </span>@srtm_tiles.nc<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="nv">NAN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>t.nc
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>t.nc<span class="w"> </span>-Ct.cpt
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-W0.25p
@@ -2032,17 +2032,17 @@ color list to have the <em>min</em> and <em>max</em> values rounded down and up 
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_colorlist
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-T0,2,6<span class="w"> </span>-Cred,yellow,purple<span class="w"> </span>-Z
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-R0/4/0/4<span class="w"> </span>-Jx1i<span class="w"> </span>-C<span class="w"> </span>-Bx<span class="w"> </span>-By+l<span class="s2">&quot;d)&quot;</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;5.1 0 -T0,2,6 -Cred,yellow,purple -Z&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-R0/4/0/4<span class="w"> </span>-Jx1i<span class="w"> </span>-C<span class="w"> </span>-Bx<span class="w"> </span>-By+l<span class="s2">"d)"</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"5.1 0 -T0,2,6 -Cred,yellow,purple -Z"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-T0,4,5.5,6<span class="w"> </span>-Cred,yellow,purple
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bxf1<span class="w"> </span>-By+l<span class="s2">&quot;c)&quot;</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu<span class="w"> </span>-Y0.3i
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;5.1 0 -T0,4,5.5,6 -Cred,yellow,purple&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bxf1<span class="w"> </span>-By+l<span class="s2">"c)"</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu<span class="w"> </span>-Y0.3i
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"5.1 0 -T0,4,5.5,6 -Cred,yellow,purple"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-T0/6/2<span class="w"> </span>-Cred,yellow,purple
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bxf1<span class="w"> </span>-By+l<span class="s2">&quot;b)&quot;</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu<span class="w"> </span>-Y0.3i
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;5.1 0 -T0/6/2 -Cred,yellow,purple&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bxf1<span class="w"> </span>-By+l<span class="s2">"b)"</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu<span class="w"> </span>-Y0.3i
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"5.1 0 -T0/6/2 -Cred,yellow,purple"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-T0/6<span class="w"> </span>-Cred,yellow,purple
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bxf1<span class="w"> </span>-By+l<span class="s2">&quot;a)&quot;</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu<span class="w"> </span>-Y0.3i
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;5.1 0 -T0/6 -Cred,yellow,purple&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bxf1<span class="w"> </span>-By+l<span class="s2">"a)"</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu<span class="w"> </span>-Y0.3i
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"5.1 0 -T0/6 -Cred,yellow,purple"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -2659,7 +2659,7 @@ while the scale on the right was placed with <strong>-Lj</strong><em>BR</em><str
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_mapscale
-<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/40/50/56<span class="w"> </span>-JM5i<span class="w"> </span>-B<span class="w"> </span>-LjML+c53+w1000k+f+l<span class="s2">&quot;Scale at 53@.N&quot;</span><span class="w"> </span>-F+glightcyan+c0+p
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/40/50/56<span class="w"> </span>-JM5i<span class="w"> </span>-B<span class="w"> </span>-LjML+c53+w1000k+f+l<span class="s2">"Scale at 53@.N"</span><span class="w"> </span>-F+glightcyan+c0+p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-LjBR+c53+w1000k+l+f<span class="w"> </span>-F+p1p+i+gwhite+c0.1i
 <span class="w">	</span><span class="nv">h</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>mapproject<span class="w"> </span>-Wh<span class="w"> </span>-Di<span class="k">)</span>
 <span class="w">	</span><span class="nv">h</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$h</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="nv">DIV</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
@@ -2787,7 +2787,7 @@ See <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.
 <span class="w">		</span>--MAP_VECTOR_SHAPE<span class="o">=</span><span class="m">0</span>.5<span class="w"> </span>--MAP_TICK_PEN_SECONDARY<span class="o">=</span>thinner,red<span class="w"> </span>--MAP_TICK_PEN_PRIMARY<span class="o">=</span>thinner,blue
 <span class="w">	</span>gmt<span class="w"> </span>inset<span class="w"> </span>begin<span class="w"> </span>-DjTR+w2.9i/3.9i+o0.05i<span class="w"> </span>-F+p+ggray95
 <span class="w">	</span>gmt<span class="w"> </span>inset<span class="w"> </span>end
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;5.5 3.8 GMT DEFAULTS&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-R0/7/0/4<span class="w"> </span>-Jx1i<span class="w"> </span>-F+f14p,Helvetica-Bold+jCM
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"5.5 3.8 GMT DEFAULTS"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-R0/7/0/4<span class="w"> </span>-Jx1i<span class="w"> </span>-F+f14p,Helvetica-Bold+jCM
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f11.5p+jLM<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">4.1 3.50 FONT_TITLE</span>
 <span class="s">4.1 3.25 MAP_TITLE_OFFSET</span>
@@ -2847,7 +2847,7 @@ colors, and used the frame-annotation machinery to add labels.  The bar was plac
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_colorbar
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-T-15/15<span class="w"> </span>-Cpolar
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/20/0/1<span class="w"> </span>-JM5i<span class="w"> </span>-BWse<span class="w"> </span>-B
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bx+u<span class="s2">&quot;@.&quot;</span><span class="w"> </span>-By+l@~D@~T<span class="w"> </span>-DJBC+e
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bx+u<span class="s2">"@."</span><span class="w"> </span>-By+l@~D@~T<span class="w"> </span>-DJBC+e
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -3455,7 +3455,7 @@ all others. Alternatively, the user can select the required variable by
 adding the suffix “?<em>varname</em>” to the grid file name. For example, to
 get information on the variable “slp” in file , use:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinfo<span class="w"> </span><span class="s2">&quot;file.nc?slp&quot;</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinfo<span class="w"> </span><span class="s2">"file.nc?slp"</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3492,13 +3492,13 @@ pressure<span class="o">(</span>time,depth,lat,lon<span class="o">)</span>:<span
 <p>To get information on the 10x10 grid of pressure at
 depth 10 and at time 24, one would use:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinfo<span class="w"> </span><span class="s2">&quot;file.nc?pressure[2,1]&quot;</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinfo<span class="w"> </span><span class="s2">"file.nc?pressure[2,1]"</span>
 </pre></div>
 </div>
 </div></blockquote>
 <p>or (only in case the coordinates increase linearly):</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinfo<span class="w"> </span><span class="s2">&quot;file.nc?pressure(24,10)&quot;</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinfo<span class="w"> </span><span class="s2">"file.nc?pressure(24,10)"</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3507,8 +3507,8 @@ or can use multi-dimensional netCDF files in a very similar way. If a
 variable in a netCDF file is one-dimensional, there is nothing more
 needed than name the variables on the command line. For example:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>plot<span class="w"> </span><span class="s2">&quot;file.nc?lon/lat&quot;</span><span class="w"> </span>...
-gmt<span class="w"> </span>convert<span class="w"> </span><span class="s2">&quot;file.nc?time/lat/lon&quot;</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>plot<span class="w"> </span><span class="s2">"file.nc?lon/lat"</span><span class="w"> </span>...
+gmt<span class="w"> </span>convert<span class="w"> </span><span class="s2">"file.nc?time/lat/lon"</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3541,22 +3541,22 @@ dimensions:
 <span class="w">        </span><span class="nv">lat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1441</span><span class="w"> </span><span class="p">;</span>
 variables:
 <span class="w">        </span>float<span class="w"> </span>lon<span class="o">(</span>lon<span class="o">)</span><span class="w"> </span><span class="p">;</span>
-<span class="w">                </span>lon:long_name<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;longitude&quot;</span><span class="w"> </span><span class="p">;</span>
-<span class="w">                </span>lon:units<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;degrees_east&quot;</span><span class="w"> </span><span class="p">;</span>
+<span class="w">                </span>lon:long_name<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"longitude"</span><span class="w"> </span><span class="p">;</span>
+<span class="w">                </span>lon:units<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"degrees_east"</span><span class="w"> </span><span class="p">;</span>
 <span class="w">                </span>lon:actual_range<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.,<span class="w"> </span><span class="m">360</span>.<span class="w"> </span><span class="p">;</span>
 <span class="w">        </span>float<span class="w"> </span>lat<span class="o">(</span>lat<span class="o">)</span><span class="w"> </span><span class="p">;</span>
-<span class="w">                </span>lat:long_name<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;latitude&quot;</span><span class="w"> </span><span class="p">;</span>
-<span class="w">                </span>lat:units<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;degrees_north&quot;</span><span class="w"> </span><span class="p">;</span>
+<span class="w">                </span>lat:long_name<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"latitude"</span><span class="w"> </span><span class="p">;</span>
+<span class="w">                </span>lat:units<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"degrees_north"</span><span class="w"> </span><span class="p">;</span>
 <span class="w">                </span>lat:actual_range<span class="w"> </span><span class="o">=</span><span class="w"> </span>-90.,<span class="w"> </span><span class="m">90</span>.<span class="w"> </span><span class="p">;</span>
 <span class="w">        </span>short<span class="w"> </span>amp<span class="o">(</span>lat,<span class="w"> </span>lon<span class="o">)</span><span class="w"> </span><span class="p">;</span>
-<span class="w">                </span>amp:long_name<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;amplitude&quot;</span><span class="w"> </span><span class="p">;</span>
-<span class="w">                </span>amp:unit<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;m&quot;</span><span class="w"> </span><span class="p">;</span>
+<span class="w">                </span>amp:long_name<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"amplitude"</span><span class="w"> </span><span class="p">;</span>
+<span class="w">                </span>amp:unit<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"m"</span><span class="w"> </span><span class="p">;</span>
 <span class="w">                </span>amp:scale_factor<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.0001<span class="w"> </span><span class="p">;</span>
 <span class="w">                </span>amp:add_offset<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span>.<span class="w"> </span><span class="p">;</span>
 <span class="w">                </span>amp:_FillValue<span class="w"> </span><span class="o">=</span><span class="w"> </span>-32768s<span class="w"> </span><span class="p">;</span>
 <span class="w">        </span>short<span class="w"> </span>pha<span class="o">(</span>lat,<span class="w"> </span>lon<span class="o">)</span><span class="w"> </span><span class="p">;</span>
-<span class="w">                </span>pha:long_name<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;phase&quot;</span><span class="w"> </span><span class="p">;</span>
-<span class="w">                </span>pha:unit<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;degrees&quot;</span><span class="w"> </span><span class="p">;</span>
+<span class="w">                </span>pha:long_name<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"phase"</span><span class="w"> </span><span class="p">;</span>
+<span class="w">                </span>pha:unit<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"degrees"</span><span class="w"> </span><span class="p">;</span>
 <span class="w">                </span>pha:scale_factor<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.01<span class="w"> </span><span class="p">;</span>
 <span class="w">                </span>pha:_FillValue<span class="w"> </span><span class="o">=</span><span class="w"> </span>-32768s<span class="w"> </span><span class="p">;</span>
 </pre></div>
@@ -3624,7 +3624,7 @@ must extract the necessary metadata from the file:</p>
 Driver: HDF4/Hierarchical Data Format Release 4
 Files: A20030012003365.L3m_YR_NSST_9
 Size is 512, 512
-Coordinate System is `&#39;
+Coordinate System is `'
 Metadata:
  Product Name=A20030012003365.L3m_YR_NSST_9
  Sensor Name=MODISA
@@ -3640,9 +3640,9 @@ Metadata:
  Data Minimum=-1.999999
  Data Maximum=34.76
 Subdatasets:
- SUBDATASET_1_NAME=HDF4_SDS:UNKNOWN:&quot;A20030012003365.L3m_YR_NSST_9&quot;:0
+ SUBDATASET_1_NAME=HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0
  SUBDATASET_1_DESC=[2160x4320] l3m_data (16-bit unsigned integer)
- SUBDATASET_2_NAME=HDF4_SDS:UNKNOWN:&quot;A20030012003365.L3m_YR_NSST_9&quot;:1
+ SUBDATASET_2_NAME=HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":1
  SUBDATASET_2_DESC=[2160x4320] l3m_qual (8-bit unsigned integer)
 </pre></div>
 </div>
@@ -3650,7 +3650,7 @@ Subdatasets:
 append the name of the sub-dataset that we want to extract. Here, a
 simple example using <a class="reference internal" href="../grdinfo.html"><span class="doc">grdinfo</span></a> would be</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinfo<span class="w"> </span>A20030012003365.L3m_YR_NSST_9<span class="o">=</span>gd?HDF4_SDS:UNKNOWN:<span class="s2">&quot;A20030012003365.L3m_YR_NSST_9&quot;</span>:0
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinfo<span class="w"> </span>A20030012003365.L3m_YR_NSST_9<span class="o">=</span>gd?HDF4_SDS:UNKNOWN:<span class="s2">"A20030012003365.L3m_YR_NSST_9"</span>:0
 
 HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0:<span class="w"> </span>Title:<span class="w"> </span>Grid<span class="w"> </span>imported<span class="w"> </span>via<span class="w"> </span>GDAL
 HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0:<span class="w"> </span>Command:
@@ -3671,7 +3671,7 @@ scaling is not applied by GDAL on reading so it cannot be done
 automatically by GMT. One solution is to do the reading and scaling
 via <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> first, i.e.,</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>A20030012003365.L3m_YR_NSST_9<span class="o">=</span>gd?HDF4_SDS:UNKNOWN:<span class="s2">&quot;A20030012003365.L3m_YR_NSST_9&quot;</span>:0<span class="w"> </span><span class="se">\</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>A20030012003365.L3m_YR_NSST_9<span class="o">=</span>gd?HDF4_SDS:UNKNOWN:<span class="s2">"A20030012003365.L3m_YR_NSST_9"</span>:0<span class="w"> </span><span class="se">\</span>
 <span class="w">            </span><span class="m">0</span>.000717185<span class="w"> </span>MUL<span class="w"> </span>-2<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>sst.nc
 </pre></div>
 </div>
@@ -3848,7 +3848,7 @@ off; see <a class="reference internal" href="../gmt.conf.html#term-PS_COMMENTS">
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

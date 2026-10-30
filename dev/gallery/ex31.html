@@ -184,11 +184,11 @@ and names of the cities are used, with awk providing help in data preparation.</
 gmt<span class="w"> </span>begin<span class="w"> </span>ex31
 <span class="w">	</span><span class="c1"># Set FONTPATH used in image conversion</span>
 <span class="w">	</span><span class="c1"># $(dirname 0) is the path to the current bash script</span>
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">PS_CONVERT</span><span class="o">=</span><span class="s2">&quot;C-sFONTPATH=</span><span class="k">$(</span>dirname<span class="w"> </span><span class="nv">$0</span><span class="k">)</span><span class="s2">/fonts&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">PS_CONVERT</span><span class="o">=</span><span class="s2">"C-sFONTPATH=</span><span class="k">$(</span>dirname<span class="w"> </span><span class="nv">$0</span><span class="k">)</span><span class="s2">/fonts"</span>
 
 <span class="w">	</span><span class="c1"># create file PSL_custom_fonts.txt in current working directory</span>
 <span class="w">	</span><span class="c1"># and add PostScript font names of Linux Biolinum and Libertine</span>
-<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;{print $1, 0.700, 0}&#39;</span><span class="w"> </span><span class="s">&lt;&lt;- EOF &gt; PSL_custom_fonts.txt</span>
+<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">'{print $1, 0.700, 0}'</span><span class="w"> </span><span class="s">&lt;&lt;- EOF &gt; PSL_custom_fonts.txt</span>
 <span class="s">	LinBiolinumO</span>
 <span class="s">	LinBiolinumOI</span>
 <span class="s">	LinBiolinumOB</span>
@@ -202,16 +202,16 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex31
 <span class="w">		</span>FONT<span class="w"> </span>LinBiolinumO<span class="w"> </span>FONT_TITLE<span class="w"> </span>24p,LinLibertineOB<span class="w"> </span>MAP_ANNOT_OBLIQUE<span class="w"> </span>lon_horizontal,lat_parallel,tick_extend
 
 <span class="w">	</span><span class="c1"># map of countries</span>
-<span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R-7/31/64/66+r<span class="w"> </span>-JL15/50/40/60/16c<span class="w"> </span>-Bx10g10<span class="w"> </span>-By5g5<span class="w"> </span>-B+t<span class="s2">&quot;Europe\072 Countries and Capital Cities&quot;</span><span class="w"> </span>-A250<span class="w"> </span><span class="se">\</span>
+<span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R-7/31/64/66+r<span class="w"> </span>-JL15/50/40/60/16c<span class="w"> </span>-Bx10g10<span class="w"> </span>-By5g5<span class="w"> </span>-B+t<span class="s2">"Europe\072 Countries and Capital Cities"</span><span class="w"> </span>-A250<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>-Slightblue<span class="w"> </span>-Glightgreen<span class="w"> </span>-W0.25p<span class="w"> </span>-N1/1p,white
 <span class="w">	</span><span class="c1"># mark capitals</span>
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@europe-capitals-ru.csv<span class="w"> </span>-i0,1<span class="w"> </span>-Sc0.15c<span class="w"> </span>-G196/80/80
 <span class="w">	</span><span class="c1"># small EU cities</span>
-<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;BEGIN {FS=&quot;,&quot;} $4 !=&quot;&quot; &amp;&amp; $4 &lt;= 1000000 {print $1, $2}&#39;</span><span class="w"> </span><span class="nv">$capitals</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.15c<span class="w"> </span>-W0.25p
+<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">'BEGIN {FS=","} $4 !="" &amp;&amp; $4 &lt;= 1000000 {print $1, $2}'</span><span class="w"> </span><span class="nv">$capitals</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.15c<span class="w"> </span>-W0.25p
 <span class="w">	</span><span class="c1"># big EU cities</span>
-<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;BEGIN {FS=&quot;,&quot;} $4 &gt; 1000000 {print $1, $2}&#39;</span><span class="w"> </span><span class="nv">$capitals</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.15c<span class="w"> </span>-W1.25p
+<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">'BEGIN {FS=","} $4 &gt; 1000000 {print $1, $2}'</span><span class="w"> </span><span class="nv">$capitals</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.15c<span class="w"> </span>-W1.25p
 <span class="w">	</span><span class="c1"># label big EU cities</span>
-<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;BEGIN {FS=&quot;,&quot;} $4 &gt; 1000000 {print $1, $2, $3}&#39;</span><span class="w"> </span><span class="nv">$capitals</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f7p,LinBiolinumOI+jBL<span class="w"> </span>-Dj0.1c<span class="w"> </span>-Gwhite<span class="w"> </span>-C5%+tO<span class="w"> </span>-Qu
+<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">'BEGIN {FS=","} $4 &gt; 1000000 {print $1, $2, $3}'</span><span class="w"> </span><span class="nv">$capitals</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f7p,LinBiolinumOI+jBL<span class="w"> </span>-Dj0.1c<span class="w"> </span>-Gwhite<span class="w"> </span>-C5%+tO<span class="w"> </span>-Qu
 
 <span class="w">	</span><span class="c1"># construct legend</span>
 <span class="w">	</span>cat<span class="w"> </span><span class="s">&lt;&lt;- EOF &gt; legend.txt</span>
@@ -228,8 +228,8 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex31
 <span class="s">	EOF</span>
 
 <span class="w">	</span><span class="c1"># append city names and population to legend</span>
-<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;BEGIN {FS=&quot;,&quot;; f=&quot;L 8p,LinBiolinumO L&quot;}</span>
-<span class="s1">	  $4 &gt; 1000000 {printf &quot;%s %s:\n%s %.2f\n&quot;, f, $3, f, $4/1e6}&#39;</span><span class="w"> </span><span class="nv">$capitals</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>legend.txt
+<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">'BEGIN {FS=","; f="L 8p,LinBiolinumO L"}</span>
+<span class="s1">	  $4 &gt; 1000000 {printf "%s %s:\n%s %.2f\n", f, $3, f, $4/1e6}'</span><span class="w"> </span><span class="nv">$capitals</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>legend.txt
 
 <span class="w">	</span><span class="c1"># reduce annotation font size for legend</span>
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>8p
@@ -262,7 +262,7 @@ rm<span class="w"> </span>-f<span class="w"> </span>PSL_custom_fonts.txt
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

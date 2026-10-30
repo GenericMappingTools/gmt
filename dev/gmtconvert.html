@@ -495,7 +495,7 @@ first column of a file right.txt (i.e., 1 of 0,1 and 2 of 2,3):</p>
 </div>
 <p>To extract all segments in the file big_file.txt whose headers contain
 the string “RIDGE AXIS”, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>convert<span class="w"> </span>big_file.txt<span class="w"> </span>-S<span class="s2">&quot;RIDGE AXIS&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>subset.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>convert<span class="w"> </span>big_file.txt<span class="w"> </span>-S<span class="s2">"RIDGE AXIS"</span><span class="w"> </span>&gt;<span class="w"> </span>subset.txt
 </pre></div>
 </div>
 <p>To only get the segments in the file big_file.txt whose headers exactly
@@ -505,7 +505,7 @@ matches the string “Spitsbergen”, try:</p>
 </div>
 <p>To invert the selection of segments whose headers begin with “profile ”
 followed by an integer number and any letter between “g” and “l”, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>convert<span class="w"> </span>-S~<span class="s2">&quot;/^profile [0-9]+[g-l]</span>$<span class="s2">/&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>convert<span class="w"> </span>-S~<span class="s2">"/^profile [0-9]+[g-l]</span>$<span class="s2">/"</span>
 </pre></div>
 </div>
 <p>To reverse the order of segments in a file without reversing the order
@@ -580,7 +580,7 @@ where we reset the origin of the sequential numbering from 0 to 5000, try:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

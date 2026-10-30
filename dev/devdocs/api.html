@@ -842,28 +842,28 @@ returns a data structure of requested type.</p></li>
 <h3>Example code<a class="headerlink" href="#example-code" title="Link to this heading"></a></h3>
 <p>For the example code to run you must have Internet access. Compile and run
 this program:</p>
-<div class="highlight-c notranslate" id="example-code1"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;gmt.h&quot;</span>
+<div class="highlight-c notranslate" id="example-code1"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"gmt.h"</span>
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">API</span><span class="p">;</span><span class="w">                        </span><span class="cm">/* The API control structure */</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">GMT_DATASET</span><span class="w"> </span><span class="o">*</span><span class="n">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">     </span><span class="cm">/* Structure to hold input dataset */</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">GMT_GRID</span><span class="w"> </span><span class="o">*</span><span class="n">G</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Structure to hold output grid */</span>
-<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">input</span><span class="p">[</span><span class="n">GMT_VF_LEN</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">};</span><span class="w">    </span><span class="cm">/* String to hold virtual input filename */</span>
-<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">output</span><span class="p">[</span><span class="n">GMT_VF_LEN</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">};</span><span class="w">   </span><span class="cm">/* String to hold virtual output filename */</span>
-<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">128</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">};</span><span class="w">            </span><span class="cm">/* String to hold module command arguments */</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">input</span><span class="p">[</span><span class="n">GMT_VF_LEN</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">""</span><span class="p">};</span><span class="w">    </span><span class="cm">/* String to hold virtual input filename */</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">output</span><span class="p">[</span><span class="n">GMT_VF_LEN</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">""</span><span class="p">};</span><span class="w">   </span><span class="cm">/* String to hold virtual output filename */</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="mi">128</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">""</span><span class="p">};</span><span class="w">            </span><span class="cm">/* String to hold module command arguments */</span>
 
 <span class="w">    </span><span class="cm">/* Initialize the GMT session */</span>
-<span class="w">    </span><span class="n">API</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GMT_Create_Session</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2U</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">    </span><span class="n">API</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GMT_Create_Session</span><span class="w"> </span><span class="p">(</span><span class="s">"test"</span><span class="p">,</span><span class="w"> </span><span class="mi">2U</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Read in our data table to memory */</span>
 <span class="w">    </span><span class="n">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GMT_Read_Data</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_DATASET</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_FILE</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_PLP</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_READ_NORMAL</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;@Table_5_11.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">        </span><span class="s">"@Table_5_11.txt"</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Associate our data table with a virtual file */</span>
 <span class="w">    </span><span class="n">GMT_Open_VirtualFile</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_DATASET</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_PLP</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IN</span><span class="p">,</span><span class="w"> </span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Create a virtual file to hold the resulting grid */</span>
 <span class="w">    </span><span class="n">GMT_Open_VirtualFile</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_GRID</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_SURFACE</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_OUT</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Prepare the module arguments */</span>
-<span class="w">    </span><span class="n">sprintf</span><span class="w"> </span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;-R0/7/0/7 -I0.2 -D1 -St0.3 %s -G%s&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
+<span class="w">    </span><span class="n">sprintf</span><span class="w"> </span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="s">"-R0/7/0/7 -I0.2 -D1 -St0.3 %s -G%s"</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Call the greenspline module */</span>
-<span class="w">    </span><span class="n">GMT_Call_Module</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;greenspline&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_MODULE_CMD</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
+<span class="w">    </span><span class="n">GMT_Call_Module</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="s">"greenspline"</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_MODULE_CMD</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Obtain the grid from the virtual file */</span>
 <span class="w">    </span><span class="n">G</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GMT_Read_VirtualFile</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Close the virtual files */</span>
@@ -871,7 +871,7 @@ this program:</p>
 <span class="w">    </span><span class="n">GMT_Close_VirtualFile</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Write the grid to file */</span>
 <span class="w">    </span><span class="n">GMT_Write_Data</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_GRID</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_FILE</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_IS_SURFACE</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_READ_NORMAL</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span>
-<span class="w">        </span><span class="s">&quot;junk.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="p">);</span>
+<span class="w">        </span><span class="s">"junk.nc"</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="p">);</span>
 <span class="w">    </span><span class="cm">/* Destroy the GMT session */</span>
 <span class="w">    </span><span class="n">GMT_Destroy_Session</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">);</span>
 <span class="p">};</span>
@@ -1193,7 +1193,7 @@ simplify our treatment to the use of a single session only.</p>
 <p>and you will typically call it like this:</p>
 <blockquote>
 <div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">API</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w">   </span><span class="cm">/* Opaque pointer to GMT controls */</span>
-<span class="n">API</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GMT_Create_Session</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Session name&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="n">API</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GMT_Create_Session</span><span class="w"> </span><span class="p">(</span><span class="s">"Session name"</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -1249,13 +1249,13 @@ Finally, <a class="reference internal" href="#gmt-create-session">GMT_Create_Ses
 to set the GMT temporary directory [/tmp on Unix, current directory on Windows].</p>
 <p>Below is a bare-bones minimalistic GMT program hello.c that initializes and destroys
 a GMT session:</p>
-<div class="highlight-c notranslate" id="example-code2"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;gmt.h&quot;</span>
+<div class="highlight-c notranslate" id="example-code2"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"gmt.h"</span>
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">API</span><span class="p">;</span><span class="w">      </span><span class="cm">/* The API control structure */</span>
 <span class="w">      </span><span class="cm">/* Initialize the GMT session */</span>
-<span class="w">      </span><span class="n">API</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GMT_Create_Session</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2U</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">      </span><span class="n">API</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GMT_Create_Session</span><span class="w"> </span><span class="p">(</span><span class="s">"test"</span><span class="p">,</span><span class="w"> </span><span class="mi">2U</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
 <span class="w">      </span><span class="cm">/* And now for something original: */</span>
-<span class="w">      </span><span class="n">GMT_Message</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_TIME_NONE</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hello, world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="n">GMT_Message</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="n">GMT_TIME_NONE</span><span class="p">,</span><span class="w"> </span><span class="s">"hello, world</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
 <span class="w">      </span><span class="cm">/* Destroy the GMT session */</span>
 <span class="w">      </span><span class="n">GMT_Destroy_Session</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">);</span>
 <span class="p">};</span>
@@ -2361,7 +2361,7 @@ the data has a trailing string it will print it to stdout:</p>
 <span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">T</span><span class="o">-&gt;</span><span class="n">n_columns</span><span class="p">;</span><span class="w"> </span><span class="n">col</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">    </span><span class="cm">/* For all cols &gt; 1 */</span>
 <span class="w">        </span><span class="n">S</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">row</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span><span class="w">   </span><span class="cm">/* Just add one */</span>
 <span class="w">      </span><span class="p">}</span>
-<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">S</span><span class="o">-&gt;</span><span class="n">text</span><span class="p">)</span><span class="w"> </span><span class="n">printf</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;Row %d has string: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">-&gt;</span><span class="n">text</span><span class="p">[</span><span class="n">row</span><span class="p">]);</span>
+<span class="w">              </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">S</span><span class="o">-&gt;</span><span class="n">text</span><span class="p">)</span><span class="w"> </span><span class="n">printf</span><span class="w"> </span><span class="p">(</span><span class="s">"Row %d has string: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">-&gt;</span><span class="n">text</span><span class="p">[</span><span class="n">row</span><span class="p">]);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -2905,7 +2905,7 @@ been parsed then the function returns the number of parameters passed
 back via <code class="docutils literal notranslate"><span class="pre">par</span></code>; otherwise we return -1. For instance, to determine if
 the <code class="docutils literal notranslate"><span class="pre">-R</span></code> was set and to obtain the specified region you may call</p>
 <blockquote>
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GMT_Get_Common</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;R&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">wesn</span><span class="p">))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GMT_Get_Common</span><span class="w"> </span><span class="p">(</span><span class="n">API</span><span class="p">,</span><span class="w"> </span><span class="sc">'R'</span><span class="p">,</span><span class="w"> </span><span class="n">wesn</span><span class="p">))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="cm">/* wesn now contains the boundary information */</span>
 <span class="p">}</span>
 </pre></div>
@@ -3100,7 +3100,7 @@ workings are better suited to generate such arguments -- we call this the
 sort it internally according to need. The option structure is defined below.</p>
 <blockquote id="options">
 <div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">GMT_OPTION</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">char</span><span class="w">               </span><span class="n">option</span><span class="p">;</span><span class="w">  </span><span class="cm">/* Single option character (e.g., &#39;G&#39; for -G) */</span>
+<span class="w">    </span><span class="kt">char</span><span class="w">               </span><span class="n">option</span><span class="p">;</span><span class="w">  </span><span class="cm">/* Single option character (e.g., 'G' for -G) */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w">              </span><span class="o">*</span><span class="n">arg</span><span class="p">;</span><span class="w">     </span><span class="cm">/* String with arguments (NULL if not used) */</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">GMT_OPTION</span><span class="w"> </span><span class="o">*</span><span class="n">next</span><span class="p">;</span><span class="w">    </span><span class="cm">/* Next option pointer (NULL for last option) */</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">GMT_OPTION</span><span class="w"> </span><span class="o">*</span><span class="n">prev</span><span class="p">;</span><span class="w">    </span><span class="cm">/* Previous option (NULL for first option) */</span>
@@ -3288,9 +3288,9 @@ used for file redirection.</p>
 as other languages (Python, Java, Julia, etc.) or tools (MATLAB, Octave,
 etc.) need to manipulate linked options in a special way.  For instance,
 a GMT call in the MATLAB or Octave application might look like</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>table = gmt(&#39;blockmean -R30W/30E/10S/10N -I2m&#39;, [x y z]);
-grid  = gmt(&#39;surface -R -I2m -Lu&#39;, table, high_limit_grid);
-grid2 = gmt(&#39;grdmath ? LOG10 ? MUL&#39;, grid, grid);
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>table = gmt('blockmean -R30W/30E/10S/10N -I2m', [x y z]);
+grid  = gmt('surface -R -I2m -Lu', table, high_limit_grid);
+grid2 = gmt('grdmath ? LOG10 ? MUL', grid, grid);
 </pre></div>
 </div>
 <p>Most of the time our implicit rules will take care of the ordering.  The
@@ -3766,7 +3766,7 @@ more rows of a fixed number of columns.</p>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w">             </span><span class="o">*</span><span class="n">ProjRefPROJ4</span><span class="p">;</span><span class="w">  </span><span class="cm">/* To store a referencing system string in PROJ.4 format */</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w">             </span><span class="o">*</span><span class="n">ProjRefWKT</span><span class="p">;</span><span class="w">    </span><span class="cm">/* To store a referencing system string in WKT format */</span>
 <span class="w">    </span><span class="kt">int</span><span class="w">                    </span><span class="n">ProjRefEPSG</span><span class="p">;</span><span class="w">    </span><span class="cm">/* To store a referencing system EPSG code */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w">                   </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w">                   </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -3781,7 +3781,7 @@ more rows of a fixed number of columns.</p>
 <span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">max</span><span class="p">;</span><span class="w">                      </span><span class="cm">/* Maximum coordinate for each column */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">header</span><span class="p">;</span><span class="w">                    </span><span class="cm">/* Array with all file header records, if any) */</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">GMT_DATASEGMENT</span><span class="w"> </span><span class="o">**</span><span class="n">segment</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Pointer to array of segments */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">                     </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">                     </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -3796,7 +3796,7 @@ more rows of a fixed number of columns.</p>
 <span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">text</span><span class="p">;</span><span class="w">             </span><span class="cm">/* trailing text strings beyond the data */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">label</span><span class="p">;</span><span class="w">             </span><span class="cm">/* Label string (if applicable) */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">header</span><span class="p">;</span><span class="w">            </span><span class="cm">/* Segment header (if applicable) */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">            </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">            </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="w"> </span><span class="p">};</span>
 </pre></div>
 </div>
@@ -3810,7 +3810,7 @@ contains the grid values.</p>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">GMT_GRID_HEADER</span><span class="w"> </span><span class="o">*</span><span class="n">header</span><span class="p">;</span><span class="w">      </span><span class="cm">/* Pointer to full GMT header for the grid */</span>
 <span class="w">    </span><span class="kt">float</span><span class="w">                  </span><span class="o">*</span><span class="n">data</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Pointer to the float grid */</span>
 <span class="w">    </span><span class="kt">double</span><span class="w">                 </span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">y</span><span class="p">;</span><span class="w">       </span><span class="cm">/* Vector of coordinates */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">                        </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">                        </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -3836,7 +3836,7 @@ contains the grid values.</p>
 <span class="w">    </span><span class="kt">char</span><span class="w">   </span><span class="n">title</span><span class="p">[</span><span class="n">GMT_GRID_TITLE_LEN80</span><span class="p">];</span><span class="w">     </span><span class="cm">/* name of data set */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w">   </span><span class="n">command</span><span class="p">[</span><span class="n">GMT_GRID_COMMAND_LEN320</span><span class="p">];</span><span class="cm">/* name of generating command */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w">   </span><span class="n">remark</span><span class="p">[</span><span class="n">GMT_GRID_REMARK_LEN160</span><span class="p">];</span><span class="w">  </span><span class="cm">/* comments re this data set */</span>
-<span class="w">    </span><span class="cm">/* == End of &quot;untouchable&quot; header.       */</span>
+<span class="w">    </span><span class="cm">/* == End of "untouchable" header.       */</span>
 
 <span class="w">    </span><span class="cm">/* This section is flexible.  It is not copied to any grid header</span>
 <span class="cm">       or stored in any file. It is considered private */</span>
@@ -3854,7 +3854,7 @@ contains the grid values.</p>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w">  </span><span class="o">*</span><span class="n">ProjRefWKT</span><span class="p">;</span><span class="w">         </span><span class="cm">/* To store a referencing system string in WKT format */</span>
 <span class="w">    </span><span class="kt">float</span><span class="w">        </span><span class="n">nan_value</span><span class="p">;</span><span class="w">          </span><span class="cm">/* Missing value as stored in grid file */</span>
 <span class="w">    </span><span class="kt">double</span><span class="w">       </span><span class="n">xy_off</span><span class="p">;</span><span class="w">             </span><span class="cm">/* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w">        </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">             </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w">        </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">             </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -3876,7 +3876,7 @@ allocated will be <em>size * n_bands</em>.</p>
 <span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w">          </span><span class="o">*</span><span class="n">alpha</span><span class="p">;</span><span class="w">            </span><span class="cm">/* Pointer to an optional transparency layer */</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w">             </span><span class="o">*</span><span class="n">color_interp</span><span class="p">;</span><span class="w">     </span><span class="cm">/* Color interpretation name */</span>
 <span class="w">    </span><span class="kt">double</span><span class="w">                 </span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">y</span><span class="p">;</span><span class="w">            </span><span class="cm">/* Vector of coordinates */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w">                   </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">           </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w">                   </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">           </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -3898,7 +3898,7 @@ allocated will be <em>size * n_bands</em>, where the latter is one of the parame
 <span class="w">      </span><span class="kt">double</span><span class="w">                 </span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">z</span><span class="p">;</span><span class="w">   </span><span class="cm">/* Arrays of x,y,z coordinates */</span>
 <span class="w">      </span><span class="kt">char</span><span class="w"> </span><span class="n">name</span><span class="p">[</span><span class="n">GMT_GRID_UNIT_LEN80</span><span class="p">];</span><span class="w">      </span><span class="cm">/* Name of variable, if read from file (empty if default) */</span>
 <span class="w">      </span><span class="kt">char</span><span class="w"> </span><span class="n">units</span><span class="p">[</span><span class="n">GMT_GRID_UNIT_LEN80</span><span class="p">];</span><span class="w">     </span><span class="cm">/* Units in 3rd direction (complements x_units, y_units, z_units)  */</span>
-<span class="w">      </span><span class="kt">void</span><span class="w">                   </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">      </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">      </span><span class="kt">void</span><span class="w">                   </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">      </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -3931,7 +3931,7 @@ the <a class="reference internal" href="#struct-fill"><span class="std std-ref">
 <span class="w">    </span><span class="kt">double</span><span class="w">                </span><span class="n">hinge</span><span class="p">;</span><span class="w">              </span><span class="cm">/* The default hinge, if is_wrapping is true */</span>
 <span class="w">    </span><span class="kt">double</span><span class="w">                </span><span class="n">wrap_length</span><span class="p">;</span><span class="w">        </span><span class="cm">/* The default period, if has_hinge is true */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w">                </span><span class="o">**</span><span class="n">header</span><span class="p">;</span><span class="w">             </span><span class="cm">/* Array with all CPT header records, if any) */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w">                 </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">             </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w">                 </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">             </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -3980,7 +3980,7 @@ the <a class="reference internal" href="#struct-fill"><span class="std std-ref">
 <span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">mode</span><span class="p">;</span><span class="w">               </span><span class="cm">/* Bit-flag for header (1) and trailer (2) */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">;</span><span class="w">                      </span><span class="cm">/* Pointer to PostScript code */</span>
 <span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">header</span><span class="p">;</span><span class="w">                   </span><span class="cm">/* Array with all PostScript header records, if any) */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">                    </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">                    </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -4009,7 +4009,7 @@ by the <a class="reference internal" href="#struct-univector"><span class="std s
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w">          </span><span class="o">*</span><span class="n">ProjRefPROJ4</span><span class="p">;</span><span class="w">  </span><span class="cm">/* To store a referencing system string in PROJ.4 format */</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w">          </span><span class="o">*</span><span class="n">ProjRefWKT</span><span class="p">;</span><span class="w">    </span><span class="cm">/* To store a referencing system string in WKT format */</span>
 <span class="w">    </span><span class="kt">int</span><span class="w">                  </span><span class="n">ProjRefEPSG</span><span class="p">;</span><span class="w">   </span><span class="cm">/* To store a referencing system EPSG code */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w">                </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w">                </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -4034,7 +4034,7 @@ by the <a class="reference internal" href="#struct-univector"><span class="std s
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w">          </span><span class="o">*</span><span class="n">ProjRefPROJ4</span><span class="p">;</span><span class="w">  </span><span class="cm">/* To store a referencing system string in PROJ.4 format */</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w">          </span><span class="o">*</span><span class="n">ProjRefWKT</span><span class="p">;</span><span class="w">    </span><span class="cm">/* To store a referencing system string in WKT format */</span>
 <span class="w">    </span><span class="kt">int</span><span class="w">                  </span><span class="n">ProjRefEPSG</span><span class="p">;</span><span class="w">   </span><span class="cm">/* To store a referencing system EPSG code */</span>
-<span class="w">    </span><span class="kt">void</span><span class="w">                </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ---- Variables &quot;hidden&quot; from the API ---- */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w">                </span><span class="o">*</span><span class="n">hidden</span><span class="p">;</span><span class="w">        </span><span class="cm">/* ---- Variables "hidden" from the API ---- */</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -4190,7 +4190,7 @@ own threads.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

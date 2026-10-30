@@ -439,7 +439,7 @@ with the examples below.</p>
 <p>We will start off using the file tut_data.txt in your directory. Using the GMT utility <a class="reference internal" href="../../gmtinfo.html"><span class="doc">info</span></a>
 we find the extent of the data region:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmtinfo<span class="o">(</span><span class="s2">&quot;@tut_data.txt&quot;</span><span class="o">)</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmtinfo<span class="o">(</span><span class="s2">"@tut_data.txt"</span><span class="o">)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -460,7 +460,7 @@ try the following:</p>
 </ol>
 <p>To simply plot the data as a line we choose no symbol and specify a pen thickness instead:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plot<span class="o">(</span><span class="s2">&quot;@tut_data.txt&quot;</span>,<span class="w"> </span><span class="nv">region</span><span class="o">=(</span><span class="m">0</span>,6,0,6<span class="o">)</span>,<span class="w"> </span><span class="nv">pen</span><span class="o">=</span>:thinner,<span class="w"> </span><span class="nv">aspect</span><span class="o">=</span>:equal,<span class="w"> </span><span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plot<span class="o">(</span><span class="s2">"@tut_data.txt"</span>,<span class="w"> </span><span class="nv">region</span><span class="o">=(</span><span class="m">0</span>,6,0,6<span class="o">)</span>,<span class="w"> </span><span class="nv">pen</span><span class="o">=</span>:thinner,<span class="w"> </span><span class="nv">aspect</span><span class="o">=</span>:equal,<span class="w"> </span><span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -485,7 +485,7 @@ Symbols, on the other hand, can be plotted one at a time so there
 is no limit to how many symbols one may plot. Therefore, to connect
 symbols with a line we must use the overlay approach:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plot<span class="o">(</span><span class="s2">&quot;@tut_data.txt&quot;</span>,<span class="w"> </span><span class="nv">region</span><span class="o">=(</span><span class="m">0</span>,6,0,6<span class="o">)</span>,<span class="w"> </span><span class="nv">pen</span><span class="o">=</span>:thinner,<span class="w"> </span><span class="nv">marker</span><span class="o">=</span>:inverted_tri,
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plot<span class="o">(</span><span class="s2">"@tut_data.txt"</span>,<span class="w"> </span><span class="nv">region</span><span class="o">=(</span><span class="m">0</span>,6,0,6<span class="o">)</span>,<span class="w"> </span><span class="nv">pen</span><span class="o">=</span>:thinner,<span class="w"> </span><span class="nv">marker</span><span class="o">=</span>:inverted_tri,
 <span class="w">     </span><span class="nv">markersize</span><span class="o">=</span><span class="m">0</span>.5,<span class="w"> </span><span class="nv">aspect</span><span class="o">=</span>:equal,<span class="w"> </span><span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
 </pre></div>
 </div>
@@ -519,7 +519,7 @@ input format can be done in a number of ways. Here, we simply use the common col
 and its <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">scaling/offset capabilities</span></a>. To skip the first 3 header records and then select
 the 5th, 4th, 6th, and 7th column and scale the 7th column by 0.1, we would use</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">incols</span><span class="o">=</span><span class="s2">&quot;4,3,5,6s0.1&quot;</span>,<span class="w"> </span><span class="nv">header</span><span class="o">=</span><span class="m">3</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">incols</span><span class="o">=</span><span class="s2">"4,3,5,6s0.1"</span>,<span class="w"> </span><span class="nv">header</span><span class="o">=</span><span class="m">3</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -543,9 +543,9 @@ constant color intervals. You may wish to consult the <a class="reference intern
 in the Technical Reference. This color table was generated as part of the script (below).</p>
 <p>We may now complete our example using the Mercator projection:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span><span class="s2">&quot;red,green,blue&quot;</span>,<span class="w"> </span><span class="nv">range</span><span class="o">=</span><span class="s2">&quot;0,100,300,10000&quot;</span><span class="o">)</span><span class="p">;</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span><span class="s2">"red,green,blue"</span>,<span class="w"> </span><span class="nv">range</span><span class="o">=</span><span class="s2">"0,100,300,10000"</span><span class="o">)</span><span class="p">;</span>
 coast<span class="o">(</span><span class="nv">region</span><span class="o">=(</span><span class="m">130</span>,150,35,50<span class="o">)</span>,<span class="w"> </span><span class="nv">land</span><span class="o">=</span>:gray,<span class="w"> </span><span class="nv">proj</span><span class="o">=</span>:merc<span class="o">)</span>
-plot!<span class="o">(</span><span class="s2">&quot;@tut_quakes.ngdc&quot;</span>,<span class="w"> </span><span class="nv">incols</span><span class="o">=</span><span class="s2">&quot;4,3,5,6s0.1&quot;</span>,<span class="w"> </span><span class="nv">header</span><span class="o">=</span><span class="m">3</span>,<span class="w"> </span><span class="nv">symbol</span><span class="o">=</span><span class="s2">&quot;cc&quot;</span>,<span class="w"> </span><span class="nv">markerline</span><span class="o">=</span>:faint,<span class="w"> </span><span class="nv">color</span><span class="o">=</span>C,<span class="w"> </span><span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+plot!<span class="o">(</span><span class="s2">"@tut_quakes.ngdc"</span>,<span class="w"> </span><span class="nv">incols</span><span class="o">=</span><span class="s2">"4,3,5,6s0.1"</span>,<span class="w"> </span><span class="nv">header</span><span class="o">=</span><span class="m">3</span>,<span class="w"> </span><span class="nv">symbol</span><span class="o">=</span><span class="s2">"cc"</span>,<span class="w"> </span><span class="nv">markerline</span><span class="o">=</span>:faint,<span class="w"> </span><span class="nv">color</span><span class="o">=</span>C,<span class="w"> </span><span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -663,12 +663,12 @@ Technical Reference. For accented European characters you must
 set <a class="reference internal" href="../../gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> to ISOLatin1 in your <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> file.</p>
 <p>We will demonstrate <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/text">text</a> with the following script:</p>
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">text_record</span><span class="p">(</span>
-<span class="w">   </span><span class="mi">1</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="n">It</span><span class="o">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">P</span><span class="nd">@al</span><span class="p">,</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">Pal!</span>
+<span class="w">   </span><span class="mi">1</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="n">It</span><span class="o">'</span><span class="n">s</span><span class="w"> </span><span class="n">P</span><span class="nd">@al</span><span class="p">,</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">Pal!</span>
 <span class="w">   </span><span class="mi">1</span><span class="w">  </span><span class="mi">2</span><span class="w">  </span><span class="n">Try</span><span class="w"> </span><span class="nd">@%</span><span class="mi">33</span><span class="o">%</span><span class="n">ZapfChancery</span><span class="nd">@%</span><span class="o">%</span><span class="w"> </span><span class="n">today</span>
 <span class="w">   </span><span class="mi">1</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="nd">@~</span><span class="n">D</span><span class="nd">@~</span><span class="n">g</span><span class="nd">@-</span><span class="n">b</span><span class="nd">@-</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="nd">@~</span><span class="n">pr</span><span class="nd">@~</span><span class="n">G</span><span class="nd">@~</span><span class="n">D</span><span class="nd">@~</span><span class="n">h</span><span class="o">.</span>
 <span class="w">   </span><span class="mi">1</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="n">University</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">Hawaii</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">M</span><span class="nd">@!</span><span class="n">a</span><span class="o">\</span><span class="mi">225</span><span class="n">noa</span>
 <span class="p">);</span>
-<span class="n">text</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">region</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="w"> </span><span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Times-Roman&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">:DarkOrange</span><span class="p">),</span><span class="w"> </span><span class="n">jutify</span><span class="o">=</span><span class="ss">:BL</span><span class="p">)</span>
+<span class="n">text</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">region</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="w"> </span><span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="s">"Times-Roman"</span><span class="p">,</span><span class="w"> </span><span class="ss">:DarkOrange</span><span class="p">),</span><span class="w"> </span><span class="n">jutify</span><span class="o">=</span><span class="ss">:BL</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Your plot should look like <a class="reference internal" href="#gmt-tut-10-jl"><span class="std std-ref">our example 10 below</span></a></p>
@@ -744,7 +744,7 @@ set <a class="reference internal" href="../../gmt.conf.html#term-PS_CHAR_ENCODIN
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

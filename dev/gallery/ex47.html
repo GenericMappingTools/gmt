@@ -185,8 +185,8 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex47
 <span class="w">	</span><span class="c1"># Allow outliers (commented out by #) to be included in the analysis:</span>
 <span class="w">	</span>sed<span class="w"> </span>-e<span class="w"> </span>s/#//g<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>&gt;<span class="w"> </span>data.txt
 <span class="w">	</span><span class="c1"># Identify the red giants (outliers)</span>
-<span class="w">	</span>grep<span class="w"> </span><span class="s1">&#39;#&#39;</span><span class="w"> </span><span class="nv">$file</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-e<span class="w"> </span>s/#//g<span class="w"> </span>&gt;<span class="w"> </span>giants.txt
-<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>4x3<span class="w"> </span>-M0p<span class="w"> </span>-Fs5c<span class="w"> </span>-R2.85/5.25/3.9/6.3<span class="w"> </span>-JX-5c/5c<span class="w"> </span>-Srl+l<span class="s2">&quot;Log light intensity&quot;</span><span class="w"> </span>-Scb+l<span class="s2">&quot;Log temperature&quot;</span>+tc<span class="w"> </span>-Bwesn<span class="w"> </span>-Bafg
+<span class="w">	</span>grep<span class="w"> </span><span class="s1">'#'</span><span class="w"> </span><span class="nv">$file</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-e<span class="w"> </span>s/#//g<span class="w"> </span>&gt;<span class="w"> </span>giants.txt
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>4x3<span class="w"> </span>-M0p<span class="w"> </span>-Fs5c<span class="w"> </span>-R2.85/5.25/3.9/6.3<span class="w"> </span>-JX-5c/5c<span class="w"> </span>-Srl+l<span class="s2">"Log light intensity"</span><span class="w"> </span>-Scb+l<span class="s2">"Log temperature"</span>+tc<span class="w"> </span>-Bwesn<span class="w"> </span>-Bafg
 <span class="w">	</span><span class="c1"># L1 regressions</span>
 <span class="w">	</span>plot_one<span class="w"> </span>-Ey<span class="w"> </span>-N1<span class="w"> </span>-c0,0<span class="w"> </span>+tL@-1@-
 <span class="w">	</span>plot_one<span class="w"> </span>-Ex<span class="w"> </span>-N1<span class="w"> </span>-c1,0
@@ -199,13 +199,13 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex47
 <span class="w">	</span>plot_one<span class="w"> </span>-Er<span class="w"> </span>-N2<span class="w"> </span>-c3,1
 <span class="w">	</span><span class="c1">#LMS regressions - also add labels on right side</span>
 <span class="w">	</span>plot_one<span class="w"> </span>-Ey<span class="w"> </span>-Nr<span class="w"> </span>-c0,2<span class="w"> </span>+tLMS
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+cRM+jTC+a90+t<span class="s2">&quot;Y ON X&quot;</span><span class="w"> </span>-N<span class="w"> </span>-Dj15p
+<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+cRM+jTC+a90+t<span class="s2">"Y ON X"</span><span class="w"> </span>-N<span class="w"> </span>-Dj15p
 <span class="w">	</span>plot_one<span class="w"> </span>-Ex<span class="w"> </span>-Nr<span class="w"> </span>-c1,2
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+cRM+jTC+a90+t<span class="s2">&quot;X ON Y&quot;</span><span class="w"> </span>-N<span class="w"> </span>-Dj15p
+<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+cRM+jTC+a90+t<span class="s2">"X ON Y"</span><span class="w"> </span>-N<span class="w"> </span>-Dj15p
 <span class="w">	</span>plot_one<span class="w"> </span>-Eo<span class="w"> </span>-Nr<span class="w"> </span>-c2,2
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+cRM+jTC+a90+tORTHOGONAL<span class="w"> </span>-N<span class="w"> </span>-Dj15p
 <span class="w">	</span>plot_one<span class="w"> </span>-Er<span class="w"> </span>-Nr<span class="w"> </span>-c3,2
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+cRM+jTC+a90+t<span class="s2">&quot;REDUCED MAJOR AXIS&quot;</span><span class="w"> </span>-N<span class="w"> </span>-Dj15p
+<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+cRM+jTC+a90+t<span class="s2">"REDUCED MAJOR AXIS"</span><span class="w"> </span>-N<span class="w"> </span>-Dj15p
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
 gmt<span class="w"> </span>end<span class="w"> </span>show
 rm<span class="w"> </span>-f<span class="w"> </span>data.txt<span class="w"> </span>giants.txt<span class="w"> </span>hertzsprung-russell.txt
@@ -231,7 +231,7 @@ rm<span class="w"> </span>-f<span class="w"> </span>data.txt<span class="w"> </s
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

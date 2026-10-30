@@ -175,11 +175,11 @@ image the data. We use the CPT <code class="docutils literal notranslate"><span 
 <span class="c1"># Unix progs:	rm</span>
 <span class="c1">#</span>
 gmt<span class="w"> </span>begin<span class="w"> </span>ex12
-<span class="w">	</span><span class="c1"># Contour the data and draw triangles using dashed pen; use &quot;gmt gmtinfo&quot; and &quot;gmt makecpt&quot; to make a</span>
+<span class="w">	</span><span class="c1"># Contour the data and draw triangles using dashed pen; use "gmt gmtinfo" and "gmt makecpt" to make a</span>
 <span class="w">	</span><span class="c1"># color palette (.cpt) file</span>
 <span class="w">	</span><span class="nv">T</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>info<span class="w"> </span>-T25+c2<span class="w"> </span>@Table_5_11.txt<span class="k">)</span>
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cjet<span class="w"> </span><span class="nv">$T</span>
-<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-M0.1c<span class="w"> </span>-Fs8c/0<span class="w"> </span>-Scb<span class="w"> </span>-Srl<span class="w"> </span>-R0/6.5/-0.2/6.5<span class="w"> </span>-JX8c<span class="w"> </span>-BWSne<span class="w"> </span>-T<span class="s2">&quot;Delaunay Triangulation&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-M0.1c<span class="w"> </span>-Fs8c/0<span class="w"> </span>-Scb<span class="w"> </span>-Srl<span class="w"> </span>-R0/6.5/-0.2/6.5<span class="w"> </span>-JX8c<span class="w"> </span>-BWSne<span class="w"> </span>-T<span class="s2">"Delaunay Triangulation"</span>
 <span class="w">	</span><span class="c1"># First draw network and label the nodes</span>
 <span class="w">	</span>gmt<span class="w"> </span>triangulate<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-M<span class="w"> </span>&gt;<span class="w"> </span>net.xy
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>net.xy<span class="w"> </span>-Wthinner<span class="w"> </span>-c0,0
@@ -218,7 +218,7 @@ rm<span class="w"> </span>-f<span class="w"> </span>net.xy
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

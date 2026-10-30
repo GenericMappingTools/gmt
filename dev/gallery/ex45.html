@@ -169,33 +169,33 @@ Mauna Loa.  This yields the famous Keeling curve.</p>
 
 gmt<span class="w"> </span>begin<span class="w"> </span>ex45
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_HEADING<span class="w"> </span>24p
-<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>4x1<span class="w"> </span>-Fs15c/4.8c<span class="w"> </span>-R1958/2016/310/410<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+u<span class="s2">&quot; ppm&quot;</span><span class="w"> </span>-BWSne+gazure1<span class="w"> </span>-T<span class="s2">&quot;The Keeling Curve [CO@-2@- at Mauna Loa]&quot;</span>
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>4x1<span class="w"> </span>-Fs15c/4.8c<span class="w"> </span>-R1958/2016/310/410<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+u<span class="s2">" ppm"</span><span class="w"> </span>-BWSne+gazure1<span class="w"> </span>-T<span class="s2">"The Keeling Curve [CO@-2@- at Mauna Loa]"</span>
 
 <span class="w">		</span><span class="c1"># Basic LS line y = a + bx</span>
 <span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">3</span>
 <span class="w">		</span>gmt<span class="w"> </span>trend1d<span class="w"> </span>-Fxm<span class="w"> </span>@MaunaLoa_CO2.txt<span class="w"> </span>-Np1<span class="w"> </span>&gt;<span class="w"> </span>model.txt
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.05c<span class="w"> </span>-Gred<span class="w"> </span>@MaunaLoa_CO2.txt
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-W0.5p,blue<span class="w"> </span>model.txt
-<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+cTL+t<span class="s2">&quot;m@-2@-(t) = a + b\267t&quot;</span><span class="w"> </span>-Dj8p<span class="w"> </span>-Glightyellow
+<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+cTL+t<span class="s2">"m@-2@-(t) = a + b\267t"</span><span class="w"> </span>-Dj8p<span class="w"> </span>-Glightyellow
 
 <span class="w">		</span><span class="c1"># Basic LS line y = a + bx + cx^2</span>
 <span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">2</span>
 <span class="w">		</span>gmt<span class="w"> </span>trend1d<span class="w"> </span>-Fxm<span class="w"> </span>@MaunaLoa_CO2.txt<span class="w"> </span>-Np2<span class="w"> </span>&gt;<span class="w"> </span>model.txt
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.05c<span class="w"> </span>-Gred<span class="w"> </span>@MaunaLoa_CO2.txt
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-W0.5p,blue<span class="w"> </span>model.txt
-<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+cTL+t<span class="s2">&quot;m@-3@-(t) = a + b\267t + c\267t@+2@+&quot;</span><span class="w"> </span>-Dj8p<span class="w"> </span>-Glightyellow
+<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+cTL+t<span class="s2">"m@-3@-(t) = a + b\267t + c\267t@+2@+"</span><span class="w"> </span>-Dj8p<span class="w"> </span>-Glightyellow
 
 <span class="w">		</span><span class="c1"># Basic LS line y = a + bx + cx^2 + seasonal change</span>
 <span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">1</span>
 <span class="w">		</span>gmt<span class="w"> </span>trend1d<span class="w"> </span>-Fxmr<span class="w"> </span>@MaunaLoa_CO2.txt<span class="w"> </span>-Np2,f1+o1958+l1<span class="w"> </span>&gt;<span class="w"> </span>model.txt
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.05c<span class="w"> </span>-Gred<span class="w"> </span>@MaunaLoa_CO2.txt
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-W0.25p,blue<span class="w"> </span>model.txt
-<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+cTL+t<span class="s2">&quot;m@-5@-(t) = a + b\267t + c\267t@+2@+ + d\267cos(2@~p@~t) + e\267sin(2@~p@~t)&quot;</span><span class="w"> </span>-Dj8p<span class="w"> </span>-Glightyellow
+<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+cTL+t<span class="s2">"m@-5@-(t) = a + b\267t + c\267t@+2@+ + d\267cos(2@~p@~t) + e\267sin(2@~p@~t)"</span><span class="w"> </span>-Dj8p<span class="w"> </span>-Glightyellow
 
 <span class="w">		</span><span class="c1"># Plot residuals of last model</span>
 <span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span>
-<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R1958/2016/-4/4<span class="w"> </span>-Byafg10+u<span class="s2">&quot; ppm&quot;</span><span class="w"> </span>-Sc0.05c<span class="w"> </span>-Gred<span class="w"> </span>model.txt<span class="w"> </span>-i0,2
-<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+cTL+t<span class="s2">&quot;@~e@~(t) = y(t) - m@-5@-(t)&quot;</span><span class="w"> </span>-Dj8p<span class="w"> </span>-Glightyellow
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R1958/2016/-4/4<span class="w"> </span>-Byafg10+u<span class="s2">" ppm"</span><span class="w"> </span>-Sc0.05c<span class="w"> </span>-Gred<span class="w"> </span>model.txt<span class="w"> </span>-i0,2
+<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+cTL+t<span class="s2">"@~e@~(t) = y(t) - m@-5@-(t)"</span><span class="w"> </span>-Dj8p<span class="w"> </span>-Glightyellow
 
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
 <span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>model.txt
@@ -222,7 +222,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

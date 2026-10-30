@@ -409,14 +409,14 @@ your <strong>-n</strong> option.</p>
 the cruises 01010047.nc and 01010008.nc, storing the values as mGal*10
 in a 2-byte short integer, try</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77manage<span class="w"> </span><span class="m">01010047</span><span class="w"> </span><span class="m">01010008</span><span class="w"> </span>-Ai10/1/grav.11.2.img<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-Isatgrav/<span class="s2">&quot;Geosat/ERS-1 gravity&quot;</span>/<span class="s2">&quot;mGal&quot;</span>/s/10/0/<span class="s2">&quot;Sandwell/Smith version 11.2&quot;</span><span class="w"> </span>-V
+<span class="w">    </span>-Isatgrav/<span class="s2">"Geosat/ERS-1 gravity"</span>/<span class="s2">"mGal"</span>/s/10/0/<span class="s2">"Sandwell/Smith version 11.2"</span><span class="w"> </span>-V
 </pre></div>
 </div>
 <p>To append a filtered version of magnetics as an extra data column of
 type float for the cruise 01010047.nc, and interpolate the filtered data
 at the times given in the MGD77+ file, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77manage<span class="w"> </span><span class="m">01010047</span><span class="w"> </span>-ATmymag.tm<span class="w"> </span>-Ifiltmag/<span class="s2">&quot;Intermediate-wavelength \</span>
-<span class="s2">    magnetic residuals&quot;</span>/<span class="s2">&quot;nTesla&quot;</span>/f/1/0/<span class="s2">&quot;Useful for looking for isochrons&quot;</span><span class="w"> </span>-V
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>mgd77manage<span class="w"> </span><span class="m">01010047</span><span class="w"> </span>-ATmymag.tm<span class="w"> </span>-Ifiltmag/<span class="s2">"Intermediate-wavelength \</span>
+<span class="s2">    magnetic residuals"</span>/<span class="s2">"nTesla"</span>/f/1/0/<span class="s2">"Useful for looking for isochrons"</span><span class="w"> </span>-V
 </pre></div>
 </div>
 <p>To delete the existing extra columns satfaa, coastdist, and satvgg from
@@ -426,8 +426,8 @@ all MGD77+ files, try</p>
 </div>
 <p>To create a 4-byte float column with the correct IGRF reference field in
 all MGD77+ files, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span><span class="nv">mgd77manage</span><span class="w"> </span><span class="o">=</span>allmgd77.lis<span class="w"> </span>-Acm<span class="w"> </span>-Iigrf/<span class="s2">&quot;IGRF reference \</span>
-<span class="s2">    field&quot;</span>/<span class="s2">&quot;nTesla&quot;</span>/f/1/0/<span class="s2">&quot;IGRF version 10 for 1990-2010&quot;</span><span class="w"> </span>-V
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span><span class="nv">mgd77manage</span><span class="w"> </span><span class="o">=</span>allmgd77.lis<span class="w"> </span>-Acm<span class="w"> </span>-Iigrf/<span class="s2">"IGRF reference \</span>
+<span class="s2">    field"</span>/<span class="s2">"nTesla"</span>/f/1/0/<span class="s2">"IGRF version 10 for 1990-2010"</span><span class="w"> </span>-V
 </pre></div>
 </div>
 </section>
@@ -570,7 +570,7 @@ Luis, and adapted to GMT style by Paul Wessel.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

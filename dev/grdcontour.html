@@ -608,13 +608,13 @@ degree tick marks, and draw 30 minute gridlines:</p>
 <p>To contour the Alaska gravity data every 10 mGal with labels every 50 mGal, smooth
 the contours a bit, use “Gravity Anomalies” as plot-title, use a thick red pen for
 the annotated contours and a thin, dashed, blue pen for the rest, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-C10<span class="w"> </span>-A50<span class="w"> </span>-S4<span class="w"> </span>-B<span class="w"> </span>-B+t<span class="s2">&quot;Gravity Anomalies&quot;</span><span class="w"> </span>-Wathick,red<span class="w"> </span>-Wcthinnest,blue,-<span class="w"> </span>-pdf<span class="w"> </span>alaska_grav3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-C10<span class="w"> </span>-A50<span class="w"> </span>-S4<span class="w"> </span>-B<span class="w"> </span>-B+t<span class="s2">"Gravity Anomalies"</span><span class="w"> </span>-Wathick,red<span class="w"> </span>-Wcthinnest,blue,-<span class="w"> </span>-pdf<span class="w"> </span>alaska_grav3
 </pre></div>
 </div>
 <p>Same, but this time we want all negative contours to be blue and positive to be red, with
 the zero-contour black:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>alaska_grav4
-<span class="w">  </span>grdcontour<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-C10<span class="w"> </span>-A50<span class="w"> </span>-S4<span class="w"> </span>-B<span class="w"> </span>-B+t<span class="s2">&quot;Gravity Anomalies&quot;</span><span class="w"> </span>-Ln<span class="w"> </span>-Wathick,blue<span class="w"> </span>-Wcthinnest,blue,-
+<span class="w">  </span>grdcontour<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-C10<span class="w"> </span>-A50<span class="w"> </span>-S4<span class="w"> </span>-B<span class="w"> </span>-B+t<span class="s2">"Gravity Anomalies"</span><span class="w"> </span>-Ln<span class="w"> </span>-Wathick,blue<span class="w"> </span>-Wcthinnest,blue,-
 <span class="w">  </span>grdcontour<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-C10<span class="w"> </span>-A50<span class="w"> </span>-S4<span class="w"> </span>-Lp<span class="w"> </span>-Wathick,red<span class="w"> </span>-Wcthinnest,red,-
 <span class="w">  </span>grdcontour<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-A0,<span class="w"> </span>-S4
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -651,7 +651,7 @@ contours_O.txt for open contours, try:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

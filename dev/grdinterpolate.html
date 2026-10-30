@@ -565,7 +565,7 @@ using a linear spline, try:</p>
 <p>To extract a time-series through the grids deformation_*.nc at the location (115W, 33N),
 with the times of each grid provided by the file dates.txt, and append the string
 “Some like it hot” to the segment header for the series, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinterpolate<span class="w"> </span>deformation_*.nc<span class="w"> </span>-Zdates.txt<span class="w"> </span>-S115W/33N+h<span class="s2">&quot;Some like it hot&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>record.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinterpolate<span class="w"> </span>deformation_*.nc<span class="w"> </span>-Zdates.txt<span class="w"> </span>-S115W/33N+h<span class="s2">"Some like it hot"</span><span class="w"> </span>&gt;<span class="w"> </span>record.txt
 </pre></div>
 </div>
 <p>To extract a vertical slice of the 3-D grid S362ANI_kmps.nc with seismic velocities that goes
@@ -597,7 +597,7 @@ distances be longitude degrees along the parallel, try:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

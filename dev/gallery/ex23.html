@@ -185,7 +185,7 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex23
 <span class="w">	</span><span class="c1"># Position and name of central point:</span>
 <span class="w">	</span><span class="nv">lon</span><span class="o">=</span><span class="m">12</span>.50
 <span class="w">	</span><span class="nv">lat</span><span class="o">=</span><span class="m">41</span>.99
-<span class="w">	</span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;Rome&quot;</span>
+<span class="w">	</span><span class="nv">name</span><span class="o">=</span><span class="s2">"Rome"</span>
 
 <span class="w">	</span><span class="c1"># Calculate distances (km) to all points on a global 1x1 grid</span>
 <span class="w">	</span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-Rg<span class="w"> </span>-I1<span class="w"> </span><span class="nv">$lon</span><span class="w"> </span><span class="nv">$lat</span><span class="w"> </span><span class="nv">SDIST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>dist.nc
@@ -198,9 +198,9 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex23
 <span class="s">	237.67	47.58	RM	SEATTLE</span>
 <span class="s">	28.20	-25.75	LM	PRETORIA</span>
 <span class="s">	END</span>
-<span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Rg<span class="w"> </span>-JH90/25c<span class="w"> </span>-Glightgreen<span class="w"> </span>-Sblue<span class="w"> </span>-A1000<span class="w"> </span>-Bg30<span class="w"> </span>-B+t<span class="s2">&quot;Distances from </span><span class="nv">$name</span><span class="s2"> to the World&quot;</span><span class="w"> </span>-Wthinnest
+<span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Rg<span class="w"> </span>-JH90/25c<span class="w"> </span>-Glightgreen<span class="w"> </span>-Sblue<span class="w"> </span>-A1000<span class="w"> </span>-Bg30<span class="w"> </span>-B+t<span class="s2">"Distances from </span><span class="nv">$name</span><span class="s2"> to the World"</span><span class="w"> </span>-Wthinnest
 
-<span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>dist.nc<span class="w"> </span>-A1000+v+u<span class="s2">&quot; km&quot;</span>+fwhite<span class="w"> </span>-Glz-/z+<span class="w"> </span>-S8<span class="w"> </span>-C500<span class="w"> </span>-Wathin,white<span class="w"> </span>-Wcthinnest,white,-
+<span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>dist.nc<span class="w"> </span>-A1000+v+u<span class="s2">" km"</span>+fwhite<span class="w"> </span>-Glz-/z+<span class="w"> </span>-S8<span class="w"> </span>-C500<span class="w"> </span>-Wathin,white<span class="w"> </span>-Wcthinnest,white,-
 
 <span class="w">	</span><span class="c1"># For each of the cities, plot great circle arc to Rome with gmt plot</span>
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Wthickest,red<span class="w"> </span>-Fr<span class="nv">$lon</span>/<span class="nv">$lat</span><span class="w"> </span>cities.txt
@@ -209,7 +209,7 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex23
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Ss0.5c<span class="w"> </span>-Gred<span class="w"> </span>-Wthinnest<span class="w"> </span>cities.txt
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-Dj10p/0<span class="w"> </span>-F+f12p,Courier-Bold,red+j<span class="w"> </span>-N<span class="w"> </span>cities.txt
 <span class="w">	</span><span class="c1"># Place a yellow star at Rome</span>
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$lon</span><span class="s2"> </span><span class="nv">$lat</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sa0.5c<span class="w"> </span>-Gyellow<span class="w"> </span>-Wthin
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="nv">$lon</span><span class="s2"> </span><span class="nv">$lat</span><span class="s2">"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sa0.5c<span class="w"> </span>-Gyellow<span class="w"> </span>-Wthin
 
 <span class="w">	</span><span class="c1"># Sample the distance grid at the cities and use the distance in integer km for labels</span>
 <span class="w">	</span>gmt<span class="w"> </span>grdtrack<span class="w"> </span>-Gdist.nc<span class="w"> </span>cities.txt<span class="w"> </span>-o0:2<span class="w"> </span>--FORMAT_FLOAT_OUT<span class="o">=</span><span class="m">0</span>:%g,1:%g,2:%.0f<span class="w"> </span><span class="se">\</span>
@@ -250,7 +250,7 @@ should consider using it.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

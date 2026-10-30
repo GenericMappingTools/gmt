@@ -185,9 +185,9 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex39
 <span class="w">	</span>gmt<span class="w"> </span>grd2cpt<span class="w"> </span>v3.nc<span class="w"> </span>-Crainbow<span class="w"> </span>-E
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>v1.nc<span class="w"> </span>-I+a45+nt0.75<span class="w"> </span>-JG90/30/12c<span class="w"> </span>-Bg<span class="w"> </span>-X7.5c
 <span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="nv">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f16p+cTR
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>--FORMAT_FLOAT_MAP<span class="o">=</span><span class="s2">&quot;%&#39;g&quot;</span><span class="w"> </span>-Dx3c/-0.5c+jTC+w13c/0.25c+h<span class="w">  </span>-Bxaf<span class="w"> </span>-By+lm
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>--FORMAT_FLOAT_MAP<span class="o">=</span><span class="s2">"%'g"</span><span class="w"> </span>-Dx3c/-0.5c+jTC+w13c/0.25c+h<span class="w">  </span>-Bxaf<span class="w"> </span>-By+lm
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>v2.nc<span class="w"> </span>-I+a45+nt0.75<span class="w"> </span>-JG<span class="w"> </span>-Rg<span class="w"> </span>-Bg<span class="w"> </span>-X-3c<span class="w"> </span>-Y5c
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="nv">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">90</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f16p+cTR<span class="w"> </span>-B+t<span class="s2">&quot;Venus Spherical Harmonic Model&quot;</span><span class="w"> </span>--MAP_TITLE_OFFSET<span class="o">=</span><span class="m">5</span>.5c
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="nv">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">90</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f16p+cTR<span class="w"> </span>-B+t<span class="s2">"Venus Spherical Harmonic Model"</span><span class="w"> </span>--MAP_TITLE_OFFSET<span class="o">=</span><span class="m">5</span>.5c
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>v3.nc<span class="w"> </span>-I+a45+nt0.75<span class="w"> </span>-JG<span class="w"> </span>-Rg<span class="w"> </span>-Bg<span class="w"> </span>-X-3c<span class="w"> </span>-Y5c
 <span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="nv">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">180</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f16p+cTR
 <span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>v?.nc
@@ -214,7 +214,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

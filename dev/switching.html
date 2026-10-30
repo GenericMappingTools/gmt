@@ -246,7 +246,7 @@ when the recommended <code class="docutils literal notranslate"><span class="pre
 old-style GMT commands would have to be converted first. The syntax conversion
 can be accomplished with the <a class="reference internal" href="gmt5syntax.html"><span class="doc">gmt5syntax</span></a> utility. A suitable bash wrapper
 function for GMT 5 would look like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">function</span><span class="w"> </span>gmt<span class="o">()</span><span class="w"> </span><span class="o">{</span><span class="w"> </span>/path/to/gmt5/bin/gmt<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">function</span><span class="w"> </span>gmt<span class="o">()</span><span class="w"> </span><span class="o">{</span><span class="w"> </span>/path/to/gmt5/bin/gmt<span class="w"> </span><span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
 <span class="nb">export</span><span class="w"> </span>-f<span class="w"> </span>gmt
 </pre></div>
 </div>
@@ -256,7 +256,7 @@ inside a GMT shell script. The latter is useful to switch to a certain GMT
 version on a per-script basis.</p>
 <p>For GMT releases prior to GMT 5 which only provide the module commands,
 we need a slightly modified version of the wrapper script:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">function</span><span class="w"> </span>gmt<span class="o">()</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nv">module</span><span class="o">=</span><span class="nv">$1</span><span class="p">;</span><span class="w"> </span>shift<span class="p">;</span><span class="w"> </span>/path/to/gmt4/bin/<span class="si">${</span><span class="nv">module</span><span class="si">}</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">function</span><span class="w"> </span>gmt<span class="o">()</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nv">module</span><span class="o">=</span><span class="nv">$1</span><span class="p">;</span><span class="w"> </span>shift<span class="p">;</span><span class="w"> </span>/path/to/gmt4/bin/<span class="si">${</span><span class="nv">module</span><span class="si">}</span><span class="w"> </span><span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
 <span class="nb">export</span><span class="w"> </span>-f<span class="w"> </span>gmt
 </pre></div>
 </div>
@@ -266,12 +266,12 @@ versions. So we might as well put everything together in a script file
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="k">in</span>
 <span class="w">  </span><span class="m">4</span><span class="o">)</span>
 <span class="w">  </span><span class="k">function</span><span class="w"> </span>gmt<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="nv">module</span><span class="o">=</span><span class="nv">$1</span><span class="p">;</span><span class="w"> </span>shift<span class="p">;</span><span class="w"> </span>/path/to/gmt4/bin/<span class="si">${</span><span class="nv">module</span><span class="si">}</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="nv">module</span><span class="o">=</span><span class="nv">$1</span><span class="p">;</span><span class="w"> </span>shift<span class="p">;</span><span class="w"> </span>/path/to/gmt4/bin/<span class="si">${</span><span class="nv">module</span><span class="si">}</span><span class="w"> </span><span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
 <span class="w">  </span><span class="o">}</span>
 <span class="w">  </span><span class="p">;;</span>
 <span class="w">  </span><span class="m">5</span><span class="o">)</span>
 <span class="w">  </span><span class="k">function</span><span class="w"> </span>gmt<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span>/path/to/gmt5/bin/gmt<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
+<span class="w">    </span>/path/to/gmt5/bin/gmt<span class="w"> </span><span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>
 <span class="w">  </span><span class="o">}</span>
 <span class="w">  </span><span class="p">;;</span>
 <span class="w">  </span>*<span class="o">)</span>
@@ -298,7 +298,7 @@ between versions.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

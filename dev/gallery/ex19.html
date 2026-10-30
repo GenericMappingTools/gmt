@@ -190,13 +190,13 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex19
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>lon.nc<span class="w"> </span>-Clon.cpt<span class="w"> </span>-nl
 <span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Q
 <span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-Wthinnest
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 20 20TH INTERNATIONAL&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -10 GMT CONFERENCE&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -30 Honolulu, Hawaii, April 1, 2024&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f18p,Helvetica-Bold,green<span class="o">=</span>thinnest
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"0 20 20TH INTERNATIONAL"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"0 -10 GMT CONFERENCE"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"0 -30 Honolulu, Hawaii, April 1, 2024"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f18p,Helvetica-Bold,green<span class="o">=</span>thinnest
 <span class="w">		</span><span class="c1">#   Then show example of color patterns and placing a PostScript image</span>
 <span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-Gp86+fred+byellow+r100<span class="w"> </span>-Sp@circuit.png+r100<span class="w"> </span>-c1,0
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 30 SILLY USES OF&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,lightgreen<span class="o">=</span>thinner
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -30 COLOR PATTERNS&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,magenta<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"0 30 SILLY USES OF"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,lightgreen<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"0 -30 COLOR PATTERNS"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,magenta<span class="o">=</span>thinner
 <span class="w">		</span>gmt<span class="w"> </span>image<span class="w"> </span>-DjCM+w7.5c<span class="w"> </span>@GMT_covertext.eps
 <span class="w">		</span><span class="c1">#   Finally repeat 1st plot but exchange the colors</span>
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>lon.nc<span class="w"> </span>-Clon.cpt<span class="w"> </span>-nl<span class="w"> </span>-c2,0
@@ -204,9 +204,9 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex19
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>lat.nc<span class="w"> </span>-Clat.cpt<span class="w"> </span>-nl
 <span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Q
 <span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-Wthinnest
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 20 20TH INTERNATIONAL&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -10 GMT CONFERENCE&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -30 Honolulu, Hawaii, April 1, 2024&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f18p,Helvetica-Bold,green<span class="o">=</span>thinnest
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"0 20 20TH INTERNATIONAL"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"0 -10 GMT CONFERENCE"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"0 -30 Honolulu, Hawaii, April 1, 2024"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f18p,Helvetica-Bold,green<span class="o">=</span>thinnest
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
 gmt<span class="w"> </span>end<span class="w"> </span>show
 rm<span class="w"> </span>-f<span class="w"> </span>lat.nc<span class="w"> </span>lon.nc<span class="w"> </span>lat.cpt<span class="w"> </span>lon.cpt
@@ -232,7 +232,7 @@ rm<span class="w"> </span>-f<span class="w"> </span>lat.nc<span class="w"> </spa
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

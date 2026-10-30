@@ -332,7 +332,7 @@ rudimentary keyword, value system where each string keyword is followed by a voi
 to the argument.  Internal parsing will use the keyword to know what its argument should
 be and obtain the value.  This avoids the breaking of the interface since optional arguments
 do not have to be listed.  It might look something like this:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmtlib_surface<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>input,<span class="w"> </span>output,<span class="w"> </span><span class="s2">&quot;region&quot;</span>,<span class="w"> </span>wesn,<span class="w"> </span><span class="s2">&quot;increment&quot;</span>,<span class="w"> </span>incs,<span class="w"> </span>NULL<span class="o">)</span><span class="p">;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmtlib_surface<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>input,<span class="w"> </span>output,<span class="w"> </span><span class="s2">"region"</span>,<span class="w"> </span>wesn,<span class="w"> </span><span class="s2">"increment"</span>,<span class="w"> </span>incs,<span class="w"> </span>NULL<span class="o">)</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>where we have changed the location of the input and output arguments so that the variable
@@ -366,11 +366,11 @@ a keyword-argument interface.</p>
 syntax here but I anticipate simple wrappers around these if other languages need some
 variations on the theme:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>gmt_create_dictionary<span class="w"> </span><span class="o">(</span>API<span class="o">)</span><span class="p">;</span><span class="w"> </span>/*<span class="w"> </span>Create<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>and<span class="w"> </span>empty<span class="w"> </span>GMT<span class="w"> </span>dictionary<span class="w"> </span>*/
-gmt_put_option<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">&quot;region&quot;</span>,<span class="w"> </span>GMT_DOUBLE,<span class="w"> </span><span class="m">4</span>,<span class="w"> </span>wesn<span class="o">)</span><span class="p">;</span><span class="w">   </span>/*<span class="w"> </span>Pass<span class="w"> </span>wesn<span class="w"> </span>array<span class="w"> </span>*/
-gmt_put_modifier<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">&quot;region&quot;</span>,<span class="w"> </span><span class="s2">&quot;selection&quot;</span>,<span class="w"> </span>GMT_CHAR,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="s2">&quot;diagonal&quot;</span><span class="o">)</span><span class="p">;</span><span class="w">   </span>/*<span class="w"> </span>Pass<span class="w"> </span>modifier<span class="w"> </span>+r<span class="w"> </span>or<span class="w"> </span>+selection<span class="o">=</span>diagonal<span class="w"> </span>*/
-gmt_put_option<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">&quot;increment&quot;</span>,<span class="w"> </span>GMT_DOUBLE,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>incs<span class="o">)</span><span class="p">;</span><span class="w">   </span>/*<span class="w"> </span>Pass<span class="w"> </span>incs<span class="w"> </span>array<span class="w"> </span>*/
-gmt_put_option<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">&quot;registration&quot;</span>,<span class="w"> </span>GMT_INT,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>GMT_GRID_PIXEL_REG<span class="o">)</span><span class="p">;</span>
-gmt_put_option<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">&quot;tension&quot;</span>,<span class="w"> </span>GMT_DOUBLE,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>tension<span class="o">)</span><span class="p">;</span>
+gmt_put_option<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">"region"</span>,<span class="w"> </span>GMT_DOUBLE,<span class="w"> </span><span class="m">4</span>,<span class="w"> </span>wesn<span class="o">)</span><span class="p">;</span><span class="w">   </span>/*<span class="w"> </span>Pass<span class="w"> </span>wesn<span class="w"> </span>array<span class="w"> </span>*/
+gmt_put_modifier<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">"region"</span>,<span class="w"> </span><span class="s2">"selection"</span>,<span class="w"> </span>GMT_CHAR,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="s2">"diagonal"</span><span class="o">)</span><span class="p">;</span><span class="w">   </span>/*<span class="w"> </span>Pass<span class="w"> </span>modifier<span class="w"> </span>+r<span class="w"> </span>or<span class="w"> </span>+selection<span class="o">=</span>diagonal<span class="w"> </span>*/
+gmt_put_option<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">"increment"</span>,<span class="w"> </span>GMT_DOUBLE,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>incs<span class="o">)</span><span class="p">;</span><span class="w">   </span>/*<span class="w"> </span>Pass<span class="w"> </span>incs<span class="w"> </span>array<span class="w"> </span>*/
+gmt_put_option<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">"registration"</span>,<span class="w"> </span>GMT_INT,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>GMT_GRID_PIXEL_REG<span class="o">)</span><span class="p">;</span>
+gmt_put_option<span class="w"> </span><span class="o">(</span>API,<span class="w"> </span>dict,<span class="w"> </span><span class="s2">"tension"</span>,<span class="w"> </span>GMT_DOUBLE,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>tension<span class="o">)</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>We can now call the module:</p>
@@ -441,7 +441,7 @@ The loading of the IO structure can be done via functions as well:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

@@ -189,7 +189,7 @@ panels is simplified via <a class="reference internal" href="../subplot.html"><s
 gmt<span class="w"> </span>begin<span class="w"> </span>ex15
 <span class="w">	</span>gmt<span class="w"> </span>convert<span class="w"> </span>@ship_15.txt<span class="w"> </span>-bo<span class="w"> </span>&gt;<span class="w"> </span>ship.b
 <span class="w">	</span><span class="nv">region</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>info<span class="w"> </span>ship.b<span class="w"> </span>-I1<span class="w"> </span>-bi3d<span class="k">)</span>
-<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-M0.3c/0.1c<span class="w"> </span>-Fs7.5c/0<span class="w"> </span><span class="nv">$region</span><span class="w"> </span>-JM7.5c<span class="w"> </span>-BWSne<span class="w"> </span>-T<span class="s2">&quot;Gridding with missing data&quot;</span><span class="w"> </span>-Scb<span class="w"> </span>-Srl<span class="w"> </span>
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-M0.3c/0.1c<span class="w"> </span>-Fs7.5c/0<span class="w"> </span><span class="nv">$region</span><span class="w"> </span>-JM7.5c<span class="w"> </span>-BWSne<span class="w"> </span>-T<span class="s2">"Gridding with missing data"</span><span class="w"> </span>-Scb<span class="w"> </span>-Srl<span class="w"> </span>
 <span class="w">		</span><span class="c1">#   Raw nearest neighbor contouring</span>
 <span class="w">		</span>gmt<span class="w"> </span>nearneighbor<span class="w"> </span><span class="nv">$region</span><span class="w"> </span>-I10m<span class="w"> </span>-S40k<span class="w"> </span>-Gship.nc<span class="w"> </span>ship.b<span class="w"> </span>-bi
 <span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>ship.nc<span class="w"> </span>-c1,0
@@ -233,7 +233,7 @@ rm<span class="w"> </span>-f<span class="w"> </span>ship.b<span class="w"> </spa
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

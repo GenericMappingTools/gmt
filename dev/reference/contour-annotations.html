@@ -629,7 +629,7 @@ unit for the labels, choose a rounded rectangular text box, and
 inverse-video the label:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_O_7
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R50/160/-15/15<span class="w"> </span>-JM5.3i<span class="w"> </span>-Gburlywood<span class="w"> </span>-Sazure<span class="w"> </span>-A500
-<span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@App_O_geoid.nc<span class="w"> </span>-B20f10<span class="w"> </span>-BWSne<span class="w"> </span>-C10<span class="w"> </span>-A20+d+u<span class="s2">&quot; m&quot;</span>+f8p<span class="w"> </span>-Gl50/10S/160/10S<span class="w"> </span>-S10<span class="w"> </span>-T+l
+<span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@App_O_geoid.nc<span class="w"> </span>-B20f10<span class="w"> </span>-BWSne<span class="w"> </span>-C10<span class="w"> </span>-A20+d+u<span class="s2">" m"</span>+f8p<span class="w"> </span>-Gl50/10S/160/10S<span class="w"> </span>-S10<span class="w"> </span>-T+l
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-SqD15d:+gblack+fwhite+Ld+o+u@.<span class="w"> </span>-Wthick<span class="w"> </span>@App_O_transect.txt
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -651,10 +651,10 @@ those records whose distances are multiples of 1500 km and create a
 “fixed points” file that can be used to place labels and specify the
 labels. This is done with <strong>awk</strong>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_O_8
-<span class="w">	</span>gmt<span class="w"> </span>convert<span class="w"> </span>-i0,1,4<span class="w"> </span>-Em150<span class="w"> </span>@App_O_transect.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;{print $1,$2,int($3)}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>fix2.txt
+<span class="w">	</span>gmt<span class="w"> </span>convert<span class="w"> </span>-i0,1,4<span class="w"> </span>-Em150<span class="w"> </span>@App_O_transect.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">'{print $1,$2,int($3)}'</span><span class="w"> </span>&gt;<span class="w"> </span>fix2.txt
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R50/160/-15/15<span class="w"> </span>-JM5.3i<span class="w"> </span>-Gburlywood<span class="w"> </span>-Sazure<span class="w"> </span>-A500
-<span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@App_O_geoid.nc<span class="w"> </span>-B20f10<span class="w"> </span>-BWSne<span class="w"> </span>-C10<span class="w"> </span>-A20+d+u<span class="s2">&quot; m&quot;</span>+f8p<span class="w"> </span>-Gl50/10S/160/10S<span class="w"> </span>-S10<span class="w"> </span>-T+l
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sqffix2.txt:+g+an+p+Lf+u<span class="s2">&quot; m&quot;</span>+f8p<span class="w"> </span>-Wthick<span class="w"> </span>@App_O_transect.txt
+<span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@App_O_geoid.nc<span class="w"> </span>-B20f10<span class="w"> </span>-BWSne<span class="w"> </span>-C10<span class="w"> </span>-A20+d+u<span class="s2">" m"</span>+f8p<span class="w"> </span>-Gl50/10S/160/10S<span class="w"> </span>-S10<span class="w"> </span>-T+l
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sqffix2.txt:+g+an+p+Lf+u<span class="s2">" m"</span>+f8p<span class="w"> </span>-Wthick<span class="w"> </span>@App_O_transect.txt
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -685,14 +685,14 @@ gmt<span class="w"> </span>project<span class="w"> </span>-E-74/41<span class="w
 <span class="nv">km</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span>-17<span class="w"> </span><span class="m">28</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>mapproject<span class="w"> </span>-G-74/41+uk<span class="w"> </span>-fg<span class="w"> </span>--FORMAT_FLOAT_OUT<span class="o">=</span>%.0f<span class="w"> </span>-o2<span class="k">)</span>
 gmt<span class="w"> </span>makecpt<span class="w"> </span>-Clightred,lightyellow,lightgreen<span class="w"> </span>-T0,3,6,100<span class="w"> </span>-N
 gmt<span class="w"> </span>grdimage<span class="w"> </span>@App_O_ttt.nc<span class="w"> </span>-Itopo5_int.nc<span class="w"> </span>-C<span class="w"> </span><span class="nv">$R</span><span class="w"> </span>-JM5.3i<span class="w"> </span>-nc+t1
-gmt<span class="w"> </span>grdcontour<span class="w"> </span>@App_O_ttt.nc<span class="w"> </span>-C0.5<span class="w"> </span>-A1+u<span class="s2">&quot; hour&quot;</span>+v+f8p,Bookman-Demi<span class="w"> </span><span class="se">\</span>
+gmt<span class="w"> </span>grdcontour<span class="w"> </span>@App_O_ttt.nc<span class="w"> </span>-C0.5<span class="w"> </span>-A1+u<span class="s2">" hour"</span>+v+f8p,Bookman-Demi<span class="w"> </span><span class="se">\</span>
 <span class="w">	</span>-GL80W/31N/17W/26N,17W/28N/17W/50N<span class="w"> </span>-S2
 gmt<span class="w"> </span>plot<span class="w"> </span>-Wfatter,white<span class="w"> </span>great_NY_Canaries.txt
-gmt<span class="w"> </span>coast<span class="w"> </span>-B20f5<span class="w"> </span>-BWSne+t<span class="s2">&quot;Tsunami travel times from the Canaries&quot;</span><span class="w"> </span>-N1/thick<span class="w"> </span><span class="se">\</span>
+gmt<span class="w"> </span>coast<span class="w"> </span>-B20f5<span class="w"> </span>-BWSne+t<span class="s2">"Tsunami travel times from the Canaries"</span><span class="w"> </span>-N1/thick<span class="w"> </span><span class="se">\</span>
 <span class="w">	</span>-Glightgray<span class="w"> </span>-Wfaint<span class="w"> </span>-A500
 gmt<span class="w"> </span>convert<span class="w"> </span>great_NY_*.txt<span class="w"> </span>-E<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span><span class="nv">$R</span><span class="w"> </span>-Sa0.15i<span class="w"> </span>-Gred<span class="w"> </span>-Wthin
 gmt<span class="w"> </span>plot<span class="w"> </span>-Wthick<span class="w"> </span>great_NY_Canaries.txt<span class="w"> </span><span class="se">\</span>
-<span class="w">	</span>-Sqn1:+f8p,Times-Italic+l<span class="s2">&quot;Distance Canaries to New York = </span><span class="nv">$km</span><span class="s2"> km&quot;</span>+ap+v
+<span class="w">	</span>-Sqn1:+f8p,Times-Italic+l<span class="s2">"Distance Canaries to New York = </span><span class="nv">$km</span><span class="s2"> km"</span>+ap+v
 gmt<span class="w"> </span>plot<span class="w"> </span>great_NY_Paris.txt<span class="w"> </span>-Sc0.08c<span class="w"> </span>-Gblack
 gmt<span class="w"> </span>plot<span class="w"> </span>-Wthinner<span class="w"> </span>great_NY_Paris.txt<span class="w"> </span>-SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white
 cat<span class="w"> </span><span class="s">&lt;&lt; EOF | gmt text -Gwhite -Wthin -Dj0.1i -F+f8p,Bookman-Demi+j</span>
@@ -742,7 +742,7 @@ that New York will experience a large tsunami about 8 hours after the event.</sp
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

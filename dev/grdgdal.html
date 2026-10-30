@@ -299,11 +299,11 @@ any module-specific option (but not the GMT common options), then exit.</p>
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p>To interpolate the <em>x, y, z</em> data at 0.05 increment in a VRT file using the nearest neighbor algorithm
 and saving the result as a netCDF:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdgdal<span class="w"> </span>lixo.vrt<span class="w"> </span>-Agrid<span class="w"> </span>-R0/10/0/10<span class="w"> </span>-Gjunk.nc<span class="w"> </span>-I0.05<span class="w"> </span>-F<span class="s2">&quot;-a nearest&quot;</span><span class="w"> </span>-M+r
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdgdal<span class="w"> </span>lixo.vrt<span class="w"> </span>-Agrid<span class="w"> </span>-R0/10/0/10<span class="w"> </span>-Gjunk.nc<span class="w"> </span>-I0.05<span class="w"> </span>-F<span class="s2">"-a nearest"</span><span class="w"> </span>-M+r
 </pre></div>
 </div>
 <p>Now the same as above but saving the grid with GDAL and using the <em>x, y, z</em> point file directly:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdgdal<span class="w"> </span>lixo.csv<span class="w"> </span>-Agrid<span class="w"> </span>-R0/10/0/10<span class="w"> </span>-Gjunk.nc<span class="w"> </span>-I0.05<span class="w"> </span>-F<span class="s2">&quot;-a nearest&quot;</span><span class="w"> </span>-M+w
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdgdal<span class="w"> </span>lixo.csv<span class="w"> </span>-Agrid<span class="w"> </span>-R0/10/0/10<span class="w"> </span>-Gjunk.nc<span class="w"> </span>-I0.05<span class="w"> </span>-F<span class="s2">"-a nearest"</span><span class="w"> </span>-M+w
 </pre></div>
 </div>
 </section>
@@ -326,7 +326,7 @@ and saving the result as a netCDF:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

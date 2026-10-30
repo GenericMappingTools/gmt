@@ -243,18 +243,28 @@ provided, the region will be automatically determined based on the data in <em>t
 <section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl id="a">
-<dt><strong>-A</strong>[<strong>x</strong>|<strong>y</strong>]</dt><dd><p>By default, geographic line segments are drawn as great circle arcs by resampling
-coarse input data along such arcs. To disable this sampling and draw them as
-straight lines, use the <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> flag.  For Cartesian data, points are simply connected.
-To adjust these behaviors, append a directive:</p>
+<dt><strong>-A</strong>[<strong>x</strong>|<strong>y</strong>]</dt><dd><p>Control how consecutive geographic points are connected:</p>
 <ul class="simple">
-<li><p><strong>x</strong> - First follow <em>x</em>, then <em>y</em> for staircase curves.</p></li>
-<li><p><strong>y</strong> - First follow <em>y</em>, then <em>x</em> for staircase curves.</p></li>
+<li><p>Without <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>, two points are joined along the shorter great circle arc (e.g., from
+longitude 0 to 181 the line passes through the western hemisphere).  To follow the
+longer arc instead, add an intermediate point on that side.  Antipodal points have no
+unique great circle and cause an error.</p></li>
+<li><p>With <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>, the points are joined by straight lines on the map, as in a Cartesian
+plot, so the result depends on the map projection and region (e.g., rhumb lines on a
+Mercator map).  These lines are not split at the map edges, so for data that cross the
+east or west edge of a global map (e.g., tracks across the Dateline) either omit <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>,
+center the map on the data, or split the data at that edge.</p></li>
+</ul>
+<p>For Cartesian data, points are simply connected by straight lines.  For either kind of
+data, append a directive to draw staircase curves instead:</p>
+<ul class="simple">
+<li><p><strong>x</strong> - First follow <em>x</em>, then <em>y</em>.</p></li>
+<li><p><strong>y</strong> - First follow <em>y</em>, then <em>x</em>.</p></li>
 </ul>
 <p>Here, <em>x</em> and <em>y</em> have the following meanings:</p>
 <ul class="simple">
 <li><p>For Cartesian projections, <em>x</em> and <em>y</em> are the X- and Y-axis.</p></li>
-<li><p>For gragraphic projections, <em>x</em> and <em>y</em> are parallels and meridians.</p></li>
+<li><p>For geographic projections, <em>x</em> and <em>y</em> are parallels and meridians.</p></li>
 <li><p>For polar projections, <em>x</em> and <em>y</em> are theta and radius.</p></li>
 </ul>
 <p>When used together with <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><strong>v</strong> (Cartesian vectors), the <strong>x</strong> and <strong>y</strong>
@@ -1322,7 +1332,7 @@ file heights.xyz on a 3-D projection of the space (0-10), (0-10),
 (0-100), with tickmarks every 2, 2, and 10, viewing it from the
 southeast at 30 degree elevation:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>plot3d<span class="w"> </span>heights.xyz<span class="w"> </span>-R0/10/0/10/0/100<span class="w"> </span>-Jx1.25c<span class="w"> </span>-Jz0.125c<span class="w"> </span>-So1.25c<span class="w"> </span><span class="se">\</span>
-<span class="w">          </span>-Gblue<span class="w"> </span>-Bx2+lXLABEL<span class="w"> </span>-By2+lYLABEL<span class="w"> </span>-Bz10+lZLABEL<span class="w"> </span>-B+t<span class="s2">&quot;3-D PLOT&quot;</span><span class="w"> </span>-p135/30<span class="w"> </span><span class="se">\</span>
+<span class="w">          </span>-Gblue<span class="w"> </span>-Bx2+lXLABEL<span class="w"> </span>-By2+lYLABEL<span class="w"> </span>-Bz10+lZLABEL<span class="w"> </span>-B+t<span class="s2">"3-D PLOT"</span><span class="w"> </span>-p135/30<span class="w"> </span><span class="se">\</span>
 <span class="w">          </span>-U+c<span class="w"> </span>-W<span class="w"> </span>-pdf<span class="w"> </span>heights
 </pre></div>
 </div>
@@ -1442,7 +1452,7 @@ original polygon.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

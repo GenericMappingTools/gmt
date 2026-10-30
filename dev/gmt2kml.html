@@ -471,7 +471,7 @@ red circle symbols, try</p>
 <p>To convert a multisegment file with lines (<em>lon, lat</em>) separated by
 segment headers that contain a <strong>-L</strong>labelstring with the feature
 name, selecting a thick white pen, and title the document, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>2kml<span class="w"> </span>mylines.txt<span class="w"> </span>-Wthick,white<span class="w"> </span>-Fl<span class="w"> </span>-T<span class="s2">&quot;Lines from here to there&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>mylines.kml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>2kml<span class="w"> </span>mylines.txt<span class="w"> </span>-Wthick,white<span class="w"> </span>-Fl<span class="w"> </span>-T<span class="s2">"Lines from here to there"</span><span class="w"> </span>&gt;<span class="w"> </span>mylines.kml
 </pre></div>
 </div>
 <p>To convert a multisegment file with polygons (<em>lon, lat</em>) separated by
@@ -479,13 +479,13 @@ segment headers that contain a <strong>-L</strong>labelstring with the feature
 name, selecting a thick black pen and semi-transparent yellow fill,
 giving a title to the document, and prescribing a particular region
 limit, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>2kml<span class="w"> </span>mypolygons.txt<span class="w"> </span>-Gyellow@50+f<span class="w"> </span>-Fp<span class="w"> </span>-T<span class="s2">&quot;My polygons&quot;</span><span class="w"> </span>-R30/90/-20/40<span class="w"> </span>&gt;<span class="w"> </span>mypolygons.kml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>2kml<span class="w"> </span>mypolygons.txt<span class="w"> </span>-Gyellow@50+f<span class="w"> </span>-Fp<span class="w"> </span>-T<span class="s2">"My polygons"</span><span class="w"> </span>-R30/90/-20/40<span class="w"> </span>&gt;<span class="w"> </span>mypolygons.kml
 </pre></div>
 </div>
 <p>To convert a file with point locations (<em>lon, lat, time</em>) into a KML file
 with green circle symbols that will go active at the specified time and
 stay active going forward, try</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>awk<span class="w"> </span><span class="s1">&#39;{print $1, $2, $3, &quot;NaN&quot;}&#39;</span><span class="w"> </span>mypoints.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>2kml<span class="w"> </span>-Ggreen+f<span class="w"> </span>-Ft<span class="w"> </span>&gt;<span class="w"> </span>mytimepoints.kml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>awk<span class="w"> </span><span class="s1">'{print $1, $2, $3, "NaN"}'</span><span class="w"> </span>mypoints.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>2kml<span class="w"> </span>-Ggreen+f<span class="w"> </span>-Ft<span class="w"> </span>&gt;<span class="w"> </span>mytimepoints.kml
 </pre></div>
 </div>
 <p>To extract contours and labels every 10 units from the grid temp.nc and
@@ -604,7 +604,7 @@ description tags, respectively, for the current feature.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 

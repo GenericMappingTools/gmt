@@ -173,7 +173,7 @@ we convert them to a single mp4 file.</p>
 <span class="c1"># https://youtu.be/NjSDpQ5S3FM</span>
 
 <span class="c1"># 1. Create files needed in the loop</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; pre.sh</span>
 <span class="s">gmt math -T0/360/1 T SIND = sin_curve.txt</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt basemap -R0/360/-1.2/1.6 -JX22c/11.5c -X1c -Y1c \</span>
@@ -181,7 +181,7 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</s
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; 'EOF' &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt basemap -R0/360/-1.2/1.6 -JX22c/11.5c -X1c -Y1c -B+n</span>
 <span class="s">#	Plot smooth blue curve and dark red dots at all angle steps so far</span>
@@ -194,7 +194,7 @@ cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie</span>
 gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-Chd<span class="w"> </span>-Tsin_curve.txt<span class="w"> </span>-Vi<span class="w"> </span>-D50<span class="w"> </span>-Zs<span class="w"> </span>-Nanim01<span class="w"> </span>-Fmp4<span class="w"> </span><span class="se">\</span>
-<span class="w">	</span>-Lf+t<span class="s2">&quot;a = %3.3d&quot;</span>+f14p,Helvetica-Bold+jTL+o1.25/1.15
+<span class="w">	</span>-Lf+t<span class="s2">"a = %3.3d"</span>+f14p,Helvetica-Bold+jTL+o1.25/1.15
 </pre></div>
 </div>
 <p>Make sure you understand the purpose of all the steps in our script. In
@@ -218,7 +218,7 @@ on a single PostScript plot before running a lengthy animation script.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Sep 14, 2026.
+      <span class="lastupdated">Last updated on Oct 30, 2026.
       </span></p>
   </div>
 
