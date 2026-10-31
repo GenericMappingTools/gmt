@@ -661,10 +661,7 @@ GMT_LOCAL bool gmtmap_wesn_outside (struct GMT_CTRL *GMT, double lon, double lat
 	 * 360 degrees. In that case GMT->current.map.lon_wrap will be temporarily set to false.
 	 */
 
-	if (gmtmap_straight_path (GMT)) {	/* Straight lines on the map: use the longitude as it is plotted */
-		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon, lon);	lon += GMT->current.proj.central_meridian;
-	}
-	else if (GMT->current.map.lon_wrap) {
+	if (GMT->current.map.lon_wrap) {
 		while (lon < GMT->common.R.wesn[XLO] && (lon + GMT->current.map.lon_wrap_range) <= GMT->common.R.wesn[XHI]) lon += GMT->current.map.lon_wrap_range;
 		while (lon > GMT->common.R.wesn[XHI] && (lon - GMT->current.map.lon_wrap_range) >= GMT->common.R.wesn[XLO]) lon -= GMT->current.map.lon_wrap_range;
 	}
@@ -812,11 +809,7 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 	 * then move the western-most point east if it is further than 180 degrees away.
 	 * This may cause the points to span the eastern boundary */
 
-	if (gmtmap_straight_path (GMT)) {	/* Straight lines on the map: use the longitudes as they are plotted, no short-way wrapping */
-		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon0, lon0);	lon0 += GMT->current.proj.central_meridian;
-		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon1, lon1);	lon1 += GMT->current.proj.central_meridian;
-	}
-	else if (GMT->current.map.lon_wrap) {
+	if (GMT->current.map.lon_wrap && !gmtmap_straight_path (GMT)) {	/* No short-way wrapping for straight lines */
 		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += GMT->current.map.lon_wrap_range;
 		while (lon0 > GMT->common.R.wesn[XHI]) lon0 -= GMT->current.map.lon_wrap_range;
 		while (lon1 < GMT->common.R.wesn[XLO]) lon1 += GMT->current.map.lon_wrap_range;
@@ -1359,6 +1352,10 @@ GMT_LOCAL int gmtmap_eqdist_crossing (struct GMT_CTRL *GMT, double lon1, double 
 
 /*! . */
 GMT_LOCAL unsigned int gmtmap_crossing (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, unsigned int *sides) {
+	if (gmtmap_straight_path (GMT)) {	/* Use the longitudes as plotted */
+		gmt_M_wind_lon (GMT, lon1);	lon1 += GMT->current.proj.central_meridian;
+		gmt_M_wind_lon (GMT, lon2);	lon2 += GMT->current.proj.central_meridian;
+	}
 	if (GMT->current.map.prev_x_status == GMT->current.map.this_x_status && GMT->current.map.prev_y_status == GMT->current.map.this_y_status) {
 		/* This is naive. We could have two points outside with a line drawn between crossing the plotting area. */
 		return (0);
@@ -2237,15 +2234,9 @@ GMT_LOCAL bool gmtmap_rect_overlap (struct GMT_CTRL *GMT, double lon0, double la
 /*! . */
 GMT_LOCAL bool gmtmap_wesn_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1) {
 	/* Return true if either of the points (lon0,lat0) and (lon1,lat1) is inside (not on) the rectangular lon/lat boundaries */
-	bool straight = gmtmap_straight_path (GMT);
-	if (straight) {	/* Straight lines on the map: use the longitudes as they are plotted, no short-way wrapping */
-		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon0, lon0);	lon0 += GMT->current.proj.central_meridian;
-		gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon1, lon1);	lon1 += GMT->current.proj.central_meridian;
-	}
 	if (lon0 > lon1) gmt_M_double_swap (lon0, lon1);
 	if (lat0 > lat1) gmt_M_double_swap (lat0, lat1);
-	if (straight) { /* Nothing */ }
-	else if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV8_LIMIT) {
+	if (lon1 - GMT->common.R.wesn[XLO] < -GMT_CONV8_LIMIT) {
 		lon0 += 360.0;
 		lon1 += 360.0;
 	}
@@ -7670,6 +7661,9 @@ bool gmt_map_outside (struct GMT_CTRL *GMT, double lon, double lat) {
 	if (GMT->current.map.outside == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_outside: FATAL ERROR - the pointer to the projection function is NULL.\n");
 		return GMT_NOTSET;
+	}
+	if (gmtmap_straight_path (GMT)) {	/* Use the longitude as plotted */
+		gmt_M_wind_lon (GMT, lon);	lon += GMT->current.proj.central_meridian;
 	}
 	return ((*GMT->current.map.outside) (GMT, lon, lat));
 }
