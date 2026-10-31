@@ -24,7 +24,7 @@ assignees: ''
 - [ ] reserve a DOI on [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@seisman)
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update [changelog](https://github.com/GenericMappingTools/gmt/blob/master/doc/rst/source/changes.rst)
-- [ ] update the version information in CITATION.cff
+- [ ] update `version`, `doi`, `date-released` and `authors` in `CITATION.cff`
 - [ ] check installation instructions in `doc/rst/source/install.rst`
 - [ ] check if there are any warnings when building the documentation
 - [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
