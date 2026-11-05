@@ -29,7 +29,7 @@
 #define THIS_MODULE_MODERN_NAME	"image"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot raster or EPS images"
-#define THIS_MODULE_KEYS	"<I{,>X}"
+#define THIS_MODULE_KEYS	"<I{,>X},>DA"
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
 
@@ -38,6 +38,10 @@ struct PSIMAGE_CTRL {
 		bool active;
 		char *file;
 	} In;
+	struct PSIMAGE_A {	/* -A[w][h] */
+		bool active;
+		bool width, height;
+	} A;
 	struct PSIMAGE_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<n_columns>[/<n_rows>]][+o<dx>[/<dy>]][+r<dpi>[c]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
@@ -93,7 +97,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>[c]] [-F%s] "
+	GMT_Usage (API, 0, "usage: %s <imagefile> [-A[w][h]] [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>[c]] [-F%s] "
 		"[-G[<color>][+b|f|t]] [-I] [%s] %s[-M] %s%s[%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s]\n",
 		name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
 		GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -103,6 +107,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<imagefile> is an EPS or raster image file.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[w][h]");
+	GMT_Usage (API, -2, "Report the dimensions of the image set by -D, in PROJ_LENGTH_UNIT, to standard output and exit without plotting. "
+		"Append w for the width only, h for the height only [Default reports both as <width> <height>]. "
+		"With +n the size of a single image is reported.");
 	GMT_Option (API, "B-");
 	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
 	GMT_Usage (API, -2, "Set width (and height) of image with +w[-]<width>/[/<height>].  If <width> = 0 or <height> = 0 "
@@ -179,6 +187,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* Report image dimensions and exit */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				if (opt->arg[0] && strspn (opt->arg, "wh") != strlen (opt->arg)) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Only directives w and h are allowed\n");
+					n_errors++;
+				}
+				Ctrl->A.width  = (opt->arg[0] == '\0' || strchr (opt->arg, 'w'));
+				Ctrl->A.height = (opt->arg[0] == '\0' || strchr (opt->arg, 'h'));
+				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				p = (cstring[0]) ? cstring : opt->arg;	/* If -C was used then cstring was set above */
@@ -605,6 +622,33 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	if (Ctrl->D.dim[GMT_X] == 0.0) Ctrl->D.dim[GMT_X] = header.width * Ctrl->D.dim[GMT_Y] / header.height;
 	else if (Ctrl->D.dim[GMT_Y] == 0.0) Ctrl->D.dim[GMT_Y] = header.height * Ctrl->D.dim[GMT_X] / header.width;
 
+	if (Ctrl->A.active) {	/* Only report the image dimensions (in current unit) and quit */
+		double u = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit], out[2];
+		unsigned int n_out = (Ctrl->A.width && Ctrl->A.height) ? 2 : 1;
+		struct GMT_RECORD *Out = NULL;
+		gmt_M_str_free (file);
+		if (I && GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (free_GMT)
+			gmt_M_free (GMT, picture);
+		else if (is_eps || did_gray)
+			PSL_free (picture);
+		if (n_out == 2)
+			out[GMT_X] = Ctrl->D.dim[GMT_X] * u, out[GMT_Y] = Ctrl->D.dim[GMT_Y] * u;
+		else
+			out[GMT_X] = Ctrl->D.dim[Ctrl->A.width ? GMT_X : GMT_Y] * u;
+		if (GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR) Return (API->error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) Return (API->error);
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) Return (API->error);
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) Return (API->error);
+		Out = gmt_new_record (GMT, out, NULL);
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+		gmt_M_free (GMT, Out);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) Return (API->error);
+		Return (GMT_NOERROR);
+	}
+
 	/* The following is needed to have psimage work correctly in perspective */
 
 	bool fake_J_only = false;	/* Issue #5635: track whether we took the no-R fake-J branch so we skip the redundant re-setup */
@@ -743,8 +787,16 @@ EXTERN_MSC int GMT_image (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: image\n");
-		return (GMT_NOT_A_VALID_MODULE);
+		/* Allow -A (report image dimensions) in classic mode since it writes a dataset, not PostScript */
+		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
+		bool dump_only = false;
+		if (API->error) return (API->error);
+		dump_only = (GMT_Find_Option (API, 'A', options) != NULL);
+		gmt_M_free_options (mode);
+		if (!dump_only) {
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: image\n");
+			return (GMT_NOT_A_VALID_MODULE);
+		}
 	}
 	return GMT_psimage (V_API, mode, args);
 }
