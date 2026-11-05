@@ -28,6 +28,7 @@ cat << EOF > $a
 --l2stranstest -W2p,red
 --l2stranstest -Z0 -Z1 -Z2+w
 --l2stranstest -Z3 -Z4 -Z5
+--l2stranstest -Z6 -Z7 -Z7 -Z8+w
 EOF
 
 # module-specific longopts
@@ -50,5 +51,6 @@ gmt $m $l2s --series=file >> $b
 gmt $m $l2s --pen=2p,red >> $b
 gmt $m $l2s --histtype=counts --kind=freq --kind=logcount+weights >> $b
 gmt $m $l2s --kind=logfreq --kind=log10count --kind=log10freq >> $b
+gmt $m $l2s --kind=frequency --kind=probability --kind=proportion --kind=density+weights >> $b
 
 diff $a $b --strip-trailing-cr > fail
