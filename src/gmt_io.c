@@ -5734,7 +5734,7 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 	if (strstr(filename, "/=tiled_") || strstr(filename, "\\=tiled_"))	/* Special list with remote tiles, use exactly as is */
 		strncpy (file, filename, PATH_MAX-1);
 	else	/* Strip off netCDF3-D grid extensions to make sure we get a valid file name */
-		sscanf (filename, "%[^=?]", file);
+		strncpy (file, filename, MIN (strcspn (filename, "=?"), PATH_MAX-1));
 	if (file[0] == '\0')
 		return NULL;	/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 	if (mods) {	/* Given modifiers to chop off if they are valid */
