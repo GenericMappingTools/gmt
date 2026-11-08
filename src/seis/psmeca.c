@@ -662,6 +662,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment input tables */
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_PEN current_pen;
+	struct GMT_FILL G_fill;
 	struct PSMECA_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -701,6 +702,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
 		Ctrl->I.active = false;	/* So we don't do this again */
 	}
+	G_fill = Ctrl->G.fill;	/* The -G fill, before any per-event intensity is applied */
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
@@ -812,6 +814,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 						gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 				}
 				if (Ctrl->I.active) {	/* Modify color based on intensity */
+					if (!Ctrl->C.active) Ctrl->G.fill = G_fill;	/* Start from the -G fill, not from the one already illuminated for the previous event */
 					if (Ctrl->I.mode == 0)
 						gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
 					else
@@ -835,6 +838,8 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				}
 
 				/* Must examine the trailing text for optional columns: newX, newY and title */
+				xynew[GMT_X] = xynew[GMT_Y] = 0.0;	/* No alternate location unless this record gives one */
+				if (Ctrl->A.mode == SEIS_CART_OFFSET) Ctrl->A.off[GMT_X] = Ctrl->A.off[GMT_Y] = 0.0;	/* Nor offsets read from the record (-A+o) */
 				if (S->text && S->text[row]) {
 					unsigned int n_comma = gmt_count_char (GMT, S->text[row], ',');
 					char tmp_buffer[GMT_LEN256] = {""};	/* Local buffer in case S->text is read-only */

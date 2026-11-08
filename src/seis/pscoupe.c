@@ -1066,6 +1066,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	struct SEIS_AXIS T, N, P, Tr, Nr, Pr;
 	struct GMT_PALETTE *CPT = NULL;
 	struct GMT_PEN current_pen;
+	struct GMT_FILL G_fill;
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment input tables */
 	struct GMT_DATASEGMENT *S = NULL;
 
@@ -1105,6 +1106,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 		gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
 		Ctrl->I.active = false;	/* So we don't do this again */
 	}
+	G_fill = Ctrl->G.fill;	/* The -G fill, before any per-event intensity is applied */
 
 	if (Ctrl->S.read) {	/* Read symbol size from file */
 		scol = Ctrl->S.n_cols;
@@ -1290,6 +1292,8 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				}
 				/* Must examine the trailing text for optional columns: newX, newY and title */
 				/* newX and newY are not used in pscoupe, but we promised psmeca and pscoupe can use the same input file */
+				xynew[GMT_X] = xynew[GMT_Y] = 0.0;	/* No alternate location unless this record gives one */
+				if (Ctrl->D.mode == SEIS_CART_OFFSET) Ctrl->D.off[GMT_X] = Ctrl->D.off[GMT_Y] = 0.0;	/* Nor offsets read from the record (-D+o) */
 				if (has_text) {
 					unsigned int n_comma = gmt_count_char (GMT, S->text[row], ',');
 					char tmp_buffer[GMT_LEN256] = {""};	/* Local buffer in case S->text is read-only */
@@ -1343,6 +1347,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				if (Ctrl->C.active)	/* Update color based on depth */
 					gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 				if (Ctrl->I.active) {	/* Modify color based on intensity */
+					if (!Ctrl->C.active) Ctrl->G.fill = G_fill;	/* Start from the -G fill, not from the one already illuminated for the previous event */
 					if (Ctrl->I.mode == 0)
 						gmt_illuminate (GMT, Ctrl->I.value, Ctrl->G.fill.rgb);
 					else

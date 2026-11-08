@@ -470,52 +470,6 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL void psxy_plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, struct GMT_PEN *P) {
-	/* Maybe add vector heads.  Here, x,y are in inches on the plot */
-	unsigned int k, current[2] = {0,0}, next[2] = {1,0};
-	double dim[PSL_MAX_DIMS], angle, s, c, L;
-	char *end[2] = {"start", "end"};
-	if (n < 2) return;	/* No line of mine */
-	if (P->end[0].V == NULL && P->end[1].V == NULL) return;	/* No arrow heads requested */
-	current[1] = (unsigned int)n-1;	next[1] = (unsigned int)n-2;
-	PSL_command (GMT->PSL, "V\n");
-	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
-	gmt_M_memset (dim, PSL_MAX_DIMS, double);
-	for (k = 0; k < 2; k++) {
-		if (P->end[k].V == NULL) continue;
-		P->end[k].V->v.status |= PSL_VEC_LINE;	/* Flag so head is not skipped due to "short" vector */
-		/* Add vector heads to this end */
-		PSL_comment (GMT->PSL, "Add vector head to %s of line\n", end[k]);
-		angle = d_atan2d (y[current[k]] - y[next[k]], x[current[k]] - x[next[k]]);
-		sincosd (angle, &s, &c);
-		L = (P->end[k].V->v.v_kind[1] == PSL_VEC_TERMINAL) ? 1e-3 : P->end[k].length;
-		P->end[k].V->v.v_width       = (float)(P->end[k].V->v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* Set symbol pen width */
-		dim[PSL_VEC_XTIP]            = x[current[k]] + c * L;
-		dim[PSL_VEC_YTIP]            = y[current[k]] + s * L;
-		dim[PSL_VEC_TAIL_WIDTH]      = P->end[k].V->v.v_width;
-		dim[PSL_VEC_HEAD_LENGTH]     = P->end[k].V->v.h_length;
-		dim[PSL_VEC_HEAD_WIDTH]      = P->end[k].V->v.h_width;
-		dim[PSL_VEC_HEAD_SHAPE]      = P->end[k].V->v.v_shape;
-		dim[PSL_VEC_STATUS]          = (double)P->end[k].V->v.status;
-		dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)P->end[k].V->v.v_kind[0];
-		dim[PSL_VEC_HEAD_TYPE_END]   = (double)P->end[k].V->v.v_kind[1];
-		dim[PSL_VEC_TRIM_BEGIN]      = (double)P->end[k].V->v.v_trim[0];
-		dim[PSL_VEC_TRIM_END]        = (double)P->end[k].V->v.v_trim[1];
-		if (P->end[k].V->v.status & PSL_VEC_OUTLINE2) {	/* Gave specific head outline pen */
-			PSL_defpen (GMT->PSL, "PSL_vecheadpen", P->end[k].V->v.pen.width, P->end[k].V->v.pen.style, P->end[k].V->v.pen.offset, P->end[k].V->v.pen.rgb);
-			dim[PSL_VEC_HEAD_PENWIDTH] = P->end[k].V->v.pen.width;
-		}
-		else {	/* Set default based on line pen */
-			PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.5 * P->width, P->style, P->offset, P->rgb);
-			dim[PSL_VEC_HEAD_PENWIDTH] = 0.5 * P->width;
-		}
-		gmt_setfill (GMT, &P->end[k].V->v.fill, (P->end[k].V->v.status & PSL_VEC_OUTLINE2) == PSL_VEC_OUTLINE2);
-		PSL_plotsymbol (GMT->PSL, x[current[k]], y[current[k]], dim, PSL_VECTOR);
-	}
-	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
-	PSL_command (GMT->PSL, "U\n");
-}
-
 GMT_LOCAL bool psxy_is_stroke_symbol (int symbol) {
 	/* Return true if cross, x, y, - symbols */
 	if (symbol == PSL_CROSS) return true;
@@ -3260,7 +3214,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					else if (draw_line) {
 						if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 						if (S.symbol != GMT_SYMBOL_FRONT || !S.f.invisible) gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, current_pen.mode);
-						psxy_plot_end_vectors (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &current_pen);	/* Maybe add vector heads */
+						gmt_plot_end_vectors (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &current_pen);	/* Maybe add vector heads */
 					}
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must also draw fault crossbars */

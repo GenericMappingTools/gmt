@@ -1461,6 +1461,7 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	else {
 		/* Must deal with a subregion */
 		double x;
+		int err;
 		x = fabs (header->wesn[YLO] - wesn[YLO]);	/* if |x| < GMT_CONV4_LIMIT * header->inc[GMT_Y] we set wesn to the grid limit */
 		if (x > 0.0 && x < GMT_CONV4_LIMIT * header->inc[GMT_Y]) wesn[YLO] = header->wesn[YLO];	/* Avoid snafu */
 		x = fabs (header->wesn[YHI] - wesn[YHI]);	/* if |x| < GMT_CONV4_LIMIT * header->inc[GMT_Y] we set wesn to the grid limit */
@@ -1469,7 +1470,7 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 			return (GMT_GRDIO_DOMAIN_VIOLATION);	/* Calling program goofed... */
 
 		/* Make sure w,e,s,n are proper multiples of x_inc,y_inc away from x_min,y_min */
-		gmt_M_err_pass (GMT, gmt_adjust_loose_wesn (GMT, wesn, header), HH->name);
+		if ((err = gmt_adjust_loose_wesn (GMT, wesn, header)) != GMT_NOERROR) return (err);	/* Bad increment or range in the header */
 
 		/* Global grids: ensure that wesn >= header->wesn (w+e only) */
 		if ( is_global ) {	/* Deal with wrapping issues */
@@ -1676,8 +1677,8 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	else if (GMT->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
-	if ((error = gmt_M_err_fail (GMT, gmtnc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), HH->name)))
-		return (error);
+	if ((error = gmtnc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2)) != GMT_NOERROR)
+		return (error);	/* Caller reports it */
 
 	/* Set stride and offset if complex */
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */

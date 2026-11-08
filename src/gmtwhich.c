@@ -162,7 +162,7 @@ GMT_LOCAL int gmtwhich_list_tiles (struct GMTAPI_CTRL *API, char *list, unsigned
 		snprintf (dir, PATH_MAX, "%s%s%s", API->GMT->session.USERDIR, API->remote_info[t_data].dir, API->remote_info[t_data].file);
 
 	for (k = 0; k < n; k++) {
-		sprintf (path, "%s%s", dir, &file[k][1]);
+		snprintf (path, PATH_MAX, "%s%s", dir, &file[k][1]);
 		fail = access (path, R_OK);
 		if (fail) {	/* Look for jp2 version instead */
 			char *jp2_file = gmt_strrep (path, GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
@@ -262,9 +262,9 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		else if (opt->arg[0] == '@') /* Gave @ without -G is likely a user mistake; remove it */
 			first = 1;
 		if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET)
-			sprintf (file, "%s%s", opt->arg, API->remote_info[k_data].ext);	/* Append the implicit extension for remote grids */
+			snprintf (file, PATH_MAX, "%s%s", opt->arg, API->remote_info[k_data].ext);	/* Append the implicit extension for remote grids */
 		else
-			strcpy (file, opt->arg);
+			snprintf (file, PATH_MAX, "%s", opt->arg);
 		if (list) {
 			if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->G.mode, Ctrl->C.active, Out)))
 				Return (error);

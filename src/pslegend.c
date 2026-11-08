@@ -550,7 +550,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	char *plot_points[2] = {"psxy", "plot"}, *plot_text[2] = {"pstext", "text"}, orig_symbol = 0;
 	char *line = NULL, string[GMT_VF_LEN] = {""}, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 #ifdef DEBUG
-	char *dname[N_DAT] = {"symbol", "front", "qline", "textline", "partext"};
+	char *dname[N_DAT] = {"symbol", "front", "qline", "dline", "textline", "partext"};
 #endif
 
 	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, d_line_half_width, d_line_hor_offset, off_ss, off_tt, def_dx2 = 0.0, W, H;
@@ -717,15 +717,19 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 
 						case 'D':	/* Delimiter record: D offset pen [-|=|+] */
 							txt_c[0] = '\0';
-							sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
+							n = sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
+							if (n == 2 && strchr ("-=+", txt_b[0])) strcpy (txt_c, txt_b);	/* Offset was skipped: D pen flag */
 							if (!(txt_c[0] == '-' || txt_c[0] == '=')) height += quarter_line_spacing;
 							if (!(txt_c[0] == '+' || txt_c[0] == '=')) height += quarter_line_spacing;
 							column_number = 0;
 							break;
 
 						case 'G':	/* Gap record */
-							sscanf (&line[2], "%s", txt_a);
-							height += (txt_a[strlen(txt_a)-1] == 'l') ? atoi (txt_a) * one_line_spacing : gmt_M_to_inch (GMT, txt_a);
+							if (strlen (line) < 3 || sscanf (&line[2], "%s", txt_a) != 1) {
+								GMT_Report (API, GMT_MSG_ERROR, "Not enough arguments given to G operator\n");
+								Return (GMT_RUNTIME_ERROR);
+							}
+							height += (txt_a[strlen(txt_a)-1] == 'l') ? atof (txt_a) * one_line_spacing : gmt_M_to_inch (GMT, txt_a);
 							column_number = 0;
 							break;
 
@@ -799,6 +803,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							break;
 
 						case 'M':	/* Map scale record M lon0|- lat0 length[n|m|k][+opts] f|p  [-R -J] */
+							txt_a[0] = txt_b[0] = txt_c[0] = txt_d[0] = txt_e[0] = txt_f[0] = '\0';	/* Do not inherit leftovers from previous records */
 							sscanf (&line[2], "%s %s %s %s %s %s", txt_a, txt_b, txt_c, txt_d, txt_e, txt_f);
 							for (i = 0, gave_mapscale_options = false; txt_c[i] && !gave_mapscale_options; i++) if (txt_c[i] == '+') gave_mapscale_options = true;
 							/* Default assumes label is added on top */
@@ -856,7 +861,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								height += one_line_spacing;
 								column_number = 0;
 							}
-							column_number++;
+							if (symbol[0] != 'L') column_number++;	/* The L and the line that follows it make up one cell (as in the second pass) */
 							/* Find the largest symbol size specified */
 							gmt_strrepc (size, '/', ' ');	/* Replace any slashes with spaces */
 							gmt_strrepc (size, ',', ' ');	/* Replace any commas with spaces */
@@ -1225,7 +1230,8 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							pos = n_col = 0;
 							while ((gmt_strtok (&line[2], " \t", &pos, p))) {
 								if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (GMT_RUNTIME_ERROR);	/* If given z=value then we look up colors */
-								if (strcmp (p, "-")) fill[n_col++] = strdup (p);
+								if (strcmp (p, "-")) fill[n_col] = strdup (p);	/* A - means no fill but still takes up a column */
+								n_col++;
 								if (n_col > n_columns) {
 									GMT_Report (API, GMT_MSG_ERROR, "Exceeding specified N columns (%d) in F operator (%d)\n", n_columns, n_col);
 									Return (GMT_RUNTIME_ERROR);
@@ -1237,8 +1243,11 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							break;
 
 						case 'G':	/* Gap record: G gap (will be filled with current fill[0] setting if active) */
-							sscanf (&line[2], "%s", txt_a);
-							row_height = (txt_a[strlen(txt_a)-1] == 'l') ? atoi (txt_a) * one_line_spacing : gmt_M_to_inch (GMT, txt_a);
+							if (strlen (line) < 3 || sscanf (&line[2], "%s", txt_a) != 1) {
+								GMT_Report (API, GMT_MSG_ERROR, "Not enough arguments given to G operator\n");
+								Return (GMT_RUNTIME_ERROR);
+							}
+							row_height = (txt_a[strlen(txt_a)-1] == 'l') ? atof (txt_a) * one_line_spacing : gmt_M_to_inch (GMT, txt_a);
 							pslegend_fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 							row_base_y -= row_height;
 							column_number = 0;
@@ -1381,6 +1390,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 
 						case 'M':	/* Map scale record M lon0|- lat0 length[n|m|k][+mods] [-F] [-R -J] */
 							/* Was: Map scale record M lon0|- lat0 length[n|m|k][+opts] f|p  [-R -J] */
+							txt_a[0] = txt_b[0] = txt_c[0] = txt_d[0] = txt_e[0] = txt_f[0] = '\0';	/* Do not inherit leftovers from previous records */
 							n_scan = sscanf (&line[2], "%s %s %s %s %s %s", txt_a, txt_b, txt_c, txt_d, txt_e, txt_f);
 							r_options[0] = module_options[0] = '\0';
 							if (txt_d[0] == 'f' || txt_d[0] == 'p') {	/* Old-style args */

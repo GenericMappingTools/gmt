@@ -4,68 +4,64 @@ title: "The Generic Mapping Tools Version 6"
 authors:
 - family-names: Wessel
   given-names: Paul
-  affiliation: University of Hawai'i at Mānoa, USA
   orcid: https://orcid.org/0000-0001-5708-7336
-- family-names: "Luis"
-  given-names: "Joaquim"
-  orcid: "https://orcid.org/0000-0002-9035-4069"
-- family-names: "Uieda"
-  given-names: "Leonardo"
-  orcid: "https://orcid.org/0000-0001-6123-9515"
-- family-names: "Scharroo"
-  given-names: "Remko"
-  orcid: "https://orcid.org/0000-0002-2118-131X"
-- family-names: "Wobbe"
-  given-names: "Florian"
-- family-names: "Smith"
-  given-names: "Walter"
-  orcid: "https://orcid.org/0000-0002-8814-015X"
-- family-names: "Tian"
-  given-names: "Dongdong"
-  orcid: "https://orcid.org/0000-0001-7967-1197"
-- family-names: "Jones"
-  given-names: "Max"
-  orcid: "https://orcid.org/0000-0003-0180-8928"
-- family-names: "Esteban"
-  given-names: "Federico"
-  orcid: "https://orcid.org/0000-0002-0641-7371"
-- family-names: "Fröhlich"
-  given-names: "Yvonne"
-  orcid: "https://orcid.org/0000-0002-8566-0619"
-version: 6.6.0
-doi: 10.5281/zenodo.16448627
-date-released: 2025-07-26
+- family-names: Luis
+  given-names: Joaquim F.
+  orcid: https://orcid.org/0000-0002-9035-4069
+- family-names: Uieda
+  given-names: Leonardo
+  orcid: https://orcid.org/0000-0001-6123-9515
+- family-names: Scharroo
+  given-names: Remko
+  orcid: https://orcid.org/0000-0002-2118-131X
+- family-names: Wobbe
+  given-names: Florian
+- family-names: Smith
+  given-names: Walter H. F.
+  orcid: https://orcid.org/0000-0002-8814-015X
+- family-names: Tian
+  given-names: Dongdong
+  orcid: https://orcid.org/0000-0001-7967-1197
+- family-names: Jones
+  given-names: Max
+  orcid: https://orcid.org/0000-0003-0180-8928
+- family-names: Esteban
+  given-names: Federico
+  orcid: https://orcid.org/0000-0002-0641-7371
+version: 6.7.0
+doi: 10.5281/zenodo.19398868
+date-released: 2026-07-29
 license: LGPL-3.0-or-later
-repository-code: "https://github.com/GenericMappingTools/gmt"
+repository-code: https://github.com/GenericMappingTools/gmt
 type: software
 preferred-citation:
   type: article
   authors:
-  - family-names: "Wessel"
-    given-names: "Paul"
-    orcid: "https://orcid.org/0000-0001-5708-7336"
-  - family-names: "Luis"
-    given-names: "Joaquim"
-    orcid: "https://orcid.org/0000-0002-9035-4069"
-  - family-names: "Uieda"
-    given-names: "Leonardo"
-    orcid: "https://orcid.org/0000-0001-6123-9515"
-  - family-names: "Scharroo"
-    given-names: "Remko"
-    orcid: "https://orcid.org/0000-0002-2118-131X"
-  - family-names: "Wobbe"
-    given-names: "Florian"
-  - family-names: "Smith"
-    given-names: "Walter"
-    orcid: "https://orcid.org/0000-0002-8814-015X"
-  - family-names: "Tian"
-    given-names: "Dongdong"
-    orcid: "https://orcid.org/0000-0001-7967-1197"
-  doi: "10.1029/2019GC008515"
+  - family-names: Wessel
+    given-names: Paul
+    orcid: https://orcid.org/0000-0001-5708-7336
+  - family-names: Luis
+    given-names: Joaquim F.
+    orcid: https://orcid.org/0000-0002-9035-4069
+  - family-names: Uieda
+    given-names: Leonardo
+    orcid: https://orcid.org/0000-0001-6123-9515
+  - family-names: Scharroo
+    given-names: Remko
+    orcid: https://orcid.org/0000-0002-2118-131X
+  - family-names: Wobbe
+    given-names: Florian
+  - family-names: Smith
+    given-names: Walter H. F.
+    orcid: https://orcid.org/0000-0002-8814-015X
+  - family-names: Tian
+    given-names: Dongdong
+    orcid: https://orcid.org/0000-0001-7967-1197
+  title: "The Generic Mapping Tools version 6"
   journal: "Geochemistry, Geophysics, Geosystems"
+  volume: 20
+  issue: 11
   start: 5556
   end: 5564
-  title: "The Generic Mapping Tools version 6"
-  issue: 11
-  volume: 20
   year: 2019
+  doi: 10.1029/2019GC008515

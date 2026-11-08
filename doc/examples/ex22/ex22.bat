@@ -65,7 +65,6 @@ gmt begin ex22
 	echo N 1 >> neis.legend
 
 	REM Put together a reasonable legend text, and add logo and user's name:
-	echo G 0.25l >> neis.legend
 	echo P >> neis.legend
 	echo T USGS/NEIS most recent earthquakes for the last month.  The data were >> neis.legend
 	echo T obtained automatically from the USGS Earthquake Hazards Program page at >> neis.legend
@@ -79,7 +78,7 @@ gmt begin ex22
 	echo L 12p,Times-Italic LB %me% >> neis.legend
 
 	REM OK, now we can actually run gmt legend.  We center the legend below the map.
-	REM Trial and error shows that 1.7i is a good legend height:
+	REM Trial and error shows that 4.2c is a good legend height:
 	gmt legend -DJBC+o0/1c+w18c/4.2c -F+p+glightyellow neis.legend
 
 	del neis.legend usgs_quakes_22.txt

@@ -485,7 +485,7 @@ int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *ifile) {
 	if (pos == 0) pos = gmtremote_wind_to_file (ifile);	/* Skip any leading directories */
 	/* Must handle the use of srtm_relief vs earth_relief for the 01s and 03s data */
 	if (strncmp (&ifile[pos], "srtm_relief_0", 13U) == 0)	/* Gave strm special name */
-		sprintf (file, "earth_%s", &ifile[pos+5]);	/* Replace srtm with earth */
+		snprintf (file, PATH_MAX, "earth_%s", &ifile[pos+5]);	/* Replace srtm with earth */
 	else {	/* Just copy as is from pos */
 		strncpy (file, &ifile[pos], PATH_MAX - 1);
 		file[PATH_MAX - 1] = '\0';
