@@ -272,7 +272,7 @@ void tm (double lon, double lat, double *x, double *y, double central_meridian, 
 double uscal(double x1, double x2, double x3, double c, double cc, double dp);
 double udcal(double x1, double x2, double x3, double c, double cc, double dp);
 unsigned int gmt_bcr_prep (struct GMT_GRID_HEADER hdr, double xx, double yy, double wx[], double wy[]);
-double GMT_get_bcr_z(double *grd, double *bat, struct GMT_GRID_HEADER hdr, double xx, double yy);
+double GMT_get_bcr_z(double *grd, struct GMT_GRID_HEADER hdr, double xx, double yy);
 void update_max(struct nestContainer *nest);
 void update_max_velocity(struct nestContainer *nest);
 
@@ -5279,17 +5279,21 @@ void upscale_(struct nestContainer *nest, double *etad, int lev, int i_tsr) {
 
 /* --------------------------------------------------------------------- */
 void replicate(struct nestContainer *nest, int lev) {
-	/* Replicate Left and Bottom boundaries */
+	/* Replicate Left and Bottom boundaries. Only from a WET inner neighbour: a dry one holds the land
+	   elevation in etad (eta follows bat), and copying that onto a wet edge node turns it into a
+	   standing water column as high as the land next to it. */
 	int	col, row;
 
 	for (row = 0; row < nest->hdr[lev].n_rows; row++) {
 		if (nest->bat[lev][ij_grd(0, row, nest->hdr[lev])] < 0) continue;
+		if (nest->bat[lev][ij_grd(1, row, nest->hdr[lev])] + nest->etad[lev][ij_grd(1, row, nest->hdr[lev])] <= EPS5) continue;
 		nest->etad[lev][ij_grd(0, row, nest->hdr[lev])] =
 			nest->etad[lev][ij_grd(1, row, nest->hdr[lev])];
 	}
 
 	for (col = 0; col < nest->hdr[lev].n_columns; col++) {
 		if (nest->bat[lev][ij_grd(col, 0, nest->hdr[lev])] < 0) continue;
+		if (nest->bat[lev][ij_grd(col, 1, nest->hdr[lev])] + nest->etad[lev][ij_grd(col, 1, nest->hdr[lev])] <= EPS5) continue;
 		nest->etad[lev][ij_grd(col, 0, nest->hdr[lev])] =
 			nest->etad[lev][ij_grd(col, 1, nest->hdr[lev])];
 	}
@@ -5348,14 +5352,14 @@ void resamplegrid(struct nestContainer *nest, int nNg) {
 			for (col = 0; col < nest->hdr[k].n_columns; col++, ij++) {
 				if (nest->bat[k][ij] < 0) continue;
 				xx = nest->hdr[k].wesn[XLO] + col * nest->hdr[k].inc[GMT_X];
-				nest->etaa[k][ij]    = GMT_get_bcr_z(nest->etaa[k-1],    nest->bat[k-1], nest->hdr[k-1], xx, yy);
-				nest->etad[k][ij]    = GMT_get_bcr_z(nest->etad[k-1],    nest->bat[k-1], nest->hdr[k-1], xx, yy);
-				nest->fluxm_a[k][ij] = GMT_get_bcr_z(nest->fluxm_a[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
-				nest->fluxn_a[k][ij] = GMT_get_bcr_z(nest->fluxn_a[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
-				nest->fluxm_d[k][ij] = GMT_get_bcr_z(nest->fluxm_d[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
-				nest->fluxn_d[k][ij] = GMT_get_bcr_z(nest->fluxn_d[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
-				nest->htotal_a[k][ij]= GMT_get_bcr_z(nest->htotal_a[k-1],nest->bat[k-1], nest->hdr[k-1], xx, yy);
-				nest->htotal_d[k][ij]= GMT_get_bcr_z(nest->htotal_d[k-1],nest->bat[k-1], nest->hdr[k-1], xx, yy);
+				nest->etaa[k][ij]    = GMT_get_bcr_z(nest->etaa[k-1],    nest->hdr[k-1], xx, yy);
+				nest->etad[k][ij]    = GMT_get_bcr_z(nest->etad[k-1],    nest->hdr[k-1], xx, yy);
+				nest->fluxm_a[k][ij] = GMT_get_bcr_z(nest->fluxm_a[k-1], nest->hdr[k-1], xx, yy);
+				nest->fluxn_a[k][ij] = GMT_get_bcr_z(nest->fluxn_a[k-1], nest->hdr[k-1], xx, yy);
+				nest->fluxm_d[k][ij] = GMT_get_bcr_z(nest->fluxm_d[k-1], nest->hdr[k-1], xx, yy);
+				nest->fluxn_d[k][ij] = GMT_get_bcr_z(nest->fluxn_d[k-1], nest->hdr[k-1], xx, yy);
+				nest->htotal_a[k][ij]= GMT_get_bcr_z(nest->htotal_a[k-1],nest->hdr[k-1], xx, yy);
+				nest->htotal_d[k][ij]= GMT_get_bcr_z(nest->htotal_d[k-1],nest->hdr[k-1], xx, yy);
 			}
 		}
 	}
@@ -5612,15 +5616,10 @@ void tm(double lon, double lat, double *x, double *y, double central_meridian, d
 }
 
 /* ---------------------------------------------------------------------------------------- */
-double GMT_get_bcr_z(double *grd, double *bat, struct GMT_GRID_HEADER hdr, double xx, double yy) {
+double GMT_get_bcr_z(double *grd, struct GMT_GRID_HEADER hdr, double xx, double yy) {
 	/* Given xx, yy in user's grid file (in non-normalized units)
 	   this routine returns the desired bicubic interpolated value at xx, yy
-	   ADAPTED from GMT's routine with the same name.
-	   'bat' is the bathymetry (positive down) on the same grid as 'grd'; land nodes
-	   (bat < 0) are excluded from the convolution and wsum is renormalized over the
-	   remaining wet nodes. This keeps land-side terrain elevations (stored in etad/etc
-	   on dry nodes) from bleeding into coastal wet-node interpolates as invented values;
-	   pass bat = NULL to fall back to the plain, unmasked convolution. */
+	   ADAPTED from GMT's routine with the same name. */
 
 	unsigned int i, j, ij, node;
 	double retval, wsum, wx[4], wy[4], w;
@@ -5633,7 +5632,6 @@ double GMT_get_bcr_z(double *grd, double *bat, struct GMT_GRID_HEADER hdr, doubl
 	for (j = 0; j < 4; j++) {
 		for (i = 0; i < 4; i++) {
 			node = ij + i;
-			if (bat[node] <= 0) continue;	/* Skip land source nodes */
 			w = wx[i] * wy[j];
 			retval += grd[node] * w;
 			wsum += w;
