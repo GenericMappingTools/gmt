@@ -302,6 +302,16 @@ GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *
 	return true;
 }
 
+GMT_LOCAL void grdinterpolate_copy_frame(struct GMT_GRID_HEADER *to, struct GMT_GRID_HEADER *from) {
+	/* A cube made from another cube, or from a stack of grids, is on that same x/y frame: it keeps its
+	 * x/y units and its coordinate system (GMT_Create_Data makes a new header that has neither) */
+	if (from->x_units[0]) strncpy(to->x_units, from->x_units, GMT_GRID_UNIT_LEN80);
+	if (from->y_units[0]) strncpy(to->y_units, from->y_units, GMT_GRID_UNIT_LEN80);
+	if (from->ProjRefWKT && !to->ProjRefWKT) to->ProjRefWKT = strdup(from->ProjRefWKT);
+	if (from->ProjRefPROJ4 && !to->ProjRefPROJ4) to->ProjRefPROJ4 = strdup(from->ProjRefPROJ4);
+	if (from->ProjRefEPSG && !to->ProjRefEPSG) to->ProjRefEPSG = from->ProjRefEPSG;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -755,8 +765,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (inc, G[0]->header->inc, 2U, double);
 		if ((C[GMT_IN] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, dims, wesn, inc, G[0]->header->registration, GMT_NOTSET, NULL)) == NULL)
 			Return (GMT_MEMORY_ERROR);
-		if (G[0]->header->x_units[0]) strncpy (C[GMT_IN]->header->x_units, G[0]->header->x_units, GMT_GRID_UNIT_LEN80);
-		if (G[0]->header->y_units[0]) strncpy (C[GMT_IN]->header->y_units, G[0]->header->y_units, GMT_GRID_UNIT_LEN80);
+		grdinterpolate_copy_frame(C[GMT_IN]->header, G[0]->header);
 		for (k = 0; k < n_layers; k++, here += G[0]->header->size)
 			gmt_M_memcpy (&(C[GMT_IN]->data[here]), G[k]->data, G[0]->header->size, gmt_grdfloat);
 		if (GMT_Destroy_Group (API, &G, n_layers))
@@ -836,6 +845,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, this_dim, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL)
 		Return (GMT_MEMORY_ERROR);
+	grdinterpolate_copy_frame(C[GMT_OUT]->header, C[GMT_IN]->header);
 
 	if (Ctrl->D.active && gmt_decode_cube_h_info (GMT, Ctrl->D.information, C[GMT_OUT])) {
 		GMT_Destroy_Data (API, &C[GMT_OUT]);
