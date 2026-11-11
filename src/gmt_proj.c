@@ -2249,44 +2249,42 @@ GMT_LOCAL void gmtproj_vgrinten (struct GMT_CTRL *GMT, double lon0, double scale
 
 GMT_LOCAL void gmtproj_grinten (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to van der Grinten x/y */
-	double flat, A, A2, G, P, P2, Q, P2A2, i_P2A2, GP2, c, s, theta;
+	double flat, A, A2, G, G2, P, P2, k, sqrt_k, s, c, x_pi, y_pi;
 
 	flat = fabs (lat);
-	if (flat > (90.0 - GMT_PROJ_CONV_LIMIT)) {	/* Save time */
-		*x = 0.0;
-		*y = M_PI * copysign (GMT->current.proj.EQ_RAD, lat);
-		return;
-	}
-	if (doubleAlmostEqualZero (lon, GMT->current.proj.central_meridian)) {	/* Save time */
-		theta = d_asin (2.0 * fabs (lat) / 180.0);
-		*x = 0.0;
-		*y = M_PI * copysign (GMT->current.proj.EQ_RAD, lat) * tan (0.5 * theta);
-		return;
-	}
-
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (gmt_M_proj_is_zero (flat)) {	/* Save time */
+	/* s = sin(theta) from Snyder (29-6); c = cos(theta) with 1 - s computed exactly */
+	s = flat / 90.0;
+	c = sqrt ((90.0 - flat) / 90.0 * (1.0 + s));
+	if (flat == 0.0) {	/* Equator */
 		*x = GMT->current.proj.EQ_RAD * D2R * lon;
 		*y = 0.0;
 		return;
 	}
+	if (lon == 0.0 || flat >= 90.0) {	/* Central meridian and poles: y = pi * R * tan(theta/2) */
+		*x = 0.0;
+		*y = copysign (GMT->current.proj.v_r * s / (1.0 + c), lat);
+		return;
+	}
 
-	theta = d_asin (2.0 * fabs (lat) / 180.0);
-
-	A = 0.5 * fabs (180.0 / lon - lon / 180.0);
+	/* The same values as Snyder's (29-1) and (29-2), rearranged so that no step subtracts two
+	 * large terms: close to the origin A, G and P are all large, and the direct formulas lost all
+	 * the digits there (errors of kilometers within 1e-6 degree of the origin). */
+	A = 0.5 * fabs (180.0 / lon - lon / 180.0);	/* (29-3) */
 	A2 = A * A;
-	sincos (theta, &s, &c);
-	G = c / (s + c - 1.0);
-	P = G * (2.0 / s - 1.0);
-	Q = A2 + G;
+	G = c * (1.0 + c) / (s * (1.0 + c - s));	/* (29-4) */
+	P = G * (2.0 / s - 1.0);			/* (29-5) */
 	P2 = P * P;
-	P2A2 = P2 + A2;
-	GP2 = G - P2;
-	i_P2A2 = 1.0 / P2A2;
+	G2 = G * G;
+	k = A2 * (P2 - 2.0 * G + 1.0) + P2 - G2;
+	sqrt_k = sqrt (k);
+	x_pi = (G - P2 < 0.0) ? (P2 - G2) / (P * sqrt_k - A * (G - P2)) : (A * (G - P2) + P * sqrt_k) / (P2 + A2);
+	y_pi = (A2 * (2.0 * G - 1.0) + G2) / (P * (A2 + G) + A * sqrt_k);
+	if (y_pi < 0.0) y_pi = 0.0;
 
-	*x = copysign (GMT->current.proj.v_r, lon) * (A * GP2 + sqrt (A2 * GP2 * GP2 - P2A2 * (G*G - P2))) * i_P2A2;
-	*y = copysign (GMT->current.proj.v_r, lat) * (P * Q - A * sqrt ((A2 + 1.0) * P2A2 - Q * Q)) * i_P2A2;
+	*x = copysign (GMT->current.proj.v_r * x_pi, lon);
+	*y = copysign (GMT->current.proj.v_r * y_pi, lat);
 }
 
 GMT_LOCAL void gmtproj_igrinten (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
@@ -2312,7 +2310,9 @@ GMT_LOCAL void gmtproj_igrinten (struct GMT_CTRL *GMT, double *lon, double *lat,
 
 	*lat = copysign (180.0, y) * (-m1 * cos (theta1 + M_PI/3.0) - c2 / (3.0 * c3));
 	*lon = GMT->current.proj.central_meridian;
-	if (x != 0.0) *lon += 90.0 * (x2y2 - 1.0 + sqrt (1.0 + 2 * (x2 - y2) + p)) / x;
+	/* 90 * (x2y2 - 1 + sqrt (t)) / x, with t = 1 + 2 * (x2 - y2) + x2y2^2, without the cancellation of sqrt (t)
+	 * against 1 - x2y2 close to the origin: as t - (1 - x2y2)^2 = 4 * x2, it is also 360 * x / (sqrt (t) + 1 - x2y2) */
+	if (x != 0.0) *lon += 360.0 * x / (sqrt (1.0 + 2 * (x2 - y2) + p) + 1.0 - x2y2);
 }
 
 /* -JR WINKEL-TRIPEL MODIFIED gmt_M_is_azimuthal PROJECTION */
