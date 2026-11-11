@@ -2320,8 +2320,10 @@ GMT_LOCAL void gmtproj_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, do
 		*lon = R2D * 2.0 * x / (1.0 + P->current.proj.r_cosphi1) + P->current.proj.central_meridian;
 		return;
 	}
-	*lat = y / M_PI;	/* Initial guesses for lon and lat */
-	*lon = x / M_PI;
+	/* Initial guesses for lat and lon: x, y themselves. Starting from x / pi, y / pi the iteration could
+	 * fall into a two-step cycle close to the origin and stop at the iteration limit, up to 0.15 mm off */
+	*lat = y;
+	*lon = x;
 	do {
 		phi0 = *lat;
 		lambda0 = *lon;
