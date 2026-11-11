@@ -2279,13 +2279,17 @@ GMT_LOCAL void gmtproj_winkel (struct GMT_CTRL *GMT, double lon, double lat, dou
 	/* Fist find Aitoff x/y */
 
 	sincos (lat, &s, &c);
-	D = d_acos (c * cos (lon));
-	if (gmt_M_proj_is_zero (D))
+	/* sin(D)^2 and D computed without acos (cos (lat) * cos (lon/2)) and 1 - X * X, which lost half
+	 * the digits close to the origin and the poles */
+	X = sin (lon);
+	D = s * s + c * c * X * X;	/* sin(D)^2 */
+	if (D == 0.0)
 		x1 = y1 = 0.0;
 	else {
-		X = s / sin (D);
-		x1 = copysign (D * d_sqrt (1.0 - X * X), lon);
-		y1 = D * X;
+		double sin_D = sqrt (D);
+		D = atan2 (sin_D, c * cos (lon)) / sin_D;	/* D / sin(D) */
+		x1 = D * c * X;
+		y1 = D * s;
 	}
 
 	/* Then get equirectangular projection */
@@ -2311,13 +2315,13 @@ GMT_LOCAL void gmtproj_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, do
 
 	x *= P->current.proj.i_EQ_RAD;
 	y *= P->current.proj.i_EQ_RAD;
-	*lat = y / M_PI;	/* Initial guesses for lon and lat */
-	*lon = x / M_PI;
-	if (fabs (y) < GMT_PROJ_CONV_LIMIT && fabs (x) < GMT_PROJ_CONV_LIMIT) {	/* At ~origin, C is ~zero so no division */
-		*lon *= R2D;
-		*lon += P->current.proj.central_meridian;
+	if (fabs (y) < 1e-50 && fabs (x) < 1e-50) {	/* At ~origin, C is ~zero so no division; first order inverse */
+		*lat = R2D * y;
+		*lon = R2D * 2.0 * x / (1.0 + P->current.proj.r_cosphi1) + P->current.proj.central_meridian;
 		return;
 	}
+	*lat = y / M_PI;	/* Initial guesses for lon and lat */
+	*lon = x / M_PI;
 	do {
 		phi0 = *lat;
 		lambda0 = *lon;
@@ -2325,8 +2329,8 @@ GMT_LOCAL void gmtproj_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, do
 		sincos (lambda0, &sl, &cl);
 		sincos (0.5 * lambda0, &sl2, &cl2);
 		s2p = sin (2.0 * phi0);
-		D = acos (cp * cl2);
-		C = 1.0 - cp * cp * cl2 * cl2;
+		C = sp * sp + cp * cp * sl2 * sl2;	/* 1 - cp^2 cl2^2, without the cancellation close to the origin */
+		D = atan2 (sqrt (C), cp * cl2);	/* acos (cp * cl2) */
 		sq_C = sqrt (C);
 		C_32 = C * sq_C;
 		f1 = 0.5 * ((2.0 * D * cp * sl2) / sq_C + lambda0 * P->current.proj.r_cosphi1) - x;
