@@ -2075,6 +2075,33 @@ GMT_LOCAL void gmtproj_iazeqdist (struct GMT_CTRL *GMT, double *lon, double *lat
 
 /* -JW MOLLWEIDE EQUAL AREA PROJECTION */
 
+GMT_LOCAL double gmtproj_s_minus_sin_s (double s) {
+	/* s - sin(s) without the cancellation of the two terms for small s */
+	if (fabs (s) < 0.25) {
+		double s2 = s * s;
+		return s * s2 * (1.0 / 6.0 - s2 * (1.0 / 120.0 - s2 * (1.0 / 5040.0 - s2 * (1.0 / 362880.0 - s2 * (1.0 / 39916800.0 - s2 * (1.0 / 6227020800.0))))));
+	}
+	return s - sin (s);
+}
+
+GMT_LOCAL double gmtproj_mollweide_polar_s (double chi) {
+	/* Mollweide close to the poles. With theta = (pi - s) / 2 and chi the colatitude (radians),
+	 * 2 * theta + sin(2 * theta) = pi * sin(lat) becomes s - sin(s) = 2 * pi * sin(chi / 2)^2,
+	 * which Newton solves with quadratic convergence, where the iteration on theta converges
+	 * only linearly and stopped tens of meters away from the root. */
+	int i;
+	double sh = sin (0.5 * chi), w = 2.0 * M_PI * sh * sh, s = cbrt (6.0 * w), d, ds;	/* s <= the root, as s - sin(s) <= s^3 / 6 */
+	for (i = 0; i < 20; i++) {
+		sh = sin (0.5 * s);
+		d = 2.0 * sh * sh;	/* 1 - cos(s) */
+		if (d == 0.0) break;
+		ds = (gmtproj_s_minus_sin_s (s) - w) / d;
+		s -= ds;
+		if (fabs (ds) <= 1e-12 * s) break;
+	}
+	return s;
+}
+
 GMT_LOCAL void gmtproj_vmollweide (struct GMT_CTRL *GMT, double lon0, double scale) {
 	/* Set up Mollweide Equal-Area projection */
 
@@ -2099,6 +2126,12 @@ GMT_LOCAL void gmtproj_mollweide (struct GMT_CTRL *GMT, double lon, double lat, 
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (GMT->current.proj.GMT_convert_latitudes) lat = gmt_M_latg_to_lata (GMT, lat);
+	if (fabs (lat) > 90.0 - 0.5 * R2D) {	/* Close to the poles, see gmtproj_mollweide_polar_s */
+		s = gmtproj_mollweide_polar_s (D2R * (90.0 - fabs (lat)));
+		*x = GMT->current.proj.w_x * lon * sin (0.5 * s);	/* cos(theta) = sin(s/2) */
+		*y = copysign (GMT->current.proj.w_y * cos (0.5 * s), lat);	/* sin(theta) = cos(s/2) */
+		return;
+	}
 	lat *= D2R;
 
 	phi = lat;
@@ -2121,6 +2154,23 @@ GMT_LOCAL void gmtproj_imollweide (struct GMT_CTRL *GMT, double *lon, double *la
 	/* Convert Mollweide Equal-Area x/y to lon/lat */
 	double phi, phi2;
 
+	if (fabs (y) > 0.5 * GMT->current.proj.w_y && fabs (y) <= GMT->current.proj.w_y) {
+		/* Close to the poles, asin (y / w_y) and asin ((phi2 + sin (phi2)) / pi) below lose half the
+		 * digits. Instead, with s as in gmtproj_mollweide_polar_s: cos(s/2) = |y| / w_y, and the
+		 * colatitude chi from 2 * sin(chi/2)^2 = (s - sin(s)) / pi. */
+		double half_s = 2.0 * asin (sqrt (0.5 * (GMT->current.proj.w_y - fabs (y)) * GMT->current.proj.w_iy));
+		double den = GMT->current.proj.w_x * sin (half_s);
+		*lon = (den == 0.0) ? 0.0 : x / den;	/* At the pole x is 0 */
+		if (fabs (*lon) > 180.0) {   /* Beyond horizon by a whisker so set to 180/0 depending on signs */
+			*lat = 0.0;
+			*lon = copysign (180.0, *lon) + GMT->current.proj.central_meridian;
+			return;
+		}
+		*lon += GMT->current.proj.central_meridian;
+		*lat = copysign (90.0 - 2.0 * R2D * asin (sqrt (gmtproj_s_minus_sin_s (2.0 * half_s) / TWO_PI)), y);
+		if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
+		return;
+	}
 	phi = asin (y * GMT->current.proj.w_iy);
 	*lon = x / (GMT->current.proj.w_x * cos(phi));
 	if (fabs (*lon) > 180.0) {   /* Beyond horizon by a whisker so set to 180/0 depending on signs */
