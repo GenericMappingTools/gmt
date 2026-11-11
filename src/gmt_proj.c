@@ -1002,31 +1002,6 @@ GMT_LOCAL void gmtproj_istereo_sph (struct GMT_CTRL *GMT, double *lon, double *l
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
 }
 
-/* Spherical equatorial view */
-
-GMT_LOCAL void gmtproj_stereo2_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to x/y using stereographic projection, equatorial view */
-
-	double dlon, s, c, clon, slon, A;
-
-	dlon = lon - GMT->current.proj.central_meridian;
-	if (doubleAlmostEqual (dlon, 180.0)) {
-		*x = *y = 0.0;
-	}
-	else {
-		if (GMT->current.proj.GMT_convert_latitudes) lat = gmt_M_latg_to_latc (GMT, lat);
-		sincosd (lat, &s, &c);
-		sincosd (dlon, &slon, &clon);
-		A = GMT->current.proj.s_c / (1.0 + c * clon);
-		*x = A * c * slon;
-		*y = A * s;
-		if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
-			(*x) *= GMT->current.proj.Dx;
-			(*y) *= GMT->current.proj.Dy;
-		}
-	}
-}
-
 /* -JL LAMBERT CONFORMAL CONIC PROJECTION */
 
 GMT_LOCAL void gmtproj_vlamb (struct GMT_CTRL *GMT, double rlong0, double rlat0, double pha, double phb) {
