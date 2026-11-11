@@ -2448,6 +2448,24 @@ GMT_LOCAL void gmtproj_eckert4 (struct GMT_CTRL *GMT, double lon, double lat, do
 	double phi, delta, s_lat, s, c;
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	if (fabs (lat) > 90.0 - 0.1 * R2D) {
+		/* Close to the poles the iteration below converges only linearly. With t = pi/2 - |theta|
+		 * and chi the colatitude, theta + sin(theta) cos(theta) + 2 sin(theta) = (2 + pi/2) sin(lat)
+		 * becomes (2t - sin(2t)) / 2 + 2 (1 - cos(t)) = 2 (2 + pi/2) sin(chi/2)^2, solved by Newton. */
+		double sh = sin (0.5 * D2R * (90.0 - fabs (lat))), w = 2.0 * (2.0 + M_PI_2) * sh * sh, t = sqrt (w), st, d, dt;	/* t >= the root */
+		for (n_iter = 0; n_iter < 30; n_iter++) {
+			st = sin (t);
+			d = 2.0 * st * (1.0 + st);
+			if (d == 0.0) break;
+			sh = sin (0.5 * t);
+			dt = (0.5 * gmtproj_s_minus_sin_s (2.0 * t) + 4.0 * sh * sh - w) / d;
+			t -= dt;
+			if (fabs (dt) <= 1e-12 * t) break;
+		}
+		*x = GMT->current.proj.k4_x * lon * D2R * (1.0 + sin (t));
+		*y = copysign (GMT->current.proj.k4_y * cos (t), lat);
+		return;
+	}
 	phi = lat * D2R;
 	s_lat = sin (phi);
 	phi *= 0.5;
@@ -2469,6 +2487,19 @@ GMT_LOCAL void gmtproj_ieckert4 (struct GMT_CTRL *GMT, double *lon, double *lat,
 
 	double phi, s, c;
 
+	if (fabs (y) > 0.5 * GMT->current.proj.k4_y && fabs (y) <= GMT->current.proj.k4_y) {
+		/* Close to the poles, with t = pi/2 - |theta| as in gmtproj_eckert4: the asin below lost half the digits */
+		double t = 2.0 * asin (sqrt (0.5 * (GMT->current.proj.k4_y - fabs (y)) * GMT->current.proj.k4_iy));
+		double sh = sin (0.5 * t), w = 0.5 * gmtproj_s_minus_sin_s (2.0 * t) + 4.0 * sh * sh;
+		*lon = R2D * x * GMT->current.proj.k4_ix / (1.0 + sin (t));
+		if (fabs (*lon) > 180.0) {	/* Horizon */
+			*lat = *lon = GMT->session.d_NaN;
+			return;
+		}
+		*lon += GMT->current.proj.central_meridian;
+		*lat = copysign (90.0 - 2.0 * R2D * asin (sqrt (0.5 * w / (2.0 + M_PI_2))), y);
+		return;
+	}
 	s = y * GMT->current.proj.k4_iy;
 	phi = d_asin (s);
 	c = cos (phi);
