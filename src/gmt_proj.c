@@ -902,6 +902,16 @@ GMT_LOCAL void gmtproj_vstereo (struct GMT_CTRL *GMT, double lon0, double lat0, 
 	GMT->current.proj.rho_max = tand (0.5 * horizon) * GMT->current.proj.s_c;
 }
 
+GMT_LOCAL void gmtproj_azim_inv (struct GMT_CTRL *GMT, double *lon, double *lat, double X, double Y, double cos_c) {
+	/* Common last step of the spherical azimuthal inverses: X = x * sin(c) / rho, Y = y * sin(c) / rho
+	 * (all normalized by the radius), with c the angular distance from the projection center.
+	 * The latitude is computed with atan2 instead of asin (cos_c * sinp + Y * cosp): close to the
+	 * poles the argument of asin is close to 1 and asin lost half the digits (a few cm on the Moon). */
+	double ny = cos_c * GMT->current.proj.cosp - Y * GMT->current.proj.sinp;
+	*lat = atan2d (cos_c * GMT->current.proj.sinp + Y * GMT->current.proj.cosp, hypot (X, ny));
+	*lon = d_atan2d (X, ny) + GMT->current.proj.central_meridian;
+}
+
 GMT_LOCAL void gmtproj_plrs_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to x/y using Spherical polar projection */
 	double rho, slon, clon;
@@ -942,13 +952,14 @@ GMT_LOCAL void gmtproj_iplrs_sph (struct GMT_CTRL *GMT, double *lon, double *lat
 	}
 	c = 2.0 * atan (hypot (x, y) * GMT->current.proj.s_ic);
 
+	/* The latitude is 90 - c (or c - 90); asin (cos (c)) lost half the digits close to the pole */
 	if (GMT->current.proj.north_pole) {
 		*lon = GMT->current.proj.central_meridian + d_atan2d (x, -y);
-		*lat = d_asind (cos (c));
+		*lat = 90.0 - R2D * c;
 	}
 	else {
 		*lon = GMT->current.proj.central_meridian + d_atan2d (x, y);
-		*lat = d_asind (-cos (c));
+		*lat = R2D * c - 90.0;
 	}
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
 
@@ -987,8 +998,7 @@ GMT_LOCAL void gmtproj_istereo_sph (struct GMT_CTRL *GMT, double *lon, double *l
 	c = 2.0 * atan (rho * GMT->current.proj.s_ic);
 	sincos (c, &sin_c, &cos_c);
 	if (rho != 0.0) sin_c /= rho;
-	*lat = asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
-	*lon = d_atan2d (x * sin_c, cos_c * GMT->current.proj.cosp - y * sin_c * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	gmtproj_azim_inv (GMT, lon, lat, x * sin_c, y * sin_c, cos_c);
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
 }
 
@@ -1445,8 +1455,7 @@ GMT_LOCAL void gmtproj_ilambeq (struct GMT_CTRL *GMT, double *lon, double *lat, 
 	a *= a;							/* a = sin(c/2)**2	*/
 	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
 	sin_c = sqrt (1.0 - a) * GMT->current.proj.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
-	*lat = d_asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
-	*lon = d_atan2d (x * sin_c, GMT->current.proj.cosp * cos_c - y * GMT->current.proj.sinp * sin_c) + GMT->current.proj.central_meridian;
+	gmtproj_azim_inv (GMT, lon, lat, x * sin_c, y * sin_c, cos_c);
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
 }
 
@@ -1956,8 +1965,7 @@ GMT_LOCAL void gmtproj_iortho (struct GMT_CTRL *GMT, double *lon, double *lat, d
 		return;
 	}
 	cos_c = sqrt (1.0 - rho * rho);	/* Produces NaN for rho > 1: beyond horizon */
-	*lat = d_asind (cos_c * GMT->current.proj.sinp + y * GMT->current.proj.cosp);
-	*lon = d_atan2d (x, cos_c * GMT->current.proj.cosp - y * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	gmtproj_azim_inv (GMT, lon, lat, x, y, cos_c);
 }
 
 /* -JF GNOMONIC PROJECTION */
@@ -1989,7 +1997,7 @@ GMT_LOCAL void gmtproj_gnomonic (struct GMT_CTRL *GMT, double lon, double lat, d
 
 GMT_LOCAL void gmtproj_ignomonic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Gnomonic x/y to lon/lat */
-	double rho, c;
+	double rho;
 
 	x *= GMT->current.proj.i_EQ_RAD;
 	y *= GMT->current.proj.i_EQ_RAD;
@@ -1998,9 +2006,8 @@ GMT_LOCAL void gmtproj_ignomonic (struct GMT_CTRL *GMT, double *lon, double *lat
 		*lat = *lon = GMT->session.d_NaN;
 		return;
 	}
-	c = atan (rho);
-	*lat = d_asind (cos(c) * (GMT->current.proj.sinp + y * GMT->current.proj.cosp));
-	*lon = d_atan2d (x, GMT->current.proj.cosp - y * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	/* With c = atan (rho), all three terms below share the factor cos(c), which cancels */
+	gmtproj_azim_inv (GMT, lon, lat, x, y, 1.0);
 }
 
 /* -JE AZIMUTHAL EQUIDISTANT PROJECTION */
@@ -2062,8 +2069,7 @@ GMT_LOCAL void gmtproj_iazeqdist (struct GMT_CTRL *GMT, double *lon, double *lat
 	if (rho != 0.0) sin_c /= rho;
 	/* Since in the rest we only have sin_c in combination with x or y, it is not necessary to set
 	   sin_c = 1 when rho == 0. In that case x*sin_c and y*sin_c or 0 anyhow. */
-	*lat = d_asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
-	*lon = d_atan2d (x * sin_c, cos_c * GMT->current.proj.cosp - y * sin_c * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	gmtproj_azim_inv (GMT, lon, lat, x * sin_c, y * sin_c, cos_c);
 }
 
 /* -JW MOLLWEIDE EQUAL AREA PROJECTION */
@@ -2173,7 +2179,8 @@ GMT_LOCAL void gmtproj_ihammer (struct GMT_CTRL *GMT, double *lon, double *lat, 
 		return;
 	}
 	sin_c = sqrt (1.0 - a) * GMT->current.proj.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
-	*lat = asind (y * sin_c);
+	/* atan2 instead of asin (y * sin_c), which lost half the digits close to the poles */
+	*lat = atan2d (y * sin_c, hypot (x * sin_c, cos_c));
 	*lon = 2.0 * d_atan2d (x * sin_c, cos_c) + GMT->current.proj.central_meridian;
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
 }
