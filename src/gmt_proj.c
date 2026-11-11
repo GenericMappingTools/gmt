@@ -2028,7 +2028,7 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (gmt_M_proj_is_zero (lat-GMT->current.proj.pole) && gmt_M_proj_is_zero (lon)) {	/* Center of projection */
+	if (lat == GMT->current.proj.pole && lon == 0.0) {	/* Center of projection */
 		*x = *y = 0.0;
 		return;
 	}
@@ -2043,12 +2043,13 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 	}
 	else {
 		double sin_c, num_x, num_y;
-		c = d_acos(cc);
 		num_x = clat * slon;
 		num_y = GMT->current.proj.cosp * slat - GMT->current.proj.sinp * t;
 		/* sin(c) = sqrt(1 - cc^2) = hypot(num_x, num_y); this form avoids precision loss near the antipode (#8684) */
 		sin_c = hypot(num_x, num_y);
-		k = (gmt_M_proj_is_zero(c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin_c;
+		/* atan2 instead of acos (cc): close to the center cc is close to 1 and acos lost half the digits */
+		c = atan2 (sin_c, cc);
+		k = (sin_c == 0.0) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin_c;
 		*x = k * num_x;
 		*y = k * num_y;
 	}
