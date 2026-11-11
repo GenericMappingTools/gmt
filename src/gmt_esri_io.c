@@ -411,31 +411,37 @@ int gmtlib_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		else {
 			/* No header file; see if filename contains w/e/s/n information, as in W|ExxxN|Syy.dem
 			 * for GTOPO30 (e.g W020N90.DEM) or N|SyyW|Exxx.hgt for SRTM1|3 (e.g. N00E006.hgt)  */
-			size_t len;
+			size_t blen;
+			char *base, *bs;
 
 			while (gmt_chop_ext (file));	/* Remove all extensions so we know exactly where to look */
-			len = strlen (file);
-			if ((file[len-3] == 'N' || file[len-3] == 'n' || file[len-3] == 'S' || file[len-3] == 's') &&
-				(file[len-7] == 'W' || file[len-7] == 'w' || file[len-7] == 'E' || file[len-7] == 'e')) {
+			/* Only the file's own name counts, and it must be a whole tile name ([W|E]ddd[N|S]dd): tested on
+			 * the full path, a name ending in e.g. "src" with a 'w' four characters earlier in a directory
+			 * ("...\mwe6\src.tif") was taken for a GTOPO30 tile. */
+			base = strrchr(file, '/');
+			if ((bs = strrchr(file, '\\')) != NULL && (base == NULL || bs > base)) base = bs;
+			base = (base) ? base + 1 : file;
+			blen = strlen(base);
+			if (blen == 7 && strchr("WwEe", base[0]) && isdigit((int)base[1]) && isdigit((int)base[2]) &&
+				isdigit((int)base[3]) && strchr("NnSs", base[4]) && isdigit((int)base[5]) && isdigit((int)base[6])) {
 				/* It is a GTOPO30 or SRTM30 source file without a .hdr companion. */
 				/* see http://dds.cr.usgs.gov/srtm/version1/SRTM30/GTOPO30_Documentation */
 				HH->flags[0] = 'B';		/* GTOPO30 & SRTM30 are Big Endians */
 				HH->flags[1] = '0';		/* Flag to let us know the file type */
-				/* Store the file name with all extensions removed.
-				 * We'll use this to create header from file name info */
-				strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
+				/* Store the tile name (no directory, no extensions): the header is made from it, and a
+				 * full path longer than the title cut off the very characters that hold the w/e/s/n. */
+				strncpy(header->title, base, GMT_GRID_TITLE_LEN80-1);
 				strcpy  (header->remark, "Assumed to be a GTOPO30 or SRTM30 tile");
 				HH->orig_datatype = GMT_SHORT;
 			}
 			else if (name_len > 3 && !(strncmp (&HH->name[name_len-4], ".hgt", 4) && strncmp (&HH->name[name_len-4], ".HGT", 4))) {
 				/* Probably a SRTM1|3 file. In gmtesriio_read_info we'll check further if it is a 1 or 3 sec */
-				if ((file[len-4] == 'E' || file[len-4] == 'e' || file[len-4] == 'W' || file[len-4] == 'w') &&
-					(file[len-7] == 'N' || file[len-7] == 'n' || file[len-7] == 'S' || file[len-7] == 's')) {
+				/* The tile name alone ([N|S]dd[E|W]ddd), as for GTOPO30 above. */
+				if (blen == 7 && strchr("NnSs", base[0]) && isdigit((int)base[1]) && isdigit((int)base[2]) &&
+					strchr("EeWw", base[3]) && isdigit((int)base[4]) && isdigit((int)base[5]) && isdigit((int)base[6])) {
 					HH->flags[0] = 'B';	/* SRTM1|3 are Big Endians */
 					HH->flags[1] = '1';	/* Flag to let us know the file type */
-					/* Store the file name with all extensions removed.
-					 * We'll use this to create header from file name info */
-					strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
+					strncpy(header->title, base, GMT_GRID_TITLE_LEN80-1);
 					HH->orig_datatype = GMT_SHORT;
 				}
 			}
