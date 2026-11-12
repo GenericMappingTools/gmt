@@ -902,6 +902,16 @@ GMT_LOCAL void gmtproj_vstereo (struct GMT_CTRL *GMT, double lon0, double lat0, 
 	GMT->current.proj.rho_max = tand (0.5 * horizon) * GMT->current.proj.s_c;
 }
 
+GMT_LOCAL void gmtproj_azim_inv (struct GMT_CTRL *GMT, double *lon, double *lat, double X, double Y, double cos_c) {
+	/* Common last step of the spherical azimuthal inverses: X = x * sin(c) / rho, Y = y * sin(c) / rho
+	 * (all normalized by the radius), with c the angular distance from the projection center.
+	 * The latitude is computed with atan2 instead of asin (cos_c * sinp + Y * cosp): close to the
+	 * poles the argument of asin is close to 1 and asin lost half the digits (a few cm on the Moon). */
+	double ny = cos_c * GMT->current.proj.cosp - Y * GMT->current.proj.sinp;
+	*lat = atan2d (cos_c * GMT->current.proj.sinp + Y * GMT->current.proj.cosp, hypot (X, ny));
+	*lon = d_atan2d (X, ny) + GMT->current.proj.central_meridian;
+}
+
 GMT_LOCAL void gmtproj_plrs_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to x/y using Spherical polar projection */
 	double rho, slon, clon;
@@ -942,13 +952,14 @@ GMT_LOCAL void gmtproj_iplrs_sph (struct GMT_CTRL *GMT, double *lon, double *lat
 	}
 	c = 2.0 * atan (hypot (x, y) * GMT->current.proj.s_ic);
 
+	/* The latitude is 90 - c (or c - 90); asin (cos (c)) lost half the digits close to the pole */
 	if (GMT->current.proj.north_pole) {
 		*lon = GMT->current.proj.central_meridian + d_atan2d (x, -y);
-		*lat = d_asind (cos (c));
+		*lat = 90.0 - R2D * c;
 	}
 	else {
 		*lon = GMT->current.proj.central_meridian + d_atan2d (x, y);
-		*lat = d_asind (-cos (c));
+		*lat = R2D * c - 90.0;
 	}
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
 
@@ -987,34 +998,8 @@ GMT_LOCAL void gmtproj_istereo_sph (struct GMT_CTRL *GMT, double *lon, double *l
 	c = 2.0 * atan (rho * GMT->current.proj.s_ic);
 	sincos (c, &sin_c, &cos_c);
 	if (rho != 0.0) sin_c /= rho;
-	*lat = asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
-	*lon = d_atan2d (x * sin_c, cos_c * GMT->current.proj.cosp - y * sin_c * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	gmtproj_azim_inv (GMT, lon, lat, x * sin_c, y * sin_c, cos_c);
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_latc_to_latg (GMT, *lat);
-}
-
-/* Spherical equatorial view */
-
-GMT_LOCAL void gmtproj_stereo2_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to x/y using stereographic projection, equatorial view */
-
-	double dlon, s, c, clon, slon, A;
-
-	dlon = lon - GMT->current.proj.central_meridian;
-	if (doubleAlmostEqual (dlon, 180.0)) {
-		*x = *y = 0.0;
-	}
-	else {
-		if (GMT->current.proj.GMT_convert_latitudes) lat = gmt_M_latg_to_latc (GMT, lat);
-		sincosd (lat, &s, &c);
-		sincosd (dlon, &slon, &clon);
-		A = GMT->current.proj.s_c / (1.0 + c * clon);
-		*x = A * c * slon;
-		*y = A * s;
-		if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
-			(*x) *= GMT->current.proj.Dx;
-			(*y) *= GMT->current.proj.Dy;
-		}
-	}
 }
 
 /* -JL LAMBERT CONFORMAL CONIC PROJECTION */
@@ -1445,8 +1430,7 @@ GMT_LOCAL void gmtproj_ilambeq (struct GMT_CTRL *GMT, double *lon, double *lat, 
 	a *= a;							/* a = sin(c/2)**2	*/
 	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
 	sin_c = sqrt (1.0 - a) * GMT->current.proj.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
-	*lat = d_asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
-	*lon = d_atan2d (x * sin_c, GMT->current.proj.cosp * cos_c - y * GMT->current.proj.sinp * sin_c) + GMT->current.proj.central_meridian;
+	gmtproj_azim_inv (GMT, lon, lat, x * sin_c, y * sin_c, cos_c);
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
 }
 
@@ -1956,8 +1940,7 @@ GMT_LOCAL void gmtproj_iortho (struct GMT_CTRL *GMT, double *lon, double *lat, d
 		return;
 	}
 	cos_c = sqrt (1.0 - rho * rho);	/* Produces NaN for rho > 1: beyond horizon */
-	*lat = d_asind (cos_c * GMT->current.proj.sinp + y * GMT->current.proj.cosp);
-	*lon = d_atan2d (x, cos_c * GMT->current.proj.cosp - y * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	gmtproj_azim_inv (GMT, lon, lat, x, y, cos_c);
 }
 
 /* -JF GNOMONIC PROJECTION */
@@ -1989,7 +1972,7 @@ GMT_LOCAL void gmtproj_gnomonic (struct GMT_CTRL *GMT, double lon, double lat, d
 
 GMT_LOCAL void gmtproj_ignomonic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Gnomonic x/y to lon/lat */
-	double rho, c;
+	double rho;
 
 	x *= GMT->current.proj.i_EQ_RAD;
 	y *= GMT->current.proj.i_EQ_RAD;
@@ -1998,9 +1981,8 @@ GMT_LOCAL void gmtproj_ignomonic (struct GMT_CTRL *GMT, double *lon, double *lat
 		*lat = *lon = GMT->session.d_NaN;
 		return;
 	}
-	c = atan (rho);
-	*lat = d_asind (cos(c) * (GMT->current.proj.sinp + y * GMT->current.proj.cosp));
-	*lon = d_atan2d (x, GMT->current.proj.cosp - y * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	/* With c = atan (rho), all three terms below share the factor cos(c), which cancels */
+	gmtproj_azim_inv (GMT, lon, lat, x, y, 1.0);
 }
 
 /* -JE AZIMUTHAL EQUIDISTANT PROJECTION */
@@ -2021,7 +2003,7 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (gmt_M_proj_is_zero (lat-GMT->current.proj.pole) && gmt_M_proj_is_zero (lon)) {	/* Center of projection */
+	if (lat == GMT->current.proj.pole && lon == 0.0) {	/* Center of projection */
 		*x = *y = 0.0;
 		return;
 	}
@@ -2036,12 +2018,13 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 	}
 	else {
 		double sin_c, num_x, num_y;
-		c = d_acos(cc);
 		num_x = clat * slon;
 		num_y = GMT->current.proj.cosp * slat - GMT->current.proj.sinp * t;
 		/* sin(c) = sqrt(1 - cc^2) = hypot(num_x, num_y); this form avoids precision loss near the antipode (#8684) */
 		sin_c = hypot(num_x, num_y);
-		k = (gmt_M_proj_is_zero(c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin_c;
+		/* atan2 instead of acos (cc): close to the center cc is close to 1 and acos lost half the digits */
+		c = atan2 (sin_c, cc);
+		k = (sin_c == 0.0) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin_c;
 		*x = k * num_x;
 		*y = k * num_y;
 	}
@@ -2062,11 +2045,37 @@ GMT_LOCAL void gmtproj_iazeqdist (struct GMT_CTRL *GMT, double *lon, double *lat
 	if (rho != 0.0) sin_c /= rho;
 	/* Since in the rest we only have sin_c in combination with x or y, it is not necessary to set
 	   sin_c = 1 when rho == 0. In that case x*sin_c and y*sin_c or 0 anyhow. */
-	*lat = d_asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
-	*lon = d_atan2d (x * sin_c, cos_c * GMT->current.proj.cosp - y * sin_c * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	gmtproj_azim_inv (GMT, lon, lat, x * sin_c, y * sin_c, cos_c);
 }
 
 /* -JW MOLLWEIDE EQUAL AREA PROJECTION */
+
+GMT_LOCAL double gmtproj_s_minus_sin_s (double s) {
+	/* s - sin(s) without the cancellation of the two terms for small s */
+	if (fabs (s) < 0.25) {
+		double s2 = s * s;
+		return s * s2 * (1.0 / 6.0 - s2 * (1.0 / 120.0 - s2 * (1.0 / 5040.0 - s2 * (1.0 / 362880.0 - s2 * (1.0 / 39916800.0 - s2 * (1.0 / 6227020800.0))))));
+	}
+	return s - sin (s);
+}
+
+GMT_LOCAL double gmtproj_mollweide_polar_s (double chi) {
+	/* Mollweide close to the poles. With theta = (pi - s) / 2 and chi the colatitude (radians),
+	 * 2 * theta + sin(2 * theta) = pi * sin(lat) becomes s - sin(s) = 2 * pi * sin(chi / 2)^2,
+	 * which Newton solves with quadratic convergence, where the iteration on theta converges
+	 * only linearly and stopped tens of meters away from the root. */
+	int i;
+	double sh = sin (0.5 * chi), w = 2.0 * M_PI * sh * sh, s = cbrt (6.0 * w), d, ds;	/* s <= the root, as s - sin(s) <= s^3 / 6 */
+	for (i = 0; i < 20; i++) {
+		sh = sin (0.5 * s);
+		d = 2.0 * sh * sh;	/* 1 - cos(s) */
+		if (d == 0.0) break;
+		ds = (gmtproj_s_minus_sin_s (s) - w) / d;
+		s -= ds;
+		if (fabs (ds) <= 1e-12 * s) break;
+	}
+	return s;
+}
 
 GMT_LOCAL void gmtproj_vmollweide (struct GMT_CTRL *GMT, double lon0, double scale) {
 	/* Set up Mollweide Equal-Area projection */
@@ -2092,6 +2101,12 @@ GMT_LOCAL void gmtproj_mollweide (struct GMT_CTRL *GMT, double lon, double lat, 
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (GMT->current.proj.GMT_convert_latitudes) lat = gmt_M_latg_to_lata (GMT, lat);
+	if (fabs (lat) > 90.0 - 0.5 * R2D) {	/* Close to the poles, see gmtproj_mollweide_polar_s */
+		s = gmtproj_mollweide_polar_s (D2R * (90.0 - fabs (lat)));
+		*x = GMT->current.proj.w_x * lon * sin (0.5 * s);	/* cos(theta) = sin(s/2) */
+		*y = copysign (GMT->current.proj.w_y * cos (0.5 * s), lat);	/* sin(theta) = cos(s/2) */
+		return;
+	}
 	lat *= D2R;
 
 	phi = lat;
@@ -2114,6 +2129,23 @@ GMT_LOCAL void gmtproj_imollweide (struct GMT_CTRL *GMT, double *lon, double *la
 	/* Convert Mollweide Equal-Area x/y to lon/lat */
 	double phi, phi2;
 
+	if (fabs (y) > 0.5 * GMT->current.proj.w_y && fabs (y) <= GMT->current.proj.w_y) {
+		/* Close to the poles, asin (y / w_y) and asin ((phi2 + sin (phi2)) / pi) below lose half the
+		 * digits. Instead, with s as in gmtproj_mollweide_polar_s: cos(s/2) = |y| / w_y, and the
+		 * colatitude chi from 2 * sin(chi/2)^2 = (s - sin(s)) / pi. */
+		double half_s = 2.0 * asin (sqrt (0.5 * (GMT->current.proj.w_y - fabs (y)) * GMT->current.proj.w_iy));
+		double den = GMT->current.proj.w_x * sin (half_s);
+		*lon = (den == 0.0) ? 0.0 : x / den;	/* At the pole x is 0 */
+		if (fabs (*lon) > 180.0) {   /* Beyond horizon by a whisker so set to 180/0 depending on signs */
+			*lat = 0.0;
+			*lon = copysign (180.0, *lon) + GMT->current.proj.central_meridian;
+			return;
+		}
+		*lon += GMT->current.proj.central_meridian;
+		*lat = copysign (90.0 - 2.0 * R2D * asin (sqrt (gmtproj_s_minus_sin_s (2.0 * half_s) / TWO_PI)), y);
+		if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
+		return;
+	}
 	phi = asin (y * GMT->current.proj.w_iy);
 	*lon = x / (GMT->current.proj.w_x * cos(phi));
 	if (fabs (*lon) > 180.0) {   /* Beyond horizon by a whisker so set to 180/0 depending on signs */
@@ -2173,7 +2205,8 @@ GMT_LOCAL void gmtproj_ihammer (struct GMT_CTRL *GMT, double *lon, double *lat, 
 		return;
 	}
 	sin_c = sqrt (1.0 - a) * GMT->current.proj.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
-	*lat = asind (y * sin_c);
+	/* atan2 instead of asin (y * sin_c), which lost half the digits close to the poles */
+	*lat = atan2d (y * sin_c, hypot (x * sin_c, cos_c));
 	*lon = 2.0 * d_atan2d (x * sin_c, cos_c) + GMT->current.proj.central_meridian;
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
 }
@@ -2191,44 +2224,42 @@ GMT_LOCAL void gmtproj_vgrinten (struct GMT_CTRL *GMT, double lon0, double scale
 
 GMT_LOCAL void gmtproj_grinten (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to van der Grinten x/y */
-	double flat, A, A2, G, P, P2, Q, P2A2, i_P2A2, GP2, c, s, theta;
+	double flat, A, A2, G, G2, P, P2, k, sqrt_k, s, c, x_pi, y_pi;
 
 	flat = fabs (lat);
-	if (flat > (90.0 - GMT_PROJ_CONV_LIMIT)) {	/* Save time */
-		*x = 0.0;
-		*y = M_PI * copysign (GMT->current.proj.EQ_RAD, lat);
-		return;
-	}
-	if (doubleAlmostEqualZero (lon, GMT->current.proj.central_meridian)) {	/* Save time */
-		theta = d_asin (2.0 * fabs (lat) / 180.0);
-		*x = 0.0;
-		*y = M_PI * copysign (GMT->current.proj.EQ_RAD, lat) * tan (0.5 * theta);
-		return;
-	}
-
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (gmt_M_proj_is_zero (flat)) {	/* Save time */
+	/* s = sin(theta) from Snyder (29-6); c = cos(theta) with 1 - s computed exactly */
+	s = flat / 90.0;
+	c = sqrt ((90.0 - flat) / 90.0 * (1.0 + s));
+	if (flat == 0.0) {	/* Equator */
 		*x = GMT->current.proj.EQ_RAD * D2R * lon;
 		*y = 0.0;
 		return;
 	}
+	if (lon == 0.0 || flat >= 90.0) {	/* Central meridian and poles: y = pi * R * tan(theta/2) */
+		*x = 0.0;
+		*y = copysign (GMT->current.proj.v_r * s / (1.0 + c), lat);
+		return;
+	}
 
-	theta = d_asin (2.0 * fabs (lat) / 180.0);
-
-	A = 0.5 * fabs (180.0 / lon - lon / 180.0);
+	/* The same values as Snyder's (29-1) and (29-2), rearranged so that no step subtracts two
+	 * large terms: close to the origin A, G and P are all large, and the direct formulas lost all
+	 * the digits there (errors of kilometers within 1e-6 degree of the origin). */
+	A = 0.5 * fabs (180.0 / lon - lon / 180.0);	/* (29-3) */
 	A2 = A * A;
-	sincos (theta, &s, &c);
-	G = c / (s + c - 1.0);
-	P = G * (2.0 / s - 1.0);
-	Q = A2 + G;
+	G = c * (1.0 + c) / (s * (1.0 + c - s));	/* (29-4) */
+	P = G * (2.0 / s - 1.0);			/* (29-5) */
 	P2 = P * P;
-	P2A2 = P2 + A2;
-	GP2 = G - P2;
-	i_P2A2 = 1.0 / P2A2;
+	G2 = G * G;
+	k = A2 * (P2 - 2.0 * G + 1.0) + P2 - G2;
+	sqrt_k = sqrt (k);
+	x_pi = (G - P2 < 0.0) ? (P2 - G2) / (P * sqrt_k - A * (G - P2)) : (A * (G - P2) + P * sqrt_k) / (P2 + A2);
+	y_pi = (A2 * (2.0 * G - 1.0) + G2) / (P * (A2 + G) + A * sqrt_k);
+	if (y_pi < 0.0) y_pi = 0.0;
 
-	*x = copysign (GMT->current.proj.v_r, lon) * (A * GP2 + sqrt (A2 * GP2 * GP2 - P2A2 * (G*G - P2))) * i_P2A2;
-	*y = copysign (GMT->current.proj.v_r, lat) * (P * Q - A * sqrt ((A2 + 1.0) * P2A2 - Q * Q)) * i_P2A2;
+	*x = copysign (GMT->current.proj.v_r * x_pi, lon);
+	*y = copysign (GMT->current.proj.v_r * y_pi, lat);
 }
 
 GMT_LOCAL void gmtproj_igrinten (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
@@ -2254,7 +2285,9 @@ GMT_LOCAL void gmtproj_igrinten (struct GMT_CTRL *GMT, double *lon, double *lat,
 
 	*lat = copysign (180.0, y) * (-m1 * cos (theta1 + M_PI/3.0) - c2 / (3.0 * c3));
 	*lon = GMT->current.proj.central_meridian;
-	if (x != 0.0) *lon += 90.0 * (x2y2 - 1.0 + sqrt (1.0 + 2 * (x2 - y2) + p)) / x;
+	/* 90 * (x2y2 - 1 + sqrt (t)) / x, with t = 1 + 2 * (x2 - y2) + x2y2^2, without the cancellation of sqrt (t)
+	 * against 1 - x2y2 close to the origin: as t - (1 - x2y2)^2 = 4 * x2, it is also 360 * x / (sqrt (t) + 1 - x2y2) */
+	if (x != 0.0) *lon += 360.0 * x / (sqrt (1.0 + 2 * (x2 - y2) + p) + 1.0 - x2y2);
 }
 
 /* -JR WINKEL-TRIPEL MODIFIED gmt_M_is_azimuthal PROJECTION */
@@ -2279,13 +2312,17 @@ GMT_LOCAL void gmtproj_winkel (struct GMT_CTRL *GMT, double lon, double lat, dou
 	/* Fist find Aitoff x/y */
 
 	sincos (lat, &s, &c);
-	D = d_acos (c * cos (lon));
-	if (gmt_M_proj_is_zero (D))
+	/* sin(D)^2 and D computed without acos (cos (lat) * cos (lon/2)) and 1 - X * X, which lost half
+	 * the digits close to the origin and the poles */
+	X = sin (lon);
+	D = s * s + c * c * X * X;	/* sin(D)^2 */
+	if (D == 0.0)
 		x1 = y1 = 0.0;
 	else {
-		X = s / sin (D);
-		x1 = copysign (D * d_sqrt (1.0 - X * X), lon);
-		y1 = D * X;
+		double sin_D = sqrt (D);
+		D = atan2 (sin_D, c * cos (lon)) / sin_D;	/* D / sin(D) */
+		x1 = D * c * X;
+		y1 = D * s;
 	}
 
 	/* Then get equirectangular projection */
@@ -2311,13 +2348,13 @@ GMT_LOCAL void gmtproj_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, do
 
 	x *= P->current.proj.i_EQ_RAD;
 	y *= P->current.proj.i_EQ_RAD;
-	*lat = y / M_PI;	/* Initial guesses for lon and lat */
-	*lon = x / M_PI;
-	if (fabs (y) < GMT_PROJ_CONV_LIMIT && fabs (x) < GMT_PROJ_CONV_LIMIT) {	/* At ~origin, C is ~zero so no division */
-		*lon *= R2D;
-		*lon += P->current.proj.central_meridian;
+	if (fabs (y) < 1e-50 && fabs (x) < 1e-50) {	/* At ~origin, C is ~zero so no division; first order inverse */
+		*lat = R2D * y;
+		*lon = R2D * 2.0 * x / (1.0 + P->current.proj.r_cosphi1) + P->current.proj.central_meridian;
 		return;
 	}
+	*lat = y / M_PI;	/* Initial guesses for lon and lat */
+	*lon = x / M_PI;
 	do {
 		phi0 = *lat;
 		lambda0 = *lon;
@@ -2325,8 +2362,8 @@ GMT_LOCAL void gmtproj_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, do
 		sincos (lambda0, &sl, &cl);
 		sincos (0.5 * lambda0, &sl2, &cl2);
 		s2p = sin (2.0 * phi0);
-		D = acos (cp * cl2);
-		C = 1.0 - cp * cp * cl2 * cl2;
+		C = sp * sp + cp * cp * sl2 * sl2;	/* 1 - cp^2 cl2^2, without the cancellation close to the origin */
+		D = atan2 (sqrt (C), cp * cl2);	/* acos (cp * cl2) */
 		sq_C = sqrt (C);
 		C_32 = C * sq_C;
 		f1 = 0.5 * ((2.0 * D * cp * sl2) / sq_C + lambda0 * P->current.proj.r_cosphi1) - x;
@@ -2390,6 +2427,24 @@ GMT_LOCAL void gmtproj_eckert4 (struct GMT_CTRL *GMT, double lon, double lat, do
 	double phi, delta, s_lat, s, c;
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	if (fabs (lat) > 90.0 - 0.1 * R2D) {
+		/* Close to the poles the iteration below converges only linearly. With t = pi/2 - |theta|
+		 * and chi the colatitude, theta + sin(theta) cos(theta) + 2 sin(theta) = (2 + pi/2) sin(lat)
+		 * becomes (2t - sin(2t)) / 2 + 2 (1 - cos(t)) = 2 (2 + pi/2) sin(chi/2)^2, solved by Newton. */
+		double sh = sin (0.5 * D2R * (90.0 - fabs (lat))), w = 2.0 * (2.0 + M_PI_2) * sh * sh, t = sqrt (w), st, d, dt;	/* t >= the root */
+		for (n_iter = 0; n_iter < 30; n_iter++) {
+			st = sin (t);
+			d = 2.0 * st * (1.0 + st);
+			if (d == 0.0) break;
+			sh = sin (0.5 * t);
+			dt = (0.5 * gmtproj_s_minus_sin_s (2.0 * t) + 4.0 * sh * sh - w) / d;
+			t -= dt;
+			if (fabs (dt) <= 1e-12 * t) break;
+		}
+		*x = GMT->current.proj.k4_x * lon * D2R * (1.0 + sin (t));
+		*y = copysign (GMT->current.proj.k4_y * cos (t), lat);
+		return;
+	}
 	phi = lat * D2R;
 	s_lat = sin (phi);
 	phi *= 0.5;
@@ -2411,6 +2466,19 @@ GMT_LOCAL void gmtproj_ieckert4 (struct GMT_CTRL *GMT, double *lon, double *lat,
 
 	double phi, s, c;
 
+	if (fabs (y) > 0.5 * GMT->current.proj.k4_y && fabs (y) <= GMT->current.proj.k4_y) {
+		/* Close to the poles, with t = pi/2 - |theta| as in gmtproj_eckert4: the asin below lost half the digits */
+		double t = 2.0 * asin (sqrt (0.5 * (GMT->current.proj.k4_y - fabs (y)) * GMT->current.proj.k4_iy));
+		double sh = sin (0.5 * t), w = 0.5 * gmtproj_s_minus_sin_s (2.0 * t) + 4.0 * sh * sh;
+		*lon = R2D * x * GMT->current.proj.k4_ix / (1.0 + sin (t));
+		if (fabs (*lon) > 180.0) {	/* Horizon */
+			*lat = *lon = GMT->session.d_NaN;
+			return;
+		}
+		*lon += GMT->current.proj.central_meridian;
+		*lat = copysign (90.0 - 2.0 * R2D * asin (sqrt (0.5 * w / (2.0 + M_PI_2))), y);
+		return;
+	}
 	s = y * GMT->current.proj.k4_iy;
 	phi = d_asin (s);
 	c = cos (phi);
