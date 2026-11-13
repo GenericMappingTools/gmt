@@ -1432,6 +1432,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	}
 
 	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
+	if (not_line && GMT->current.map.path_mode == GMT_STRAIGHT_PATH) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* -A only makes lines straight, not symbols */
 #ifdef DEBUG
 	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
@@ -2491,7 +2492,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		struct GMT_DATASET_HIDDEN *DH = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
-		if (Ctrl->W.pen.mode == PSL_BEZIER && GMT->current.map.path_mode != GMT_LEAVE_PATH)	/* Turn off path-resampling if Bezier */
+		if (Ctrl->W.pen.mode == PSL_BEZIER && GMT->current.map.path_mode == GMT_RESAMPLE_PATH)	/* Turn off path-resampling if Bezier */
 			GMT->current.map.path_mode = GMT_LEAVE_PATH;
 
 		if (!no_line_clip) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
