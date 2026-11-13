@@ -174,6 +174,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/spotter/polespotter
    supplements/spotter/rotconverter
    supplements/spotter/rotsmoother
+   supplements/stereonet/stereonet
    supplements/windbarbs/barb
    supplements/windbarbs/grdbarb
    supplements/x2sys/x2sys_binlist
@@ -356,6 +357,7 @@ Supplemental Modules
     - :doc:`/supplements/spotter/polespotter`
     - :doc:`/supplements/spotter/rotconverter`
     - :doc:`/supplements/spotter/rotsmoother`
+    - :doc:`/supplements/stereonet/stereonet`
     - :doc:`/supplements/windbarbs/barb`
     - :doc:`/supplements/windbarbs/grdbarb`
     - :doc:`/supplements/x2sys/x2sys_binlist`
@@ -794,6 +796,13 @@ spotter
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/rotsmoother`  | |rotsmoother_purpose|  |
 +------------------------------------------+------------------------+
+
+stereonet
+---------
+
++--------------------------------------------+----------------------+
+| :doc:`/supplements/stereonet/stereonet`    | |stereonet_purpose|  |
++--------------------------------------------+----------------------+
 
 windbarbs
 ---------
