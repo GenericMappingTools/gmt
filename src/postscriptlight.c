@@ -929,11 +929,20 @@ void psl_set_int_array (struct PSL_CTRL *PSL, const char *prefix, int *array, in
 
 void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[], int n) {
 	int i;
-	char *outtext = NULL;
+	char *outtext = NULL, *c;
 	PSL_command (PSL, "/PSL_%s [\n", prefix);
 	for (i = 0; i < n; i++) {
 		outtext = psl_prepare_text (PSL, array[i]);	/* Expand escape codes and fix utf-8 characters */
-		PSL_command (PSL, "\t(%s)\n", outtext);
+		PSL_command (PSL, "\t(");
+		for (c = outtext; *c; c++) {	/* Pass @~ (Symbol font toggle) as \001 so PSL_label.ps can tell it from a literal @@~ */
+			if (c[0] == '@' && c[1] == '~')
+				PSL_command (PSL, "\\001"), c++;
+			else {
+				if (c[0] == '@' && c[1] == '@') PSL_command (PSL, "@"), c++;
+				PSL_command (PSL, "%c", *c);
+			}
+		}
+		PSL_command (PSL, ")\n");
 		PSL_free (outtext);
 	}
 	PSL_command (PSL, "] def\n", n);
