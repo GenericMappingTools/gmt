@@ -63,7 +63,7 @@ jobs:
       matrix:
         include:
           - name: Linux
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - name: macOS
             os: macos-15-intel # macos-14 use M1 chips, which causes many failures
           - name: Windows

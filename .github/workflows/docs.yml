@@ -50,7 +50,7 @@ jobs:
       matrix:
         include:
           - name: Linux
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - name: macOS
             os: macos-latest
           - name: Windows
@@ -157,11 +157,11 @@ jobs:
           path: deploy
           # Download the entire history
           fetch-depth: 0
-        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
+        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-24.04'
 
       - name: Deploy documentation to GitHub
         run: bash ci/deploy-gh-pages.sh
-        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
+        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-24.04'
 
       - name: Package GMT
         run: |

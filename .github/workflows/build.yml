@@ -63,13 +63,13 @@ jobs:
       matrix:
         include:
           - name: Linux
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - name: macOS
             os: macos-15-intel
           - name: Windows
             os: windows-latest
           - name: Linux (without optional dependencies)
-            os: ubuntu-latest
+            os: ubuntu-24.04
             EXCLUDE_OPTIONAL : true
 
     steps:
