@@ -81,7 +81,7 @@ jobs:
 
       - name: Setup micromamba
         uses: mamba-org/setup-micromamba@v3.2.1
-        if: runner.os == 'macOS'
+        if: runner.os != 'Windows'
 
       - name: Install GMT dependencies
         run: |

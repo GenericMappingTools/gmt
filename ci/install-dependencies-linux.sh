@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Bash script to install GMT dependencies on Ubuntu via apt-get and conda
+# Bash script to install GMT dependencies on Ubuntu via apt-get and micromamba
 #
 # Environmental variables that can control the installation:
 #
@@ -17,8 +17,8 @@ EXCLUDE_OPTIONAL=${EXCLUDE_OPTIONAL:-false}
 
 # packages installed via apt-get
 packages="build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev curl git libgdal-dev"
-# packages installed via conda
-conda_packages="ghostscript=10.03.0"
+# packages installed via micromamba
+mamba_packages="ghostscript=10.03.0"
 
 # optional packages
 if [ "$EXCLUDE_OPTIONAL" = "false" ]; then
@@ -28,28 +28,29 @@ fi
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
     packages+=" graphicsmagick gdal-bin texlive-latex-base texlive-binaries texlive-fonts-recommended"
-    conda_packages+=" dvc"
+    mamba_packages+=" dvc"
 fi
 
 # packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    conda_packages+=" pngquant sphinx dvc"
+    mamba_packages+=" pngquant sphinx dvc pip"
 fi
 
 # Install packages via apt-get
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends --no-install-suggests $packages
 
-# Install packages via conda
-conda install ${conda_packages} -c conda-forge
-echo "${CONDA}/bin" >> $GITHUB_PATH
+# Install packages via micromamba into a dedicated environment
+micromamba create --yes --name gmt ${mamba_packages} -c conda-forge
+MAMBA_PREFIX="${MAMBA_ROOT_PREFIX}/envs/gmt"
+echo "${MAMBA_PREFIX}/bin" >> $GITHUB_PATH
 
-# Remove pcre-config from conda's path so cmake won't find the conda's one
-rm -f ${CONDA}/bin/pcre-config ${CONDA}/bin/pcre2-config
+# Remove pcre-config from micromamba's path so cmake won't find the micromamba's one
+rm -f ${MAMBA_PREFIX}/bin/pcre-config ${MAMBA_PREFIX}/bin/pcre2-config
 
 # Install Sphinx extensions
 if [ "$BUILD_DOCS" = "true" ]; then
-    ${CONDA}/bin/python -m pip install --user -r doc/rst/requirements.txt
+    ${MAMBA_PREFIX}/bin/python -m pip install --user -r doc/rst/requirements.txt
 fi
 
 set +x +e
