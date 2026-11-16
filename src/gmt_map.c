@@ -2333,7 +2333,7 @@ GMT_LOCAL void gmtmap_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, dou
 	struct GMT_SUBPLOT *P = &(GMT->current.plot.panel);	/* P->active == 1 if a subplot */
 	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
 	unsigned int no_scaling = P->no_scaling;
-	bool update_parameters = false;
+	bool update_parameters = false, is_inset;
 	double fw, fh, fx, fy, w, h;
 
 	/* Set up the original min/max values, the rectangular map dimensionsm and the projection offset */
@@ -2349,13 +2349,15 @@ GMT_LOCAL void gmtmap_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, dou
 		GMT->current.proj.scale[GMT_Y] = -GMT->current.proj.scale[GMT_Y];
 	}
 
-	if (!strncmp (GMT->init.module_name, "inset", 5U))
-		no_scaling = 1;	/* Don't scale yet if we are calling inset begin (inset end would come here too but not affected since no mapping done by that module) */
+	/* gmt inset begin must see the enclosing map exactly as it was plotted: inside a subplot panel that means
+	 * applying the same panel rescaling and centering (P->dx, P->dy) as the module that drew it.  An inset never
+	 * rescales itself; that is done by the modules called between inset begin and inset end */
+	is_inset = !strncmp (GMT->init.module_name, "inset", 5U);
 
 	w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
 
 	/* Check inset first since an inset may be inside a subplot but there are no subplots inside an inset */
-	if (I->active && no_scaling == 0) {	/* Must rescale to fit inside the inset dimensions and set dx,dy for centering */
+	if (I->active && no_scaling == 0 && !is_inset) {	/* Must rescale to fit inside the inset dimensions and set dx,dy for centering */
 		fw = w / I->w;	fh = h / I->h;
 		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
 			if (fw > fh) {	/* Wider than taller given inset dims; adjust width to fit exactly and set dy for centering */
