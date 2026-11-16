@@ -3588,6 +3588,8 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 				sscanf (value, "%lg %lg", &GMT->current.plot.gridline_spacing[GMT_X], &GMT->current.plot.gridline_spacing[GMT_Y]);
 			else if (option[1] == 'L')	/* Read PS layer */
 				GMT->current.ps.layer = atoi (value);
+			else if (option[1] == 'N')	/* The -J in this history was given with fixed dimensions inside a subplot panel */
+				GMT->current.plot.panel.fixed_J = atoi (value);
 			else if (option[1] == 'S')	/* Read next sequential color IDs */
 				sscanf (value, "%d %d", &GMT->current.plot.color_seq_id[0], &GMT->current.plot.color_seq_id[1]);
 			continue;
@@ -3668,6 +3670,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if (GMT->current.plot.gridline_spacing[GMT_X] > 0.0 || GMT->current.plot.gridline_spacing[GMT_Y] > 0.0)	/* Save gridline spacing in history */
 		fprintf (fp, "@G\t%g %g\n", GMT->current.plot.gridline_spacing[GMT_X], GMT->current.plot.gridline_spacing[GMT_Y]);
 	if (GMT->current.ps.layer) fprintf (fp, "@L\t%d\n", GMT->current.ps.layer); /* Write PS layer, if non-zero */
+	if (GMT->current.plot.panel.fixed_J) fprintf (fp, "@N\t%d\n", GMT->current.plot.panel.fixed_J); /* Panel -J has fixed dimensions, if non-zero */
 	if (GMT->current.plot.color_seq_id[0] || GMT->current.plot.color_seq_id[1]) fprintf (fp, "@S\t%d %d\n", GMT->current.plot.color_seq_id[0], GMT->current.plot.color_seq_id[1]); /* Write next sequential color IDs, if non-zero */
 	fprintf (fp, "END\n");
 
@@ -3685,6 +3688,7 @@ void gmt_reset_history (struct GMT_CTRL *GMT) {
 	for (int id = 0; id < GMT_N_UNIQUE; id++) {
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);
 	}
+	GMT->current.plot.panel.fixed_J = 0;	/* Goes with the -J being forgotten */
 }
 
 /*! . */
@@ -16198,8 +16202,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				if (gmtinit_build_new_J_option (API, opt_J, P, NULL, is_psrose))	/* Found ?-mark(s) and replaced them */
-					GMT->current.plot.panel.no_scaling = 0;
+					GMT->current.plot.panel.no_scaling = GMT->current.plot.panel.fixed_J = 0;
 				else if (opt_J && strchr (opt_J->arg, '?') == NULL) /* Do not auto-scale but use the given dimensions */
+					GMT->current.plot.panel.no_scaling = GMT->current.plot.panel.fixed_J = 1;
+				else if (opt_J == NULL && GMT->current.plot.panel.fixed_J && !GMT->current.plot.inset.active)	/* -J will come from history and was given with fixed dimensions */
 					GMT->current.plot.panel.no_scaling = 1;
 			}
 		}
@@ -16741,6 +16747,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	Ccopy->current.ps.initialize = GMT->current.ps.initialize;
 	Ccopy->current.plot.color_seq_id[0] = GMT->current.plot.color_seq_id[0];
 	Ccopy->current.plot.color_seq_id[1] = GMT->current.plot.color_seq_id[1];
+	Ccopy->current.plot.panel.fixed_J = GMT->current.plot.panel.fixed_J;	/* Goes with the -J history above */
 
 	/* GMT_COMMON */
 

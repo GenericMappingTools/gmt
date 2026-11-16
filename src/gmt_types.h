@@ -181,6 +181,7 @@ struct GMT_SUBPLOT {
 	unsigned int active;	/* 1 if subplot is in effect */
 	unsigned int first;		/* 1 the first time we reach panel, 0 later */
 	unsigned int no_scaling;	/* 1 when we are plotting a scale, bar, etc and not map and don't want to auto-scale plot */
+	unsigned int fixed_J;		/* 1 if the panel's -J (as stored in history) was given with fixed dimensions, so it must not be rescaled */
 	unsigned int parallel;	/* 1 for axis-parallel annotations [0 for standard] */
 	unsigned int inside;	/* 1 if all annots/ticks are inside panels [0 for outside] */
 	unsigned int fixed_figure;	/* 1 if subplot -Ff gave the figure dimensions, so contents must fit inside them */
