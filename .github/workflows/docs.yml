@@ -50,7 +50,7 @@ jobs:
       matrix:
         include:
           - name: Linux
-            os: ubuntu-24.04
+            os: ubuntu-latest
           - name: macOS
             os: macos-latest
           - name: Windows
@@ -66,9 +66,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Setup micromamba (macOS)
+      - name: Setup micromamba
         uses: mamba-org/setup-micromamba@v3.2.1
-        if: runner.os == 'macOS'
+        if: runner.os != 'Windows'
 
       - name: Install GMT dependencies
         run: |
@@ -157,11 +157,11 @@ jobs:
           path: deploy
           # Download the entire history
           fetch-depth: 0
-        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-24.04'
+        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
 
       - name: Deploy documentation to GitHub
         run: bash ci/deploy-gh-pages.sh
-        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-24.04'
+        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
 
       - name: Package GMT
         run: |
