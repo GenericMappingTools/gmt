@@ -646,6 +646,13 @@ GMT_LOCAL char *gmtremote_lockfile (struct GMT_CTRL *GMT, char *file) {
 	return (strdup (Lfile));
 }
 
+GMT_LOCAL void gmtremote_partial_name (const char *file, char *partial) {
+	/* Name of the file (in the same directory as file) to which a download or conversion is written
+	 * before it is renamed to file in one step, so that other processes running at the same time
+	 * (e.g., movie or batch frames) can never see a partially written file */
+	snprintf (partial, PATH_MAX, "%s.%d.part", file, (int)getpid ());
+}
+
 GMT_LOCAL size_t gmtremote_discard_body (void *ptr, size_t size, size_t nmemb, void *userdata) {
 	/* Write callback that discards all data and aborts the transfer immediately.
 	 * Returning 0 causes libcurl to stop with CURLE_WRITE_ERROR, which is expected. */
@@ -730,8 +737,6 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
 		/* Complete connection within 10 seconds */
 		curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT);
-
-		res = curl_easy_perform (curl);
 
 		if ((res = curl_easy_perform (curl)) == CURLE_OK) {
       			res = curl_easy_getinfo (curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &filesize);
@@ -836,6 +841,7 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	bool turn_ctrl_C_off = false;
 	int curl_err = 0, error = GMT_NOERROR;
 	long time_spent;
+	char partfile[PATH_MAX] = {""};
 	CURL *Curl = NULL;
 	struct LOCFILE_FP *LF = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
@@ -858,12 +864,14 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	if (do_lock && !access (file, F_OK))
 		goto unlocking1;	/* Yes it was, unlock and return no error */
 
-	/* Initialize the curl session */
-	if ((Curl = gmtremote_setup_curl (API, url, file, &urlfile, GMT_HASH_TIME_OUT)) == NULL)
-		goto unlocking1;
+	/* Initialize the curl session; we download to a partial file that is renamed when complete */
+	gmtremote_partial_name (file, partfile);
+	if ((Curl = gmtremote_setup_curl (API, url, partfile, &urlfile, GMT_HASH_TIME_OUT)) == NULL) {
+		error = 1; goto unlocking1;
+	}
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
-	gmtremote_turn_on_ctrl_C_check (file);	turn_ctrl_C_off = true;
+	gmtremote_turn_on_ctrl_C_check (partfile);	turn_ctrl_C_off = true;
 	begin = time (NULL);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		end = time (NULL);
@@ -886,11 +894,18 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 				GMT->current.io.refreshed[index] = GMT->current.io.internet_error = true;
 			}
 		}
+		curl_easy_cleanup (Curl);
+		if (!access (partfile, F_OK)) gmt_remove_file (GMT, partfile);	/* Remove the incomplete download */
 		error = 1; goto unlocking1;
 	}
 	curl_easy_cleanup (Curl);
 	if (urlfile.fp) /* close the local file */
 		fclose (urlfile.fp);
+	if (access (partfile, F_OK) || gmt_rename_file (GMT, partfile, file, GMT_RENAME_FILE)) {	/* Nothing received or failed to rename */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to place downloaded file %s\n", file);
+		if (!access (partfile, F_OK)) gmt_remove_file (GMT, partfile);
+		error = 1;
+	}
 
 unlocking1:
 
@@ -1223,15 +1238,17 @@ bool gmt_use_srtm_coverage (struct GMTAPI_CTRL *API, char **file, int *k, unsign
 
 GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localfile) {
 	static char *args = " -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=readonly";
-	char cmd[GMT_LEN512] = {""},  *ncfile = NULL;
+	char cmd[2*PATH_MAX+GMT_LEN256] = {""}, partfile[PATH_MAX] = {""}, *ncfile = NULL;
 	int k_data;
 
 	if (API->GMT->current.io.leave_as_jp2) return GMT_NOERROR;	/* Conversion temporarily turned off by gmtget -N */
 	if ((k_data = gmtlib_file_is_jpeg2000_tile (API, localfile)) == GMT_NOTSET) return GMT_NOERROR;	/* Nothing to do */
 
-	/* Convert JP2 file to NC for local cache storage */
+	/* Convert JP2 file to NC for local cache storage.  We write to a partial file that is renamed to the
+	 * final netCDF tile name when complete, so other processes never read a half-written tile */
 	ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
-	sprintf (cmd, "%s -G%s=ns", localfile, ncfile);	/* We know we are writing a netCDF short int grid */
+	gmtremote_partial_name (ncfile, partfile);
+	snprintf (cmd, sizeof (cmd), "%s -G%s=ns", localfile, partfile);	/* We know we are writing a netCDF short int grid */
 	if (!doubleAlmostEqual (API->remote_info[k_data].scale, 1.0) || !gmt_M_is_zero (API->remote_info[k_data].offset)) {
 		/* Integer is not the original data unit and/or has an offset - must scale/shift jp2 integers to units first.
 		 * Because we are inverting the scaling and because grdconvert applies z' = z * scale + offset, we must
@@ -1246,9 +1263,15 @@ GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localf
 	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
 	GMT_Report (API, GMT_MSG_DEBUG, "Running: grdconvert %s\n", cmd);
 	API->GMT->common.V.active = false;	/* Since we will parse again below */
-	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR || gmt_rename_file (API->GMT, partfile, ncfile, GMT_RENAME_FILE)) {
+		if (!access (partfile, F_OK)) gmt_remove_file (API->GMT, partfile);	/* Remove the incomplete netCDF tile */
+		if (!access (ncfile, F_OK)) {	/* Another process converted this tile in the meantime, so we are fine */
+			gmt_M_str_free (ncfile);
+			return GMT_NOERROR;
+		}
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
-		gmt_M_free (API->GMT, ncfile);
+		if (!access (localfile, F_OK)) gmt_remove_file (API->GMT, localfile);	/* Remove the bad JP2 tile so the next attempt downloads it again */
+		gmt_M_str_free (ncfile);
 		return GMT_RUNTIME_ERROR;
 	}
 	gmt_M_str_free (ncfile);
@@ -1345,10 +1368,17 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			srtm_switch = !strcmp (GMT->parent->remote_info[t_data].coverage, "srtm_tiles.nc");	/* true if this dataset switches to SRTM tiles for this resolutions */
 			if (access (local_path, R_OK)) {	/* A local tile in netCDF format was not found.  See if it exists as compressed JP2000 */
 				char *local_jp2 = gmt_strrep (local_path, GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
- 				if (access (local_jp2, R_OK))
+ 				if (access (local_jp2, R_OK)) {
+					gmt_M_str_free (local_jp2);
 	 				goto not_local;	/* No such file yet */
-				else {	/* Yep, do the just-in-time conversion now */
-					int error = gmtremote_convert_jp2_to_nc (API, local_jp2);
+				}
+				else {	/* Yep, do the just-in-time conversion now, holding the same lock used while downloading
+					 * the tile so that only one process converts it while the others wait for the result */
+					int error = GMT_NOERROR;
+					struct LOCFILE_FP *LF = gmtremote_lock_on (GMT, (char *)file);
+					if (access (local_path, R_OK))	/* Still no netCDF tile after we got the lock */
+						error = gmtremote_convert_jp2_to_nc (API, local_jp2);
+					if (LF) gmtremote_lock_off (GMT, &LF);
 					gmt_M_str_free (local_jp2);
 					if (error) return error;	/* Something failed in the conversion */
 				}
@@ -1520,9 +1550,10 @@ int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
 }
 
 int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *localfile, bool be_fussy) {
-	bool query = gmt_M_file_is_query (url), turn_ctrl_C_off = false;
+	bool query = gmt_M_file_is_query (url);
 	int curl_err, error = 0;
 	size_t fsize;
+	char partfile[PATH_MAX] = {""}, *ncfile = NULL;
 	CURL *Curl = NULL;
 	struct FtpFile urlfile = {NULL, NULL};
 	struct LOCFILE_FP *LF = NULL;
@@ -1549,52 +1580,63 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	if (!query && (LF = gmtremote_lock_on (GMT, (char *)name)) == NULL)
 		return 1;
 
-	/* If file locking held us up as another process was downloading the same file,
-	 * then that file should now be available.  So we check again if it is before proceeding */
+	/* If file locking held us up as another process was downloading the same file, then that file
+	 * should now be available.  So we check again if it is before proceeding.  For a JPEG2000 tile
+	 * the final product is the netCDF tile it is converted to, so we must check for that one */
 
-	if (!access (localfile, F_OK)) {	/* Yes it was! Undo lock and return no error */
-		if (!query)	/* Remove lock file after successful download (unless query) */
-			gmtremote_lock_off (GMT, &LF);
-		return GMT_NOERROR;
-	}
-
-	/* Initialize the curl session */
-	if ((Curl = gmtremote_setup_curl (API, url, localfile, &urlfile, 0)) == NULL)
+	if (gmtlib_file_is_jpeg2000_tile (API, localfile) != GMT_NOTSET)
+		ncfile = gmt_strrep (localfile, GMT_TILE_EXTENSION_REMOTE, GMT_TILE_EXTENSION_LOCAL);
+	if (ncfile && !access (ncfile, F_OK))	/* Yes, the tile was downloaded and converted already */
 		goto unlocking2;
+	if (!access (localfile, F_OK))	/* Yes, the file was downloaded already but may still need conversion */
+		goto converting;
+
+	/* Initialize the curl session; we download to a partial file that is renamed when complete */
+	gmtremote_partial_name (localfile, partfile);
+	if ((Curl = gmtremote_setup_curl (API, url, partfile, &urlfile, 0)) == NULL) {
+		error = 1; goto unlocking2;
+	}
 
 	gmtremote_find_and_give_data_attribution (API, name);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Downloading file %s ...\n", url);
-	gmtremote_turn_on_ctrl_C_check (localfile);
-	turn_ctrl_C_off = true;
-	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
+	gmtremote_turn_on_ctrl_C_check (partfile);
+	curl_err = curl_easy_perform (Curl);
+	curl_easy_cleanup (Curl);
+	if (urlfile.fp) /* close the local file */
+		fclose (urlfile.fp);
+	gmtremote_turn_off_ctrl_C_check ();
+	if (curl_err) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (API, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 			if (curl_err == CURLE_HTTP_RETURNED_ERROR)
 				GMT_Report (API, GMT_MSG_ERROR, "Probably means %s does not exist on the remote server\n", name);
 			error = curl_err;
-			if (urlfile.fp != NULL) {
-				fclose (urlfile.fp);
-				urlfile.fp = NULL;
-			}
-			if (!access (localfile, F_OK) && gmt_remove_file (GMT, localfile))	/* Failed to clean up as well */
-				GMT_Report (API, GMT_MSG_WARNING, "Could not even remove file %s\n", localfile);
 		}
-		else if (curl_err == CURLE_COULDNT_CONNECT)
+		if (curl_err == CURLE_COULDNT_CONNECT)
 			GMT->current.io.internet_error = true;	/* Prevent GMT from trying again in this session */
+		if (!access (partfile, F_OK) && gmt_remove_file (GMT, partfile))	/* Remove the incomplete download */
+			GMT_Report (API, GMT_MSG_WARNING, "Could not even remove file %s\n", partfile);
+		goto unlocking2;
 	}
-	curl_easy_cleanup (Curl);
-	if (urlfile.fp) /* close the local file */
-		fclose (urlfile.fp);
+	if (access (partfile, F_OK)) {	/* Nothing was received */
+		GMT_Report (API, GMT_MSG_ERROR, "No data received for %s\n", url);
+		error = 1; goto unlocking2;
+	}
+	if (gmt_rename_file (GMT, partfile, localfile, GMT_RENAME_FILE)) {	/* Give the complete download its final name */
+		gmt_remove_file (GMT, partfile);
+		error = 1; goto unlocking2;
+	}
+
+converting:	/* Convert a JP2 tile to netCDF while we still hold the lock, so other processes wait for the netCDF tile */
+
+	error = gmtremote_convert_jp2_to_nc (API, localfile);
 
 unlocking2:
 
 	if (!query)	/* Remove lock file after successful download (unless query) */
 		gmtremote_lock_off (GMT, &LF);
-
-	if (turn_ctrl_C_off) gmtremote_turn_off_ctrl_C_check ();
-
-	if (error == 0) error = gmtremote_convert_jp2_to_nc (API, localfile);
+	if (ncfile) gmt_M_str_free (ncfile);
 
 	return (error);
 }
