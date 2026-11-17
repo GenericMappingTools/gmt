@@ -5657,6 +5657,13 @@ void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *fo
 		PSL_plottext (PSL, x, y, font->size, label, angle, just, form);
 }
 
+GMT_LOCAL bool gmtplot_upside_down_3D (struct GMT_CTRL *GMT, double angle) {
+	/* True if text at this x-y plane angle would read right-to-left (or downward) in the perspective view */
+	double s, c;
+	sincosd (angle + GMT->current.proj.z_project.view_azimuth, &s, &c);
+	return (c > GMT_CONV8_LIMIT || (fabs (c) <= GMT_CONV8_LIMIT && s > 0.0));
+}
+
 void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, unsigned side) {
 	unsigned int k, i, nx, nx1, np = 0;/* Misc. variables */
 	unsigned int annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
@@ -5765,8 +5772,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		}
 	}
 	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
-	if (axis != GMT_Z && GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate x/y-annotations when seen "from North" */
+	if (axis != GMT_Z && GMT->current.proj.three_D) {	/* Rotate x/y-annotations that would appear upside down */
 		for (pr = GMT_PRIMARY; pr <= GMT_SECONDARY; pr++) {
+			if (!gmtplot_upside_down_3D (GMT, text_angle[pr])) continue;
 			if (!flip) justify[pr] = gmt_flip_justify (GMT, justify[pr]);
 			text_angle[pr] += 180.0;
 		}
