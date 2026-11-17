@@ -5228,7 +5228,7 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, dou
 		az[0] = gmtplot_smallcircle_az (GMT, C.A, S);	/* Compute the azimuth from A to B at A along small circle */
 		scl[0] = (perspective) ? S->v.scale : gmtplot_get_local_scale (GMT, C.lon[0], C.lat[0], 0.001 * C.r, az[0]);	/* Get local deg/inch scale at A in az[0] direction */
 		dr[0] = scl[0] * (head_length - 1.1*dshift[0]);	/* This is arrow head length in degrees, approximately, adjusted for ~pen thickness to ensure no gap between head and line (the 1.1 slop) */
-		if (dr[0] > h_length_limit) {	/* Head length still too long, refuse to plot it */
+		if (dr[0] > h_length_limit * (1.0 + GMT_CONV8_LIMIT)) {	/* Head length still too long, refuse to plot it */
 			gmt_M_memcpy (Ax, C.A, 3, double);	/* No need to shorten arc at beginning */
 			heads -= 1;	/* Not purse this head any further */
 			warn = 1;
@@ -5252,7 +5252,7 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, dou
 		az[1] = -gmtplot_smallcircle_az (GMT, C.B, S);	/* Compute the azimuth from B to A at B along small circle */
 		scl[1] = (perspective) ? S->v.scale : gmtplot_get_local_scale (GMT, C.lon[1], C.lat[1], 0.01 * C.r, az[1]);	/* Get local deg/inch scale */
 		dr[1] = S->v.scale * (head_length - 1.1*dshift[1]);	/* This is arrow head length in degrees, approximately, adjusted for ~pen thickness to ensure no gap between head and line */
-		if (dr[1] > h_length_limit) {	/* Head length too long, refuse to plot it */
+		if (dr[1] > h_length_limit * (1.0 + GMT_CONV8_LIMIT)) {	/* Head length too long, refuse to plot it */
 			gmt_M_memcpy (Bx, C.B, 3, double);	/* No need to shorten arc at end */
 			heads -= 1;	/* Not purse this head any further */
 			warn = 1;
@@ -5481,7 +5481,7 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_greatcircle (struct GMT_CTRL *GMT, dou
 		az[0] = gmt_az_backaz (GMT, C.lon[0], C.lat[0], C.lon[1], C.lat[1], false);	/* Compute the azimuth from A to B at A along great circle */
 		scl[0] = (perspective) ? S->v.scale : gmtplot_get_local_scale (GMT, C.lon[0], C.lat[0], 0.001 * C.r, az[0]);	/* Get local deg/inch scale at A in az[0] direction */
 		dr[0] = scl[0] * (head_length - 1.1*dshift[0]);	/* This is arrow head length in degrees, approximately, adjusted for ~pen thickness to ensure no gap between head and line */
-		if (dr[0] > h_length_limit) {   /* Head length still too long, refuse to plot it */
+		if (dr[0] > h_length_limit * (1.0 + GMT_CONV8_LIMIT)) {   /* Head length still too long, refuse to plot it */
 			gmt_M_memcpy (Ax, C.A, 3, double);	/* No need to shorten arc at beginning */
 			heads -= 1;	/* Not purse this head any further */
 			warn = 1;
@@ -5501,7 +5501,7 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_greatcircle (struct GMT_CTRL *GMT, dou
 		az[1] = gmt_az_backaz (GMT, C.lon[1], C.lat[1], C.lon[0], C.lat[0], false);	/* Compute the azimuth from B to A at B along great circle */
 		scl[1] = (perspective) ? S->v.scale : gmtplot_get_local_scale (GMT, C.lon[1], C.lat[1], 0.01 * C.r, az[1]);	/* Get local deg/inch scale */
 		dr[1] = scl[1] * (head_length - 1.1*dshift[1]);	/* This is arrow head length in degrees, approximately, adjusted for ~pen thickness to ensure no gap between head and line */
-		if (dr[1] > h_length_limit) {	/* Head length still too long, refuse to plot it */
+		if (dr[1] > h_length_limit * (1.0 + GMT_CONV8_LIMIT)) {	/* Head length still too long, refuse to plot it */
 			gmt_M_memcpy (Bx, C.B, 3, double);	/* No need to shorten arc at end */
 			heads -= 2;	/* Not purse this head any further */
 			warn = 1;
