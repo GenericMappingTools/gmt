@@ -2683,7 +2683,6 @@ GMT_LOCAL uint64_t gmtsupport_trace_contour (struct GMT_CTRL *GMT, struct GMT_GR
 		if (n_exits == 0) {	/* We have hit a field of NaNs, finish contour */
 			more = false;
 			*nan_flag = n_nan;
-			if (n_nan == 0 && GMT->current.map.z_periodic) *nan_flag = 1;	/* Dead end at a phase singularity, so also trace the other way */
 			continue;
 		}
 		else if (n_exits == 3) {	/* Saddle point: Turn to the correct side */
@@ -2714,10 +2713,6 @@ GMT_LOCAL uint64_t gmtsupport_trace_contour (struct GMT_CTRL *GMT, struct GMT_GR
 		ij0 = gmt_M_ij0 (G->header, row + d_row[side], col + d_col[side]);	/* Non-padded index used for edge array */
 		edge_word = (unsigned int)(ij0 / 32 + d_side[side] * offset);
 		edge_bit  = (unsigned int)(ij0 % 32);
-		if (!test && (edge[edge_word] & bit[edge_bit])) {	/* Ran into an already traced contour */
-			more = false;
-			continue;
-		}
 		edge[edge_word] |= bit[edge_bit];
 
 		if ((side == 0 && row == G->header->n_rows - 1) || (side == 2 && row == 1)) {	/* Going out of grid at N or S */
