@@ -201,7 +201,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           fail_ci_if_error: false
-        if: always()
+        if: always() && runner.os != 'Windows'
 
   # Twin of "test" - see build-skip in build.yml.
   test-skip:
