@@ -15,7 +15,8 @@ gmt grdseamount -R0/200/0/150+uk -I1000 -Gsmt_%05.2f.nc t.txt -T10/0/0.25 -Qc/c+
 gmt grdseamount -R0/200/0/150+uk -I1000 -Gsmt.nc t.txt -C$m -Dk -E -F$f -Z-1
 gmt grdcontour smt_00.00.nc+Uk -Jx0.03i -Xc -Y0.5i -P -C500 -A1000 -GlLM/RM -Bafg -K > $ps
 gmt grdcontour smt.nc+Uk -J -O -K -C500 -A1000 -Gl50/20/50/130,150/20/150/130 -Wc0.25p,red -Wa0.75p,red --FONT_ANNOT_PRIMARY=12p,Helvetica,red >> $ps
-gmt grdtrack -Gsmt_00.00.nc+Uk -E0/75/200/75 -o0,1 -nn | gmt psxy -R0/200/0/150 -J -O -K -W1p >> $ps
+gmt grdtrack -Gsmt_00.00.nc+Uk -E0/75/200/75 -o0,1 -nn > tmp_pipe.txt
+gmt psxy -R0/200/0/150 -J -O -K -W1p < tmp_pipe.txt >> $ps
 ls smt_*.*.nc > t.lis
 n=$(cat t.lis | wc -l)
 let n++
@@ -28,10 +29,12 @@ while read file; do
 	if [ $k -eq 20 ]; then
 		rgb=black
 	fi
-	gmt grdtrack -G${file}+Uk -E0/75/200/75 -o0,2 -nn | gmt psxy -R -J -O -K -G$rgb >> $ps
+	gmt grdtrack -G${file}+Uk -E0/75/200/75 -o0,2 -nn > tmp_pipe.txt
+	gmt psxy -R -J -O -K -G$rgb < tmp_pipe.txt >> $ps
 	let k=k+1
 done < t.lis
-gmt grdtrack -Gsmt.nc+Uk -E0/75/200/75 -o0,2 -nn | gmt psxy -R -J -O -K -W1p >> $ps
+gmt grdtrack -Gsmt.nc+Uk -E0/75/200/75 -o0,2 -nn > tmp_pipe.txt
+gmt psxy -R -J -O -K -W1p < tmp_pipe.txt >> $ps
 gmt psscale -Ct2.cpt -Dx3i/-0.4i+w-6i/0.15i+h+jTC -O -K -Baf -Bx+l"Time of emplacement" >> $ps
 gmt psxy -R1/10/0/1 -JX-6i/0.15i -O -Y-0.55i -Gblack << EOF >> $ps
 5.25	0

@@ -27,22 +27,31 @@ gmt pscoast -R150/220/00/65 -JM7i -P -K -G30/120/30 -A500 -Dl -W0.25p -B20 -BWSn
 gmt psxy -R -J -O -K -Sc0.1i -Cdrift.cpt D2012_HI_drift.txt >> $ps
 gmt psxy -R -J -O -K -Sc0.1i -Gred -W0.5p loihi.txt >> $ps
 # Task 1: [OK]
-gmt backtracker loihi.txt -Df -Lb1 -ED2012x.txt -FD2012_HI_drift.txt | gmt psxy -R -J -O -K -W1p >> $ps
+gmt backtracker loihi.txt -Df -Lb1 -ED2012x.txt -FD2012_HI_drift.txt > tmp_pipe.txt
+gmt psxy -R -J -O -K -W1p < tmp_pipe.txt >> $ps
 # Task 6: NO - gives flowline of tries with -Db -Lb since drift applied at wrong location.  Must do this instead:
 gmt backtracker end_of_trail.txt -Db -ED2012x.txt -FD2012_HI_drift.txt > start_of_trail.txt
-gmt backtracker start_of_trail.txt -Df -Lb5 -ED2012x.txt -FD2012_HI_drift.txt | gmt psxy -R -J -O -K -Sc0.2c -Wfaint >> $ps
+gmt backtracker start_of_trail.txt -Df -Lb5 -ED2012x.txt -FD2012_HI_drift.txt > tmp_pipe.txt
+gmt psxy -R -J -O -K -Sc0.2c -Wfaint < tmp_pipe.txt >> $ps
 # Task 2: [OK]
-gmt backtracker loihi.txt -Df -ED2012x.txt -FD2012_HI_drift.txt | gmt psxy -R -J -O -K -Sc0.1i -Ggreen -W0.5p >> $ps
+gmt backtracker loihi.txt -Df -ED2012x.txt -FD2012_HI_drift.txt > tmp_pipe.txt
+gmt psxy -R -J -O -K -Sc0.1i -Ggreen -W0.5p < tmp_pipe.txt >> $ps
 # Task 4: [OK]
-gmt backtracker suiko.txt -Db -Lf1 -ED2012x.txt -FD2012_HI_drift.txt | gmt psxy -R -JM -O -K -W1p,orange >> $ps
+gmt backtracker suiko.txt -Db -Lf1 -ED2012x.txt -FD2012_HI_drift.txt > tmp_pipe.txt
+gmt psxy -R -JM -O -K -W1p,orange < tmp_pipe.txt >> $ps
 # Task 3: [OK]
-gmt backtracker start_at_ridge.txt -Df -Lf200 -ED2012x.txt -FD2012_HI_drift.txt | gmt psxy -R -JM -O -K -Sc0.2c -Wfaint,orange >> $ps
+gmt backtracker start_at_ridge.txt -Df -Lf200 -ED2012x.txt -FD2012_HI_drift.txt > tmp_pipe.txt
+gmt psxy -R -JM -O -K -Sc0.2c -Wfaint,orange < tmp_pipe.txt >> $ps
 # Task 5: [OK]
-gmt backtracker suiko.txt -Db -ED2012x.txt -FD2012_HI_drift.txt | gmt psxy -R -JM -O -K -Sc0.1c -Gblack >> $ps
+gmt backtracker suiko.txt -Db -ED2012x.txt -FD2012_HI_drift.txt > tmp_pipe.txt
+gmt psxy -R -JM -O -K -Sc0.1c -Gblack < tmp_pipe.txt >> $ps
 echo "170 44 64.7" > suiko.txt
-gmt backtracker suiko.txt -Db -ED2012x.txt -FD2012_HI_drift.txt | gmt psxy -R -JM -O -K -ST0.1i -Gyellow -W0.5p >> $ps
+gmt backtracker suiko.txt -Db -ED2012x.txt -FD2012_HI_drift.txt > tmp_pipe.txt
+gmt psxy -R -JM -O -K -ST0.1i -Gyellow -W0.5p < tmp_pipe.txt >> $ps
 gmt psxy -R -JM -O -K -ST0.1i -Gcyan -W0.5p suiko.txt >> $ps
 # Task 7: [OK]
-gmt backtracker loihi.txt -Df -Lb -ED2012x.txt | gmt psxy -R -J -O -K -W0.5p,- >> $ps
+gmt backtracker loihi.txt -Df -Lb -ED2012x.txt > tmp_pipe.txt
+gmt psxy -R -J -O -K -W0.5p,- < tmp_pipe.txt >> $ps
 # Task 8: [OK]
-gmt backtracker end_of_flow.txt -Db -Lf200 -ED2012x.txt | gmt psxy -R -J -O -W0.5p,. >> $ps
+gmt backtracker end_of_flow.txt -Db -Lf200 -ED2012x.txt > tmp_pipe.txt
+gmt psxy -R -J -O -W0.5p,. < tmp_pipe.txt >> $ps
