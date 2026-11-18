@@ -622,7 +622,7 @@ GMT_LOCAL int read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, str
 		/* compute the central lat lon For y_min/max we reverse MIN/MAX because we already have multiplied y by -1 above. */
 		for (k = 0; k < n; k++) {
 			x_min = MIN(Ctrl->triang[k].x, x_min);	x_max = MAX(Ctrl->triang[k].x, x_max);
-			y_min = MAX(Ctrl->triang[n].y, y_min);	y_max = MIN(Ctrl->triang[n].y, y_max);
+			y_min = MAX(Ctrl->triang[k].y, y_min);	y_max = MIN(Ctrl->triang[k].y, y_max);
 		}
 		*lon_0 = (x_min + x_max) / 2;
 		*lat_0 = (y_min + y_max) / 2;
