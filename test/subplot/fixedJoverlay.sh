@@ -6,7 +6,7 @@
 # so we spell it via $start (as in subplot_3d_fit.sh).
 start=begin
 gmt $start fixedJoverlay ps
-	gmt subplot begin 1x1 -Fs15c/10c -B -BWSne
+	gmt subplot begin 1x1 -Fs15c/10c -B0
 		gmt coast -R10W/5E/35N/44N -JM15c -W1/faint -Dl -c0
 		echo -9.14 38.72 | gmt plot -Sc0.3c -Gred -W0.5p -JM15c
 		echo -9.14 38.72 | gmt plot -Sc0.3c -Gred -W0.5p
