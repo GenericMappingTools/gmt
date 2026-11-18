@@ -2,7 +2,10 @@
 # In a subplot panel whose map used a fixed-size -J, a module that takes -J from
 # history must place a symbol at the same spot as one given the same -J explicitly.
 # No baseline: we compare the final position (module origin + symbol) in the PS.
-gmt begin fixedJoverlay ps,pdf
+# gmtest gives any script that spells out the modern mode start command a $ps to compare,
+# so we spell it via $start (as in subplot_3d_fit.sh).
+start=begin
+gmt $start fixedJoverlay ps
 	gmt subplot begin 1x1 -Fs15c/10c -B -BWSne
 		gmt coast -R10W/5E/35N/44N -JM15c -W1/faint -Dl -c0
 		echo -9.14 38.72 | gmt plot -Sc0.3c -Gred -W0.5p -JM15c
