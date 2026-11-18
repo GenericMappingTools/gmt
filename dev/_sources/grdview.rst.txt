@@ -16,7 +16,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-G|\ *drapegrid*\|\ *drapeimage* ]
-[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*]\|\ **+P**\ [*modifiers*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
 [ |-Q|\ **c**\|\ **g**\ [**m**]\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\|\ [*color*][**+m**]\ **t** ]
@@ -243,6 +243,13 @@ topo_intens.nc, and looking from the SE, run::
 
     gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt -Qs -p140/30 -Itopo_intens.nc -pdf draped3D
 
+To view the Island of Hawaii and the surrounding sea floor in perspective, shaded with physically based
+lighting: a low sun from the northwest that makes Mauna Kea and Mauna Loa cast their shadows, ambient
+occlusion, tone mapping, a threefold vertical exaggeration of the shading and a brighter sun and fill
+light than the defaults::
+
+    gmt grdview @earth_gebco_15s -R-156.2/-154.7/18.8/20.35 -Cgeo -I+P315/35+o+s+t+v3+l1.4+f0.5 -JM15c -JZ3c -p150/35 -B -png hawaii
+
 .. module_note_begins
 
 Notes
@@ -260,6 +267,18 @@ variations within polygons by using scanline conversion to image the polygons.
 .. include:: macos_preview_issue.rst_
 
 .. module_note_ends
+
+References
+----------
+
+Heitz, E., Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs, Journal of
+Computer Graphics Techniques, Vol. 3, No. 2, 2014, pp. 48-107.
+
+Schlick, C., An Inexpensive BRDF Model for Physically-based Rendering, Computer Graphics Forum,
+Vol. 13, No. 3, 1994, pp. 233-246.
+
+Walter, B., Marschner, S. R., Li, H., and Torrance, K. E., Microfacet Models for Refraction through
+Rough Surfaces, Proceedings of the Eurographics Symposium on Rendering, 2007, pp. 195-206.
 
 See Also
 --------

@@ -2,9 +2,9 @@ Using LaTeX Expressions in GMT
 ==============================
 
 GMT supports the use of LaTeX equations embedded in text strings that are used
-with **-B** in titles, subtitles and axis labels, as well as for single lines
-of text placed via :doc:`/text`.  These expressions must be enclosed by the
-marker @[ (e.g., "Plotting @[\\Delta \\sigma_{xx}^2@["), or alternatively enclose
+with **-B** in titles, subtitles and axis labels, for single lines of text
+placed via :doc:`/text`, and for panel tags set via :doc:`/subplot` **set -A**.
+These expressions must be enclosed by the marker @[ (e.g., "Plotting @[\\Delta \\sigma_{xx}^2@["), or alternatively enclose
 the expressions with <math> and </math> (e.g., "Plotting <math>\\Delta \\sigma_{xx}^2</math>").
 If these markers are found, the entire line will be converted to an
 Encapsulated PostScript file (EPS) via system commands to latex and dvips,
