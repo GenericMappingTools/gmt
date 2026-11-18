@@ -15,6 +15,7 @@ on:
       - '**/*.dvc'
 
 permissions:
+  actions: read
   contents: read
   pull-requests: write
 
@@ -33,22 +34,18 @@ jobs:
     - name: Setup data version control (DVC)
       uses: iterative/setup-dvc@v2
 
-    - name: Pull baseline image data from dvc remote
-      id: dvc-pull
+    - name: Download DVC cache from GitHub Artifacts
       continue-on-error: true
+      run: gh run download -n dvc-cache -D .dvc/cache/
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+    - name: Pull missing baseline image data from dvc remote
       env:
         DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
       run: |
         dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-        dvc pull --remote origin --no-run-cache || dvc pull --remote origin --no-run-cache
-
-    - name: Download DVC cache from GitHub Artifacts and restore baseline image data
-      if: steps.dvc-pull.outcome == 'failure'
-      run: |
-        gh run download -n dvc-cache -D .dvc/cache/
-        dvc checkout --force
-      env:
-        GH_TOKEN: ${{ github.token }}
+        dvc pull --remote origin --no-run-cache || dvc pull --remote origin --no-run-cache || dvc checkout --force
 
     - name: Setup continuous machine learning (CML)
       uses: iterative/setup-cml@v3
