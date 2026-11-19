@@ -1121,12 +1121,14 @@ GMT_LOCAL unsigned int gmtmap_genper_crossing (struct GMT_CTRL *GMT, double lon1
 	 * Approach: Determine how the points do relative to either boundary. */
 
 	bool h_out[2], r_out[2];
+	int x_status = GMT->current.map.this_x_status, y_status = GMT->current.map.this_y_status;	/* The tests below overwrite these */
 
 	/* Check if point 1 is beyond horizon: */
 	h_out[0] = gmtmap_radial_outside (GMT, lon1, lat1);	/* true if point 1 is beyond the horizon */
 	h_out[1] = gmtmap_radial_outside (GMT, lon2, lat2);	/* true if point 2 is beyond the horizon */
 	r_out[0] = gmtmap_rect_outside (GMT, lon1, lat1);		/* true if point 1 is beyond the map box */
 	r_out[1] = gmtmap_rect_outside (GMT, lon2, lat2);		/* true if point 2 is beyond the map box */
+	GMT->current.map.this_x_status = x_status;	GMT->current.map.this_y_status = y_status;
 	if (h_out[0] == false && h_out[1] == false)	/* We are not beyond horizon so technically inside unless clipped by the window: */
 		return (gmtmap_rect_crossing (GMT, lon1, lat1, lon2, lat2, clon, clat, xx, yy, sides));
 	if (r_out[0] == false && r_out[1] == false)	/* We are not outside the map box but might be beyond horizon: */
@@ -2252,6 +2254,7 @@ GMT_LOCAL bool gmtmap_genperg_overlap (struct GMT_CTRL *GMT, double lon0, double
 /*! . */
 GMT_LOCAL bool gmtmap_genperw_overlap (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1) {
 	bool out0, out1;
+	int x_status = GMT->current.map.this_x_status, y_status = GMT->current.map.this_y_status;	/* The tests below overwrite these */
 	gmt_M_unused(lon0); gmt_M_unused(lat0); gmt_M_unused(lon1); gmt_M_unused(lat1);
 	/* Return true if either of the points (lon0,lat0) and (lon1,lat1) is inside (not on) the windowed genper boundary */
 	/* Check if point 1 is beyond horizon: */
@@ -2259,6 +2262,7 @@ GMT_LOCAL bool gmtmap_genperw_overlap (struct GMT_CTRL *GMT, double lon0, double
 	if (!out0) out0 = gmtmap_rect_outside (GMT, lon0, lat0);	/* true if point 0 is beyond the map box */
 	out1 = gmtmap_radial_outside (GMT, lon1, lat1);		/* true if point 1 is beyond the horizon */
 	if (!out1) out1 = gmtmap_rect_outside (GMT, lon1, lat1);	/* true if point 1 is beyond the map box */
+	GMT->current.map.this_x_status = x_status;	GMT->current.map.this_y_status = y_status;
 	return (out0 != out1);
 }
 
