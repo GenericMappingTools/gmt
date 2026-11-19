@@ -43,6 +43,7 @@
     /setdist offset def				% Initialize the distance we have
 						% covered by setting characters.
     /charcount 0 def				% Initialize the character count.
+    /psl_ct_sym false def			% Start each label in the current font.
     /justy just 4 idiv textheight mul 2 div neg ydepth sub def % Compute the y-shift
     V flattenpath				% Reduce the path to a series of
 						% straight line segments. The
@@ -147,10 +148,9 @@ PSL_pathtextdict begin
 						% the path and then updates the
 						% amount of path we have
 						% exhausted.
-  { charcount 1 add str length lt		% Check if at least 2 chars remain
-    {str charcount get 64 eq str charcount 1 add get 126 eq and} {false} ifelse
+  { str charcount get 1 eq			% \001 marks a @~ Symbol font toggle
     {	% Found @~ escape: skip it, toggle font, no rendering
-      /charcount charcount 2 add def
+      /charcount charcount 1 add def
       /psl_ct_sym psl_ct_sym not def
       psl_ct_sym {
         /psl_ct_origfont currentfont def
@@ -467,7 +467,6 @@ end
     PSL_drawbox		% Want to draw outline of box
     {V PSL_setboxpen S U} if N
   } if
-  /psl_ct_sym false def
   PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 
@@ -623,47 +622,17 @@ end
 } def
 
 % Escape-aware label rendering procedures.
-% These handle the @~ escape sequence (Symbol font toggle) in label strings.
-% When @~ is found, the string is split into segments that alternate between
+% These handle the @~ escape sequence (Symbol font toggle) in label strings,
+% which PSL_plottextline passes as the \001 byte so a literal @@~ is left alone.
+% When \001 is found, the string is split into segments that alternate between
 % the current font and the Symbol font at the same size.
 
-/PSL_split_esc {	% (string) PSL_split_esc => array of substrings split on @~
-  /psl_src exch def
-  /psl_parts 20 array def
-  /psl_np 0 def
-  /psl_pos 0 def
-  {
-    /psl_found false def
-    psl_pos 1 psl_src length 2 sub {
-      /psl_i exch def
-      psl_src psl_i get 64 eq			% '@' = ASCII 64
-      psl_src psl_i 1 add get 126 eq and	% '~' = ASCII 126
-      {
-        psl_parts psl_np psl_src psl_pos psl_i psl_pos sub getinterval put
-        /psl_np psl_np 1 add def
-        /psl_pos psl_i 2 add def
-        /psl_found true def
-        exit
-      } if
-    } for
-    psl_found not {exit} if
-  } loop
-  psl_pos psl_src length lt {
-    psl_parts psl_np psl_src psl_pos psl_src length psl_pos sub getinterval put
-    /psl_np psl_np 1 add def
-  } if
-  psl_parts 0 psl_np getinterval
+/PSL_split_esc {	% (string) PSL_split_esc => array of substrings split on \001
+  [ exch { (\001) search {exch pop exch} {exit} ifelse } loop ]
 } def
 
-/PSL_has_esc {	% (string) PSL_has_esc => bool  -- true if string contains @~
-  /psl_ts exch def
-  /psl_he false def
-  0 1 psl_ts length 2 sub {
-    /psl_ti exch def
-    psl_ts psl_ti get 64 eq psl_ts psl_ti 1 add get 126 eq and
-    {/psl_he true def exit} if
-  } for
-  psl_he
+/PSL_has_esc {	% (string) PSL_has_esc => bool  -- true if string contains \001
+  (\001) search {pop pop pop true} {pop false} ifelse
 } def
 
 /PSL_get_fontsize {	% => fontsize  -- extract size from current font
