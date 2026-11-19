@@ -6549,13 +6549,14 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		GMT->current.proj.z_project.corner_y[0] = GMT->current.proj.z_project.corner_y[1] = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YLO] : GMT->common.R.wesn[YHI];
 		GMT->current.proj.z_project.corner_y[2] = GMT->current.proj.z_project.corner_y[3] = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO];
 		for (i = 0; i < 360; i++) {	/* Go around the circle */
-			sincosd (i * 1.0, &y, &x);
-			gmt_xyz_to_xy (GMT, GMT->current.proj.r * (1.0 + x), GMT->current.proj.r * (1.0 + y), gmt_z_to_zz(GMT, GMT->common.R.wesn[ZLO]), &x, &y);
+			double s, c;
+			sincosd (i * 1.0, &s, &c);
+			gmt_xyz_to_xy (GMT, GMT->current.proj.r * (1.0 + c), GMT->current.proj.r * (1.0 + s), gmt_z_to_zz(GMT, GMT->common.R.wesn[ZLO]), &x, &y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
-			gmt_xyz_to_xy (GMT, GMT->current.proj.r * (1.0 + x), GMT->current.proj.r * (1.0 + y), gmt_z_to_zz(GMT, GMT->common.R.wesn[ZHI]), &x, &y);
+			gmt_xyz_to_xy (GMT, GMT->current.proj.r * (1.0 + c), GMT->current.proj.r * (1.0 + s), gmt_z_to_zz(GMT, GMT->common.R.wesn[ZHI]), &x, &y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
