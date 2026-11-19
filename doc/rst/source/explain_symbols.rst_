@@ -256,6 +256,27 @@
         Multi-band bars require |-C| with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
         Thus, input records are either (*x1 y x2 ... xn*) or (*dx1 y dx2 ... dxn*).
 
+    .. rubric:: Infinite Lines
+
+    The next type of symbol draws an infinite straight line through a single coordinate,
+    spanning the entire map frame in either the vertical or horizontal direction:
+
+    **-SY**\ [*size*]
+        Infinite vertical line through *x*. Only the *x*-coordinate is read from the
+        input (no *y* column is required); the line is drawn from the bottom to the
+        top of the map frame at that *x* position. The optional *size* sets the pen
+        width if not controlled via |-W|. **Note**: Not supported with geographic
+        coordinates or a polar (**-Jp**\|\ **P**) projection, since "vertical" has
+        no consistent meaning under those projections.
+
+    **-SX**\ [*size*]
+        Infinite horizontal line through *y*. Only the *y*-coordinate is read from the
+        input (no *x* column is required); the line is drawn from the left to the
+        right of the map frame at that *y* position. The optional *size* sets the pen
+        width if not controlled via |-W|. **Note**: Not supported with geographic
+        coordinates or a polar (**-Jp**\|\ **P**) projection, since "horizontal" has
+        no consistent meaning under those projections.
+
     .. rubric:: Vectors
 
     The next family of symbols are all different types of *vectors*. Apart from requiring parameters
