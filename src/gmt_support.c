@@ -12562,17 +12562,17 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 }
 
 /*! . */
-void gmt_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, bool contour, struct GMT_CONTOUR *G) {
+void gmtlib_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, bool contour, struct GMT_CONTOUR *G, const struct GMT_CONTOUR_SOURCE *source) {
 	/* The xxx, yyy are expected to be projected x/y inches.
-	 * This function just makes sure that the xxx/yyy are continuous and do not have map jumps.
-	 * If there are jumps we find them and call the main gmtsupport_hold_contour_sub for each segment
+	 * If there are jumps we call gmtsupport_hold_contour_sub for each segment.
+	 * Geographic grid contours can supply source information to resolve seam crossings.
 	 * contour is true for contours and false for quoted lines.
 	 */
 
 	uint64_t seg, first, n, *split = NULL;
 	double *xs = NULL, *ys = NULL, *xin = NULL, *yin = NULL;
 
-	if ((split = gmtlib_split_line (GMT, xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
+	if ((split = gmtlib_split_line_with_source (GMT, xxx, yyy, &nn, G->line_type, source)) == NULL) {	/* Just one long line */
 		gmtsupport_hold_contour_sub (GMT, xxx, yyy, nn, zval, label, ctype, cangle, closed, contour, G);
 		return;
 	}
@@ -12592,6 +12592,11 @@ void gmt_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_
 		first += n;	/* First point in the next segment */
 	}
 	gmt_M_free (GMT, split);
+}
+
+/*! . */
+void gmt_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, bool contour, struct GMT_CONTOUR *G) {
+	gmtlib_hold_contour (GMT, xxx, yyy, nn, zval, label, ctype, cangle, closed, contour, G, NULL);
 }
 
 /*! . */
