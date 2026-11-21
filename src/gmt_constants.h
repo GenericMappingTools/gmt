@@ -440,8 +440,8 @@ enum GMT_enum_inside {
 
 /*! Return codes from gmt_polygon_orientation */
 enum GMT_enum_polorient {
-	GMT_POL_IS_CCW = 0,
-	GMT_POL_IS_CW  = 1};
+	GMT_POL_IS_CCW = -1,
+	GMT_POL_IS_CW  = +1};
 
 /*! Codes for -q selections */
 enum GMT_enum_skiprows {
