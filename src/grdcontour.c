@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_internals.h"
 #include "longopt/grdcontour_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdcontour"
@@ -1559,6 +1560,8 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			}
 
 			if (closed == cont_is_not_closed || use_contour) {	/* Passed our minimum point criteria for closed contours */
+				struct GMT_CONTOUR_SOURCE source = {0};
+				struct GMT_CONTOUR_SOURCE *geographic = gmt_M_is_geographic (GMT, GMT_IN) ? &source : NULL;
 				if (Ctrl->D.active && n > 2) {	/* Save the contour as output data */
 					S = gmt_prepare_contour (GMT, x, y, n, cval);
 					/* Select which table this segment should be added to */
@@ -1599,8 +1602,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 					save[n_save].n = n + extra;
 					n_save++;
 				}
-				if (need_proj && (nn = (unsigned int)gmt_clip_to_map (GMT, x, y, n, &xp, &yp)) != 0) {	/* Lines inside the region */
-					/* From here on, xp/yp are map inches */
+				if (need_proj && (nn = (unsigned int)gmtlib_clip_to_map (GMT, x, y, n, &xp, &yp, geographic)) != 0) {	/* Lines inside the region */
 					if (cont[c].type == 'A' || cont[c].type == 'a') {	/* Annotated contours */
 						if (data_is_time) {
 							double tval = (use_t_offset) ? cval - t_offset : cval;
@@ -1615,7 +1617,9 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 					}
 					else
 						cont_label[0] = '\0';
-					gmt_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont[c].type, cont[c].angle, closed == cont_is_closed, true, &Ctrl->contour);
+					gmtlib_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont[c].type, cont[c].angle, closed == cont_is_closed, true,
+					                     &Ctrl->contour, geographic);
+					gmt_M_free (GMT, source.x_crossings);
 					gmt_M_free (GMT, xp);
 					gmt_M_free (GMT, yp);
 					n_cont_attempts++;
