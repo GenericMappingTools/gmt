@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# GMT_KNOWN_FAILURE
-# Test script for -p perspective. Ancient #131 issue.
-# The p<az>/90 is wrongly positioned while th p180/90 is always correct.
+# Test script for -p perspective: -p<az>/90+w must rotate about the +w point, so both circles are concentric.
 
 ps=poption.ps
 gmt psbasemap -Vd -R0/360/-90/0 -JA0/-90/4c -Bg360a360f360 -Xc0c -Yc0c -P -K -p45/90+w0/-90 > $ps
