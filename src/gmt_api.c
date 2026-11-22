@@ -1094,7 +1094,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
 	 * We can now determine how many shared libraries and plugins to consider, and open the core lib */
 	struct GMT_CTRL *GMT = API->GMT;
-	unsigned int n_custom_libs, k, e, n_alloc = GMT_TINY_CHUNK;
+	unsigned int n_custom_libs, k, e, was, n_alloc = GMT_TINY_CHUNK;
 	char text[PATH_MAX] = {""}, plugindir[PATH_MAX] = {""}, path[PATH_MAX] = {""};
 	char *libname = NULL, **list = NULL;
 #ifdef WIN32
@@ -1191,8 +1191,10 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 						GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = %s\n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
 						n_custom_libs++;			/* Add up entries found */
 						if (n_custom_libs == n_alloc) {		/* Allocate more memory for list */
+							was = n_alloc;
 							n_alloc <<= 1;
 							if ((API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct GMT_LIBINFO)) == NULL) return 0;
+							gmt_M_memset (&API->lib[was], n_alloc - was, struct GMT_LIBINFO);	/* realloc leaves the new entries uninitialized */
 						}
 					}
 					++k;
@@ -1225,8 +1227,10 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 							GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
 							n_custom_libs++;		/* Add up entries found */
 							if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
+								was = n_alloc;
 								n_alloc <<= 1;
 								if ((API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct GMT_LIBINFO)) == NULL) return 0;
+								gmt_M_memset (&API->lib[was], n_alloc - was, struct GMT_LIBINFO);	/* realloc leaves the new entries uninitialized */
 							}
 						}
 						else
@@ -1258,8 +1262,10 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Shared Library # %d (%s). Path = \n", n_custom_libs, API->lib[n_custom_libs].name, API->lib[n_custom_libs].path);
 					n_custom_libs++;		/* Add up entries found */
 					if (n_custom_libs == n_alloc) {	/* Allocate more memory for list */
+						was = n_alloc;
 						n_alloc <<= 1;
 						if ((API->lib = gmt_M_memory (GMT, API->lib, n_alloc, struct GMT_LIBINFO)) == NULL) return 0;
+						gmt_M_memset (&API->lib[was], n_alloc - was, struct GMT_LIBINFO);	/* realloc leaves the new entries uninitialized */
 					}
 				}
 				else
