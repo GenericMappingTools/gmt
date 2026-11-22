@@ -265,7 +265,7 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
-	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0; the grid is moved to ghost cells right after it is read, so it ends up pad-free anyway (#4358) */
 	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;
 	if (Ctrl->M.active && ((error = gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M"))))
 		Return (error);
