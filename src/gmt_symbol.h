@@ -159,7 +159,9 @@ struct GMT_MAP_INSET {
 	struct GMT_REFPOINT *refpoint;
 	double wesn[4];		/* Geographic or projected boundaries */
 	double off[2];		/* Offset from reference point */
-	double dim[2];		/* Width & height of box */
+	double dim[2];		/* Width & height of box, in inches once resolved */
+	bool fraction[2];	/* True if the corresponding dim[] was given as %% of map width/height and still needs resolving */
+	double scl[2];		/* Fraction (0-1) of map width/height to use for dim[] when fraction[] is true */
 	char *file;			/* Used to write inset location and dimensions [+s] */
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
