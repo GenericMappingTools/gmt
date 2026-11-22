@@ -445,6 +445,14 @@ GMT_LOCAL char *gmtio_trim_segheader (struct GMT_CTRL *GMT, char *line) {
 
 /*! . */
 GMT_LOCAL void gmtio_adjust_periodic_lon (struct GMT_CTRL *GMT, double *val) {
+	/* Far outside the region, first take out whole turns at once so the loops below take at most two steps;
+	 * one step at a time needs |lon|/360 steps, and never ends from |lon| = 2^62 (about 5e18) on, where
+	 * lon - 360 == lon, or on infinity */
+	if (!isfinite (*val)) return;
+	if (*val - GMT->common.R.wesn[XHI] > 720.0)
+		*val = GMT->common.R.wesn[XHI] + 360.0 + fmod (*val - GMT->common.R.wesn[XHI], 360.0);
+	else if (GMT->common.R.wesn[XLO] - *val > 720.0)
+		*val = GMT->common.R.wesn[XLO] - 360.0 - fmod (GMT->common.R.wesn[XLO] - *val, 360.0);
 	while (*val > GMT->common.R.wesn[XHI] && (*val - 360.0) >= GMT->common.R.wesn[XLO])
 		*val -= 360.0;
 	while (*val < GMT->common.R.wesn[XLO] && (*val + 360.0) <= GMT->common.R.wesn[XLO]) *val += 360.0;
@@ -6146,6 +6154,8 @@ void gmt_reenable_bghio_opts (struct GMT_CTRL *GMT) {
 
 /*! . */
 void gmt_lon_range_adjust (unsigned int range, double *lon) {
+	if (!isfinite (*lon)) return;	/* NaN or infinity: no range to adjust to (the loops below would never end on infinity) */
+	if (fabs (*lon) > 720.0) *lon = fmod (*lon, 360.0);	/* Exact; keeps the loops below to at most two steps */
 	switch (range) {	/* Adjust to the desired range */
 		case GMT_IS_0_TO_P360_RANGE:		/* Make 0 <= lon <= 360 */
 			while ((*lon) < 0.0) (*lon) += 360.0;
