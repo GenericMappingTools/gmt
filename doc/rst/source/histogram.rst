@@ -100,12 +100,14 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*\ [**+b**]
-    Give a CPT. The mid-coordinate for each bar is used to look up
-    the bar color.  Alternatively, append **+b** to use the *bin* value
+    Give a CPT file. The mid-coordinate for each bar is used to look up
+    the bar color. Alternatively, append **+b** to use the *bin* value
     as the look-up value, unless |-Z| involves percentages,
     in which case the look-up value is the *percentage* computed. If
     we are in modern mode and no *cpt* is given then we select the
-    current CPT.
+    current CPT. Please note using the master CPTs provided by GMT is
+    not suppported yet. Use makectp to set up an appropriate CPT file
+    first and pass it's filename (with extension).
 
 .. _-D:
 
