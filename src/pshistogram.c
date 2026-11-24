@@ -987,10 +987,6 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
-		Return (GMT_DATA_READ_ERROR);
-	}
-
 	data = gmt_M_memory (GMT, NULL, n_alloc , double);
 	if (F.weights) weights = gmt_M_memory (GMT, NULL, n_alloc , double);
 
@@ -1258,6 +1254,30 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, F.boxh);
 		if (F.weights) gmt_M_free (GMT, weights);
 		Return (GMT_NOERROR);
+	}
+
+	if (Ctrl->C.active) {	/* A master CPT is stretched to the bin midpoints or to the bin values (+b) */
+		double z_min, z_max;
+		if (Ctrl->C.binval) {
+			z_min = z_max = 0.0;
+			for (uint64_t ibox = 0; ibox < F.n_boxes; ibox++) {
+				z_min = MIN (z_min, F.boxh[ibox]);
+				z_max = MAX (z_max, F.boxh[ibox]);
+			}
+			if (F.hist_type == PSHISTOGRAM_FREQ_PCT || F.hist_type == PSHISTOGRAM_LOG_FREQ_PCT || F.hist_type == PSHISTOGRAM_LOG10_FREQ_PCT) {
+				z_min = (F.sum_w > 0.0) ? 100.0 * z_min / F.sum_w : 0.0;
+				z_max = (F.sum_w > 0.0) ? 100.0 * z_max / F.sum_w : 0.0;
+			}
+		}
+		else {	/* Must include the first and last bin midpoints used for the lookup */
+			z_min = MIN (F.wesn[XLO], 0.5 * (F.T->array[0] + F.T->array[1]));
+			z_max = MAX (F.wesn[XHI], 0.5 * (F.T->array[F.n_boxes-1] + F.T->array[F.n_boxes]));
+		}
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, z_min, z_max, 0.0)) == NULL) {
+			gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
+			if (F.weights) gmt_M_free (GMT, weights);
+			Return (GMT_DATA_READ_ERROR);
+		}
 	}
 
 	if (automatic) {	/* Set up s/n based on 'clever' rounding up of the minmax values */
