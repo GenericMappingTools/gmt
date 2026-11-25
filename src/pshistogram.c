@@ -301,10 +301,15 @@ GMT_LOCAL bool pshistogram_auto_annot (struct GMT_CTRL *GMT, unsigned int axis) 
 	/* True if we may pick the annotation interval for this axis: not when -B only set ticks, gridlines or no intervals (e.g., -Bf, -B0) */
 	unsigned int k;
 	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
-	if (A->item[GMT_ANNOT_UPPER].interval != 0.0) return (false);
-	if (A->item[GMT_ANNOT_UPPER].active) return (true);
-	for (k = GMT_ANNOT_UPPER; k <= GMT_GRID_LOWER; k++) if (A->item[k].active) return (false);
-	return (!GMT->current.map.frame.set[axis]);
+	if (A->item[GMT_ANNOT_UPPER].interval != 0.0)
+		return false;
+	if (A->item[GMT_ANNOT_UPPER].active)
+		return true;
+	for (k = GMT_ANNOT_UPPER; k <= GMT_GRID_LOWER; k++) {
+		if (A->item[k].active)
+			return false;
+	}
+	return !GMT->current.map.frame.set[axis];
 }
 
 GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct PSHISTOGRAM_INFO *F, uint64_t ibox, double *x, double *y, double *px, double *py) {
