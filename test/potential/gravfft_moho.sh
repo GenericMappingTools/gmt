@@ -15,4 +15,8 @@ gmt gravfft moho_z.nc+uk -D500 -E4 -Nf -Gmoho_g2.nc
 # Compare the interior of the two results; std must be ~0
 gmt grdmath moho_g1.nc moho_g2.nc SUB = diff.nc
 gmt grdcut diff.nc -R-128/128/-128/128 -Gdiff_in.nc
-gmt grdinfo -C -L2 diff_in.nc | awk '{if ($13 > 0.01) printf "Std of difference too large: %g mGal\n", $13}' > fail
+if [ -f diff_in.nc ]; then
+	gmt grdinfo -C -L2 diff_in.nc | awk '{if ($13 > 0.01) printf "Std of difference too large: %g mGal\n", $13}' > fail
+else	# Some command failed (e.g., gravfft -T+m crashed) so there is nothing to compare
+	echo "No difference grid was produced" > fail
+fi
