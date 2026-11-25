@@ -25,5 +25,5 @@ cat << EOF > answer.txt
 3	0	50
 4	0	51
 EOF
-testapi_gmtgrid > results.txt
-diff -q --strip-trailing-cr results.txt answer.txt > fail
+testapi_gmtgrid > results.txt || exit 1
+diff -q --strip-trailing-cr results.txt answer.txt > fail || exit 1
