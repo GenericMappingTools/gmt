@@ -1243,8 +1243,16 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 				if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin[piece], nYOff, nXSize[piece], buffy, tmp,
 			                 nBufXSize[piece], buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread: GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
-					continue;
+					/* A failed read leaves this block of the output unset (zeros), so we must not return a grid or image as if all went well */
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: GDALRasterIO failed to read band %d of %s [err = %d]\n",
+					            (nReqBands) ? whichBands[i] : i + 1, gdal_filename, gdal_code);
+					if (!(just_copy || copy_flipud)) gmt_M_str_free (tmp);
+					gmt_M_free (GMT, rowVec);
+					gmt_M_free (GMT, colVec);
+					gmt_M_free (GMT, whichBands);
+					GDALClose (hDataset);
+					gmtlib_GDALDestroyDriverManager (GMT->parent);
+					return (GMT_NOTSET);
 				}
 
 				/* If we didn't compute it yet, its time to do it now (for this block) */
