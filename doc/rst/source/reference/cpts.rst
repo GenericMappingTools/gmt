@@ -50,7 +50,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The color maps (v8.0.1) by Fabio Crameri supported by GMT. Only the non-cyclic and non-categorical variants are shown here.
+   The color maps (v9.0.0) by Fabio Crameri supported by GMT. Only the non-cyclic and non-categorical variants are shown here.
 
 .. _CPT_files_c:
 

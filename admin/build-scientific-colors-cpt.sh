@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # This script takes the downloaded zip content from
-# Crameri, Fabio. (2023, Oct 5). Scientific colour maps
-# (Version 8.0.1). Zenodo.  https://doi.org/10.5281/zenodo.1243862
+# Crameri, Fabio. (2026, Nov 18). Scientific colour maps
+# (Version 9.0.0). Zenodo.  https://doi.org/10.5281/zenodo.1243862
 # and converts the *.cpt files into proper GMT master
 # CPT files with correct attribution and hinge info
 # Run from the ScientificColourMapsV directory (V is version) after the
@@ -11,8 +11,10 @@
 # downloaded directory.  It will create a gmt subdirectory with all the CPTs.
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
-# Last setup and run for ScientificColourMaps8 (release 8.0.1) on Jan 2, 2025 for GMT 6.6 (master)
-# Gave 56 CPTs: The same as release 8.0.0 from GMT 6.5 with new entry naviaW.
+# Last setup and run for ScientificColourMaps9 (release 9.0.0) on Nov 25, 2026 for GMT 6.7 (master)
+# Gave 63 CPTs: New entries batlowO, delphi, ston and the categorical batlowKS, batlowWS,
+# glasgowS, lipariS, naviaS.  Release 9.0.0 no longer includes naviaW, so the 8.0.1 version
+# of naviaW.cpt is kept unchanged in share/cpt/SCM.
 #
 
 if [ $# -eq 0 ]; then
@@ -21,11 +23,11 @@ if [ $# -eq 0 ]; then
 
 	Will create the GMT CPT versions of Crameri's scientific colour maps.
 	Give the full path to the expanded zip file top directory, such as
-	~/Download/ScientificColourMaps8.
+	~/Download/ScientificColourMaps9.
 	Before running you must update this script with:
 	  1. Any new CPT entries since the last release to \$TMP/cpt.info
 	  2. Flag those with a soft hinge as S and a hard hinge as H
-	  3. Manually set the current version number/doi (see the zip PDF docs)
+	  3. Manually set the current version number/doi/copyright year (see the zip PDF docs)
 	Afterwards you must:
 	  1. Update src/gmt_cpt_masters.h with any new entries (copy lines from \$DIR/cpt_strings.txt)
 	  2. Adding the CPTs to share/cpt/SCM (overwriting the previous versions)
@@ -35,7 +37,8 @@ if [ $# -eq 0 ]; then
 fi
 
 DIR=$1
-VERSION=8.0.1
+VERSION=9.0.0
+YEAR=2026
 DOI=10.5281/zenodo.1243862
 
 TMP=$(mktemp -d) 
@@ -48,8 +51,11 @@ bamako|Perceptually uniform, low-lightness gradient colormap by Fabio Crameri [C
 bamakoS|Perceptually uniform, low-lightness gradient categorical colormap by Fabio Crameri [C=RGB]
 batlow|Perceptually uniform 'rainbow' colormap by Fabio Crameri [C=RGB]
 batlowK|Perceptually uniform 'rainbow' colormap with black ending by Fabio Crameri [C=RGB]
+batlowKS|Perceptually uniform 'rainbow' categorical colormap, black ending, by Fabio Crameri [C=RGB]
+batlowO|Perceptually uniform 'rainbow' cyclic colormap by Fabio Crameri [C=RGB]
 batlowS|Perceptually uniform 'rainbow' categorical colormap by Fabio Crameri [C=RGB]
 batlowW|Perceptually uniform 'rainbow' colormap with white ending by Fabio Crameri [C=RGB]
+batlowWS|Perceptually uniform 'rainbow' categorical colormap, white ending, by Fabio Crameri [C=RGB]
 berlin|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 bilbao|Perceptually uniform colormap by Fabio Crameri [C=RGB]
 bilbaoS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
@@ -62,10 +68,12 @@ cork|Perceptually uniform bimodal colormap, light, by Fabio Crameri [S,C=RGB]
 corkO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RGB]
 davos|Perceptually uniform colormap by Fabio Crameri [C=RGB]
 davosS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
+delphi|Perceptually uniform bimodal colormap, light, by Fabio Crameri [S,C=RGB]
 devon|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 devonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
 fes|Perceptually uniform multi-sequential colormap by Fabio Crameri [H,C=RGB]
 glasgow|Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]
+glasgowS|Perceptually uniform sequential categorical colormap by Fabio Crameri [C=RGB]
 grayC|Perceptually uniform 'gray' colormap by Fabio Crameri [C=RGB]
 grayCS|Perceptually uniform 'gray' categorical colormap by Fabio Crameri [C=RGB]
 hawaii|Perceptually uniform lush colormap by Fabio Crameri [C=RGB]
@@ -78,9 +86,10 @@ lapaz|Perceptually uniform 'rainbow' colormap by Fabio Crameri [C=RGB]
 lapazS|Perceptually uniform 'rainbow' categorical colormap by Fabio Crameri [C=RGB]
 lisbon|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 lipari|Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]
+lipariS|Perceptually uniform sequential categorical colormap by Fabio Crameri [C=RGB]
 managua|Perceptually uniform diverging colormap, by Fabio Crameri [S,C=RGB]
 navia|Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]
-naviaW|Perceptually uniform sequential colormap with white ending by Fabio Crameri [C=RGB]
+naviaS|Perceptually uniform sequential categorical colormap by Fabio Crameri [C=RGB]
 nuuk|Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]
 nuukS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]
 oleron|Perceptually uniform topography colormap, by Fabio Crameri [H,C=RGB]
@@ -88,6 +97,7 @@ oslo|Perceptually uniform, B&W limits, by Fabio Crameri [C=RGB]
 osloS|Perceptually uniform, B&W limits, categorical colormap, by Fabio Crameri [C=RGB]
 roma|Perceptually uniform 'seis' colormap by Fabio Crameri [S,C=RGB]
 romaO|Perceptually uniform cyclic colormap by Fabio Crameri [C=RGB]
+ston|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 tofino|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 tokyo|Perceptually uniform colormap without black or white, by Fabio Crameri [C=RGB]
 tokyoS|Perceptually uniform categorical colormap without black or white, by Fabio Crameri [C=RGB]
@@ -129,8 +139,8 @@ while read line; do
 	#	www.fabiocrameri.ch/visualisation
 	#
 	# License: MIT License
-	# Copyright (c) 2023, Fabio Crameri.
-	# Crameri, F., (2023). Scientific colour maps. Zenodo. https://doi.org/$DOI
+	# Copyright (c) $YEAR, Fabio Crameri.
+	# Crameri, F., ($YEAR). Scientific colour maps. Zenodo. https://doi.org/$DOI
 	# This is Scientific Colour Maps version $VERSION
 	# Note: Original file converted to GMT version >= 5 CPT format.
 	EOF

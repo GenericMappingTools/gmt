@@ -6,7 +6,7 @@
 # We have five sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [46]
 # 1b) The regular Scientific Color Maps* [30]
-# 1c) Cyclic CPTs [7]
+# 1c) Cyclic CPTs [8]
 # 1d) Colormaps from cmocean [22]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
