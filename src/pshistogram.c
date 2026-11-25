@@ -297,6 +297,21 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	return (0);
 }
 
+GMT_LOCAL bool pshistogram_auto_annot (struct GMT_CTRL *GMT, unsigned int axis) {
+	/* True if we may pick the annotation interval for this axis: not when -B only set ticks, gridlines or no intervals (e.g., -Bf, -B0) */
+	unsigned int k;
+	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
+	if (A->item[GMT_ANNOT_UPPER].interval != 0.0)
+		return false;
+	if (A->item[GMT_ANNOT_UPPER].active)
+		return true;
+	for (k = GMT_ANNOT_UPPER; k <= GMT_GRID_LOWER; k++) {
+		if (A->item[k].active)
+			return false;
+	}
+	return !GMT->current.map.frame.set[axis];
+}
+
 GMT_LOCAL double pshistogram_set_xy_array (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct PSHISTOGRAM_INFO *F, uint64_t ibox, double *x, double *y, double *px, double *py) {
 	/* Compute the x- and y-coordinates for this bar given bin ibox and return polygon coordinates via px, py.
 	 * We also return the z-value of the bar for CPT lookup purposes. */
@@ -1107,7 +1122,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			F.wesn[XHI] = ceil  (b_max / tmp) * tmp;
 		}
 		if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10 && F.wesn[XLO] == 0.0) F.wesn[XLO] = 1.0;	/* To avoid any log10 of zero issues */
-		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
+		if (pshistogram_auto_annot (GMT, GMT_X)) {	/* Annotations not set */
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval = tmp;
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].parent = 0;
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].active = true;
@@ -1311,7 +1326,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			F.wesn[YLO] = 0.0;
 			F.wesn[YHI] = ceil (F.yy1 / tmp) * tmp;
 		}
-		if (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval == 0.0) {	/* Tickmarks not set */
+		if (pshistogram_auto_annot (GMT, GMT_Y)) {	/* Annotations not set */
 			GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER].interval = tmp;
 			GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].parent = 1;
 			GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].active = true;
