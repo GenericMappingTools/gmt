@@ -13,8 +13,7 @@
 #
 # Last setup and run for ScientificColourMaps9 (release 9.0.0) on Nov 25, 2026 for GMT 6.7 (master)
 # Gave 63 CPTs: New entries batlowO, delphi, ston and the categorical batlowKS, batlowWS,
-# glasgowS, lipariS, naviaS.  Release 9.0.0 no longer includes naviaW, so the 8.0.1 version
-# of naviaW.cpt is kept unchanged in share/cpt/SCM.
+# glasgowS, lipariS, naviaS.  Release 9.0.0 no longer includes naviaW, so it was removed.
 #
 
 if [ $# -eq 0 ]; then
