@@ -351,6 +351,11 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
 		PSL_command (PSL, "V %% Begin inset\n");
 
+		if (GMT->current.plot.panel.active) {	/* Inside a subplot panel the enclosing map was centered in the panel by (dx,dy), so the inset must follow */
+			struct GMT_SUBPLOT *P = &(GMT->current.plot.panel);
+			PSL_setorigin (PSL, P->dx, P->dy, 0.0, PSL_FWD);
+		}
+
 		gmt_draw_map_inset (GMT, &Ctrl->D.inset, !Ctrl->N.active);	/* Draw the inset background */
 
 		/* Set the new origin as indicated */
