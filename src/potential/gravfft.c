@@ -706,11 +706,16 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 		gravfft_do_isostasy (GMT, Grid[0], Ctrl, K);
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Inverse FFT...\n");
-		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
+		/* For -T+m the flexed moho is the input to the Parker loop below, which needs the grid to
+		 * remain complex (full size) and interleaved, so we must skip the demux after the inverse FFT */
+		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, Ctrl->T.moho ? GMT_FFT_COMPLEX | GMT_FFT_NO_DEMUX : GMT_FFT_COMPLEX, K))
 			Return (GMT_RUNTIME_ERROR);
 
 		if (!doubleAlmostEqual (scale_out, 1.0))
 			gmt_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
+
+		if (Ctrl->T.moho)	/* Wipe the round-off left in the imaginary components */
+			for (m = 1; m < Grid[0]->header->size; m += 2) Grid[0]->data[m] = 0.0f;
 
 		if (!Ctrl->T.moho) {
 
