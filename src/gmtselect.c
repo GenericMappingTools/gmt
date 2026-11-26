@@ -577,7 +577,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	uint64_t k, row, seg, n_read = 0, n_pass = 0, n_output = 0;
 
-	double xx, yy, z_seg_value;
+	double xx, yy, xp, z_seg_value;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
@@ -640,7 +640,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 		}
 		if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-		if (no_resample) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
+		if (no_resample || Ctrl->N.active) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	}
 
 	if (do_project) GMT_Report (API, GMT_MSG_WARNING, "-J means all data will be projected before tests are applied\n");
@@ -977,7 +977,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 					gmt_free_shore_polygons (GMT, p[id], np[id]);
 					if (np[id]) gmt_M_free (GMT, p[id]);
 					np[id] = gmt_assemble_shore (GMT, &c, wd[id], true, west_border, east_border, &p[id]);
-					np[id] = gmt_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);
+					if (!do_project) np[id] = gmt_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);	/* With -J we test in lon/lat */
 				}
 			}
 
@@ -986,7 +986,11 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 			else {
 				this_point_level = 0;
-				gmt_geo_to_xy (GMT, lon, In->data[GMT_Y], &xx, &yy);
+				if (do_project) {	/* Land does not depend on -J, so test in lon/lat like the polygons */
+					xx = lon;	yy = In->data[GMT_Y];
+				}
+				else
+					gmt_geo_to_xy (GMT, lon, In->data[GMT_Y], &xx, &yy);
 				for (id = 0; id < 2; id++) {
 
 					for (k = 0; k < np[id]; k++) {
@@ -1005,12 +1009,17 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 							if (p[id][k].lat[i] > ymax) ymax = p[id][k].lat[i];
 						}
 
+						xp = xx;
+						if (do_project) {	/* Match the point longitude to the polygon's 360-degree range */
+							while (xp > xmax) xp -= 360.0;
+							while (xp < xmin) xp += 360.0;
+						}
 						if (yy < ymin || yy > ymax) continue;
-						if (xx < xmin || xx > xmax) continue;
+						if (xp < xmin || xp > xmax) continue;
 
 						/* Must compare with polygon; holes are handled explicitly via the levels */
 
-						if ((side = gmt_non_zero_winding (GMT, xx, yy, p[id][k].lon, p[id][k].lat, p[id][k].n)) < Ctrl->E.inside[N_ITEM]) continue;	/* Outside polygon */
+						if ((side = gmt_non_zero_winding (GMT, xp, yy, p[id][k].lon, p[id][k].lat, p[id][k].n)) < Ctrl->E.inside[N_ITEM]) continue;	/* Outside polygon */
 
 						/* Here, point is inside, we must assign value */
 
