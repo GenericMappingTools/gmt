@@ -19,11 +19,11 @@ gmt begin d2dxy
 	# compute derivative using DDY and then DDX
 	gmt grdmath gaussfunc.nc DDY DDX = gauss_ddx_ddy.nc
 	# Save CPT for original function
-	gmt makecpt -Cbatlow -T0.0/0.5/0.01 -Z -H > z.cpt
+	gmt makecpt -Cviridis -T0.0/0.5/0.01 -Z -H > z.cpt
 
 	# plot
 	gmt subplot begin 2x2 -Fs6c -C0.25c -M0.5/1.5c
-		gmt makecpt -Cvik -T-0.25/0.25/0.01 -Z	# Set default subplot CPT
+		gmt makecpt -Cpolar -T-0.25/0.25/0.01 -Z	# Set default subplot CPT
 		gmt grdimage gaussfunc.nc -Ba2f1g1 -BWeSn+t"Original Function" -Bx+l"x" -By+l"y" -Cz.cpt -c
 		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1 -Cz.cpt
 
