@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# GMT_KNOWN_FAILURE_WINDOWS
+# Windows CI reads the 1-row grid with a collapsed y range, see
+# https://github.com/GenericMappingTools/gmt/issues/9261
+#
 # Create cubic data in x and y separately, then fit with -N4 +x|y
 
 gmt begin trend_xy_plot ps
