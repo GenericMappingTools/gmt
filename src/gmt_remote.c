@@ -837,6 +837,8 @@ GMT_LOCAL void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) 
 
 /* Deal with hash values of cache/data files */
 
+static char gmtremote_fail_reason[GMT_LEN256] = {""};	/* Why the last attempt to reach the data server failed */
+
 GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index, bool do_lock) {
 	bool turn_ctrl_C_off = false;
 	int curl_err = 0, error = GMT_NOERROR;
@@ -878,6 +880,7 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 		time_spent = (long)(end - begin);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to download file %s\n", url);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
+		snprintf (gmtremote_fail_reason, GMT_LEN256, "%s", curl_easy_strerror (curl_err));
 		if (urlfile.fp != NULL) {
 			fclose (urlfile.fp);
 			urlfile.fp = NULL;
@@ -1559,6 +1562,10 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	struct LOCFILE_FP *LF = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
+	if (GMT->current.io.internet_error && gmtremote_fail_reason[0]) {	/* GMT itself turned remote copying off after failing to reach the server */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download disabled for this session: unable to reach the GMT data server %s (%s)\n", gmt_dataserver_url (API), gmtremote_fail_reason);
+		return 1;
+	}
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) {  /* Not allowed to use remote copying */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Remote download is currently deactivated\n");
 		return 1;
