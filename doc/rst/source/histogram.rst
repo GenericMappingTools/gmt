@@ -105,8 +105,8 @@ Optional Arguments
     as the look-up value, unless |-Z| involves percentages,
     in which case the look-up value is the *percentage* computed. If
     we are in modern mode and no *cpt* is given then we select the
-    current CPT. Please note directly using the master CPTs provided by
-    GMT is not supported yet. Use makecpt to set up an appropriate CPT
+    current CPT. For GMT <= 6.7.0, directly using the master CPTs provided
+    by GMT is not supported. Use makecpt to set up an appropriate CPT
     first and use **-C**, or give the filename (with extension) of a CPT
     file containing a colormap previously created and saved with makecpt.
 
