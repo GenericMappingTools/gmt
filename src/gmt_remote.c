@@ -1238,7 +1238,7 @@ bool gmt_use_srtm_coverage (struct GMTAPI_CTRL *API, char **file, int *k, unsign
 
 GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localfile) {
 	static char *args = " -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=readonly";
-	char cmd[2*PATH_MAX+GMT_LEN256] = {""}, partfile[PATH_MAX] = {""}, *ncfile = NULL;
+	char cmd[GMT_LEN1024] = {""}, partfile[PATH_MAX] = {""}, *ncfile = NULL;
 	int k_data;
 
 	if (API->GMT->current.io.leave_as_jp2) return GMT_NOERROR;	/* Conversion temporarily turned off by gmtget -N */
