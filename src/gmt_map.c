@@ -6511,7 +6511,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 			break;
 	}
 
-	if (!GMT->current.proj.three_D) easy = true;
+	if (!GMT->current.proj.three_D || GMT->current.proj.windowed) easy = true;	/* Windowed -JG: the outline is the rectangle */
 
 	GMT->current.proj.z_project.xmin = GMT->current.proj.z_project.ymin = DBL_MAX;
 	GMT->current.proj.z_project.xmax = GMT->current.proj.z_project.ymax = -DBL_MAX;
@@ -6547,7 +6547,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 			}
 		}
 	}
-	else if (GMT->current.proj.r > 0.0) {	/* Do not think the next four lines mean anything in this case, just copied from the general case */
+	else if (GMT->current.proj.r > 0.0 && GMT->current.map.clip == &gmtmap_radial_clip) {	/* Map bounded by a full circle (horizon); sectors and caps sample the perimeter below */
 		GMT->current.proj.z_project.corner_x[0] = GMT->current.proj.z_project.corner_x[3] = (GMT->current.proj.xyz_pos[GMT_X]) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
 		GMT->current.proj.z_project.corner_x[1] = GMT->current.proj.z_project.corner_x[2] = (GMT->current.proj.xyz_pos[GMT_X]) ? GMT->common.R.wesn[XHI] : GMT->common.R.wesn[XLO];
 		GMT->current.proj.z_project.corner_y[0] = GMT->current.proj.z_project.corner_y[1] = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YLO] : GMT->common.R.wesn[YHI];
