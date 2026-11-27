@@ -7007,7 +7007,9 @@ const char * GMT_strerror (int err) {
 	/* Returns the error string for a given error code "err"
 	 * Passes "err" on to nc_strerror if the error code is not one we defined */
 	if (err < 0) return nc_strerror (err);	/* Negative error codes come from netCDF */
-	return (gmt_error_string[err]);		/* Other errors are internal GMT errors */
+	if (err <= GMT_MAP_BAD_MEASURE_UNIT) return (gmt_error_string[err]);	/* Internal GMT errors */
+	if (err <= GMT_WRITTEN_ONCE) return (gmt_api_error_string[err]);	/* Beyond that table, e.g. GMT_PROJECTION_ERROR from gmt_proj_setup */
+	return ("Unknown GMT error");
 }
 
 /*! . */
