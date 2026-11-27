@@ -253,7 +253,7 @@ To build the documentation, you also need to install some Python packages (the S
 After `configuring and building GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_,
 you can then build the GMT documentation using the following commands within the ``build`` directory::
 
-  dvc pull
+  git lfs pull                              # Download the baseline images of the documentation
   cmake --build . --target docs_depends     # Generate images included in the documentation
   cmake --build . --target optimize_images  # Optimize PNG images for documentation [optional]
   cmake --build . --target docs_man         # Build UNIX manual pages
@@ -339,50 +339,31 @@ require a larger tolerance than the default RMS threshold are managed using ``GR
 test script. These tests are tracked in `GitHub issue #2458 <https://github.com/GenericMappingTools/gmt/issues/2458>`_.
 
 
-Managing Test Images Using Data Version Control (dvc)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Managing Test Images Using Git Large File Storage (LFS)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As the baseline images are large blob files that can change often, it is not ideal to store them in ``git``. Instead,
-we use `data version control (dvc) <https://dvc.org/>`_ to track the test images, which is like ``git`` but for data.
-``dvc`` stores the hash (md5sum) of a file or an md5sum that describes the contents of a directory. For each test
+As the baseline images are large blob files that can change often, they are managed with
+`Git Large File Storage (LFS) <https://git-lfs.com>`_ rather than as regular ``git`` objects. For each test
 ``test/<module>/*.sh`` that generates a .PS file, there is a baseline image file in ``test/baseline/<module>/``
-that is compared to the test result using `GraphicsMagick <http://www.graphicsmagick.org/>`_. Each of the
-directories ``test/baseline/<module>`` are tracked by ``dvc`` using the file ``test/baseline/<module>.dvc``. This file
-contains the hash of a JSON .dir file stored in the .dvc cache. The .dir file contains information about each tracked
-file in the directory, which is used to push/pull the files to/from remote storage. The ``test/baseline/<module>.dvc``
-files are stored as usual on GitHub, while the .PS files are stored separately on the ``dvc`` remote at
-https://dagshub.com/GenericMappingTools/gmt.
+that is compared to the test result using `GraphicsMagick <http://www.graphicsmagick.org/>`_. The PostScript files in
+``test/baseline/``, ``doc/scripts/images/``, and ``doc/examples/images/`` are tracked by Git LFS, as set in the
+``.gitattributes`` file: ``git`` stores a small pointer file in the repository, while the .PS files themselves are
+stored on GitHub's Git LFS server.
 
-Setting up your local environment for dvc
-*****************************************
+You need to `install Git LFS <https://git-lfs.com>`_ and run the following command once to set it up on your machine::
 
-#. `Install dvc <https://dvc.org/doc/install>`_
-#. If you will need to push baseline images to the remote, ask a GMT maintainer to add you as a collaborator on
-   `DAGsHub <https://dagshub.com/GenericMappingTools/gmt>`_.
-#. If you will need to push baseline imaged to the remote, set up
-   `authentication for the DVC remote <https://dagshub.com/docs/feature_guide/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
+    git lfs install
 
-Pulling files from the remote for testing
-*****************************************
-
-To pull or sync files from the ``dvc`` remote to your local repository, the commands are similar to ``git``:
-
-::
-
-    dvc status  # should report any files 'not_in_cache'
-    dvc pull    # pull down files from DVC remote cache (fetch + checkout)
-
-
-Once the sync is complete, you should notice that there are images stored in the ``test/baseline/<module>``
-directories (e.g., ``test/baseline/api/api_matrix_as_grid.ps``). These images are technically reflinks/symlinks/copies
-of the files under the ``.dvc/cache`` directory. You can now run the test suite as usual.
+After that, ``git clone`` and ``git pull`` download the baseline images automatically. If Git LFS downloads were
+deliberately skipped (e.g., with ``GIT_LFS_SKIP_SMUDGE=1``), run ``git lfs pull`` to download the missing images.
 
 Running tests
 ^^^^^^^^^^^^^
 
-First, pull any baseline images stored in the DAGsHub repository using dvc::
+First, make sure that you have the latest baseline images (see
+:ref:`Managing Test Images <devdocs/contributing:Managing Test Images Using Git Large File Storage (LFS)>`)::
 
-  dvc pull
+  git lfs pull
 
 After configuring CMake and building GMT, you can run all the tests by running this command in the build directory::
 
@@ -429,7 +410,7 @@ Pull requests should avoid needing to change PostScript files in the ``test/base
 ``doc/examples/images/`` directories. However, if this is unavoidable, new PostScript reference files can be generated
 using the following steps:
 
-- Run ``dvc pull`` to ensure that you have the latest versions of the images.
+- Run ``git pull`` (or ``git lfs pull``) to ensure that you have the latest versions of the images.
 - Run ``ctest -R <test-script-name>`` in the build directory after following the
   `building guide <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, the
   :ref:`setting up your environment <devdocs/contributing:setting up your environment>` instructions, and the
@@ -437,17 +418,13 @@ using the following steps:
 - Copy the modified PostScript file from the appropriate subdirectory within ``build/test/``, ``build/doc/scripts/``, or
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the failing tests now pass.
-- Run ``dvc diff`` to check that modified files are in the correct directory.
-- Add the modified images to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``,
-  or ``dvc add doc/examples/images/<newplot.ps>``
-  depending on the type of test modified. Run one dvc add command per updated PostScript plot.
-- Check that the .dvc file was updated by running ``git status``.
-- Stage the modified .dvc files in git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``,
-  or ``git add doc/examples/images/<newplot.ps>.dvc``, again per updated file.
-- Commit the changes using ``git commit``.
-- Open a pull request on GitHub with your changes.
-- Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first
-  to query the diff between your local environment and the remote repository.
+- Run ``git status`` to check that the modified files are in the correct directory.
+- Stage the modified images using ``git add test/baseline/<module>/<newplot.ps>``, ``git add doc/scripts/images/<newplot.ps>``,
+  or ``git add doc/examples/images/<newplot.ps>``. Git LFS stores them as pointer files automatically; you can check it
+  with ``git lfs status``.
+- Commit the changes using ``git commit``. ``git push`` uploads the images to the Git LFS server automatically.
+- Open a pull request on GitHub with your changes. The summary of the "Image diff" workflow run (also posted as a PR
+  comment for branches in the main repository) links to PNG versions of the old and new images.
 
 Adding new tests
 ^^^^^^^^^^^^^^^^
@@ -473,18 +450,12 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
 - Copy the new PostScript file from the appropriate subdirectory within ``build/test/``, ``build/doc/scripts/``, or
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the new test passes.
-- Run ``dvc diff`` to check that the new file is in the correct directory.
-- For the first test of a module, you add the directory via ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``,
-  or ``dvc add doc/scripts/examples``. For later addition you do so per file, e.g. ``dvc add test/baseline/<module>/<newplot.ps>``,
-  ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/scripts/examples/<newplot.ps>``
-  depending on the type of test modified.
-- Check that the .dvc file was updated by running ``git status``.
-- Add the modified .dvc file to git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``, or
-  ``git add doc/examples/images/<newplot.ps>.dvc``.
-- Commit the changes using ``git commit``.
+- Run ``git status`` to check that the new file is in the correct directory.
+- Stage the new image using ``git add test/baseline/<module>/<newplot.ps>``, ``git add doc/scripts/images/<newplot.ps>``,
+  or ``git add doc/examples/images/<newplot.ps>``. Git LFS stores it as a pointer file automatically; you can check it
+  with ``git lfs status``.
+- Commit the changes using ``git commit``. ``git push`` uploads the image to the Git LFS server automatically.
 - Open a pull request on GitHub with your changes.
-- Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first
-  to query the diff between your local environment and the remote repository.
 
 To add a non-PostScript based test (e.g., `gmean.sh <https://github.com/GenericMappingTools/gmt/blob/master/test/blockmean/gmean.sh>`_):
 

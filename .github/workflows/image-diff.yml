@@ -1,0 +1,143 @@
+# Report changes in baseline images
+#
+# This workflow is triggered in a PR when any PostScript baseline image tracked
+# by Git LFS has been added, modified, or deleted. GitHub can't display diffs of
+# PostScript files, so the old and new images are converted to PNG and uploaded
+# as a workflow artifact, and a comment with a summary table is posted to the PR.
+#
+name: Image diff
+
+on:
+  pull_request:
+    paths:
+      - 'test/baseline/**/*.ps'
+      - 'doc/examples/images/*.ps'
+      - 'doc/scripts/images/*.ps'
+      - '.github/workflows/image-diff.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  image-diff:
+    name: Image diff
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7.0.1
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: Find the changed baseline images
+      id: changes
+      env:
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      run: |
+        base=$(git merge-base "$BASE_SHA" HEAD)
+        echo "base=$base" >> $GITHUB_OUTPUT
+        git diff --name-status --no-renames "$base" HEAD -- \
+          'test/baseline/**/*.ps' 'doc/examples/images/*.ps' 'doc/scripts/images/*.ps' > changes.txt
+        cat changes.txt
+        count=$(wc -l < changes.txt)
+        echo "count=$count" >> $GITHUB_OUTPUT
+        # Converting hundreds of images (e.g., a mass baseline update) is too slow
+        if [ "$count" -gt 0 ] && [ "$count" -le 100 ]; then echo "convert=true" >> $GITHUB_OUTPUT; fi
+
+    - name: Setup Micromamba
+      if: steps.changes.outputs.convert == 'true'
+      uses: mamba-org/setup-micromamba@v3.2.1
+      with:
+        environment-name: gmt
+        condarc: |
+          channels:
+            - conda-forge
+            - nodefaults
+        cache-downloads: true
+        cache-environment: true
+        create-args: >-
+          gmt
+
+    # Fetch only the changed images from Git LFS: new versions from the PR head,
+    # old versions from the merge base, and convert both to PNG.
+    - name: Convert the old and new images to PNG
+      if: steps.changes.outputs.convert == 'true'
+      env:
+        BASE: ${{ steps.changes.outputs.base }}
+      run: |
+        mkdir -p image-diff/old image-diff/new
+        while read -r status file; do
+          dir=$(dirname "$file")
+          if [ "$status" != "D" ]; then
+            git lfs pull --include="$file"
+            mkdir -p "image-diff/new/$dir"
+            gmt psconvert -A -P -Tg "$file" -D"image-diff/new/$dir"
+          fi
+          if [ "$status" != "A" ]; then
+            mkdir -p "image-diff/old/$dir"
+            git show "$BASE:$file" | git lfs smudge "$file" > old.ps
+            gmt psconvert -A -P -Tg old.ps -D"image-diff/old/$dir" -F"$(basename "${file%.ps}")"
+          fi
+        done < changes.txt
+
+    - name: Upload the old and new images
+      id: upload
+      if: steps.changes.outputs.convert == 'true'
+      uses: actions/upload-artifact@v7
+      with:
+        name: image-diff
+        path: image-diff/
+
+    # Produce the markdown report, which looks like:
+    #
+    # ## Summary of changed images
+    #
+    # | Status   | Path                            |
+    # |----------|---------------------------------|
+    # | added    | test/baseline/psxy/new_test.ps  |
+    # | modified | test/baseline/psxy/old_test.ps  |
+    #
+    # Old and new images (as PNG): <artifact link>
+    #
+    # Report last updated at commit abcdef
+    - name: Generate the image diff report
+      if: steps.changes.outputs.count != '0'
+      env:
+        ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      run: |
+        {
+          echo -e "## Summary of changed images\n"
+          echo "| Status | Path |"
+          echo "|---|---|"
+          while read -r status file; do
+            case "$status" in
+              A) status=added ;;
+              M) status=modified ;;
+              D) status=deleted ;;
+            esac
+            echo "| $status | \`$file\` |"
+          done < changes.txt
+          if [ -n "$ARTIFACT_URL" ]; then
+            echo -e "\nOld and new images (as PNG): ${ARTIFACT_URL}\n"
+          else
+            echo -e "\nToo many changed images to convert them to PNG.\n"
+          fi
+          echo "Report last updated at commit ${HEAD_SHA}"
+        } > report.md
+        cat report.md >> $GITHUB_STEP_SUMMARY
+
+    # The token is read-only in PRs from forks, so the report is also in the job summary.
+    - name: Create or update the PR comment
+      if: steps.changes.outputs.count != '0'
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file report.md --edit-last --create-if-none

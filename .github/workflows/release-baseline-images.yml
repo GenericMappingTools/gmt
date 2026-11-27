@@ -21,26 +21,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v7.0.1
-
-    - name: Setup data version control (DVC)
-      uses: iterative/setup-dvc@v2
-
-    - name: Pull baseline image data from dvc remote
-      id: dvc-pull
-      continue-on-error: true
-      run: |
-        dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-        dvc pull --remote origin --no-run-cache
-      env:
-        DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-
-    - name: Download DVC cache from GitHub Artifacts and restore baseline image data
-      if: steps.dvc-pull.outcome == 'failure'
-      run: |
-        gh run download -n dvc-cache -D .dvc/cache/
-        dvc checkout --force
-      env:
-        GH_TOKEN: ${{ github.token }}
+      with:
+        persist-credentials: false
+        lfs: true
 
     - name: Create the baseline image asset in zip format
       run: |
@@ -51,7 +34,7 @@ jobs:
         cp -r test/baseline/* baseline-images/test
         cp doc/examples/images/*.ps baseline-images/examples
         cp doc/scripts/images/*.ps baseline-images/scripts
-        zip -r baseline-images baseline-images/ -x "*.dvc"
+        zip -r baseline-images baseline-images/
         shasum -a 256 baseline-images.zip
 
     - name: Upload baseline image as a release asset

@@ -66,5 +66,4 @@ install (DIRECTORY examples
 	PATTERN "CMakeLists.txt" EXCLUDE
 	PATTERN "gmt.history" EXCLUDE
 	PATTERN ".DS_Store" EXCLUDE
-	PATTERN "*.dvc" EXCLUDE
 	REGEX "[.](cmake|in|ps)$" EXCLUDE)

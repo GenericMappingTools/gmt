@@ -1,0 +1,4 @@
+# Store the PostScript baseline images for tests and documentation in Git LFS.
+test/baseline/**/*.ps filter=lfs diff=lfs merge=lfs -text
+doc/examples/images/*.ps filter=lfs diff=lfs merge=lfs -text
+doc/scripts/images/*.ps filter=lfs diff=lfs merge=lfs -text

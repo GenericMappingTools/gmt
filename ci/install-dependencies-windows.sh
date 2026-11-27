@@ -30,13 +30,11 @@ vcpkg list
 
 conda_packages="ninja ghostscript=10.03.0"
 if [ "$BUILD_DOCS" = "true" ]; then
-    conda_packages+=" sphinx dvc"
+    conda_packages+=" sphinx"
     # choco install pngquant
 fi
 
 if [ "$RUN_TESTS" = "true" ]; then
-    conda_packages+=" dvc"
-
     # Install graphicsmagick via choco (retry: SourceForge download occasionally times out)
     for i in 1 2 3; do
         choco install graphicsmagick --version 1.3.42 --no-progress && break

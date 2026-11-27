@@ -14,7 +14,7 @@ doc/examples/**/*.mp4
 doc/examples/**/*.png
 doc/examples/**/*.gif
 test/**/*.ps
-!test/**/*.ps.dvc
+!test/baseline/**/*.ps
 .vscode
 cmake/ConfigUser.cmake.orig
 cmake/ConfigUserAdvanced.cmake.orig

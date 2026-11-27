@@ -13,6 +13,7 @@ on:
       - 'ci/**'
       - 'doc/**'
       - '**/CMakeLists.txt'
+      - '.github/actions/**'
       - '.github/workflows/docs.yml'
   release:
     types:
@@ -82,18 +83,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Download DVC cache from GitHub Artifacts
-        continue-on-error: true
-        run: gh run download -n dvc-cache -D .dvc/cache/
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-      - name: Pull missing baseline image data from dvc remote
-        run: |
-          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-          dvc pull --remote origin --no-run-cache --force || dvc checkout --force
-        env:
-          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+      - name: Checkout the Git LFS objects (i.e., the baseline images)
+        uses: ./.github/actions/checkout-lfs
 
       - name: Configure GMT
         run: bash ci/config-gmt.sh

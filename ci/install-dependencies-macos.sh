@@ -23,13 +23,12 @@ mamba_packages="ghostscript=10.03.0"
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
     packages+=" pngquant"
-    mamba_packages+=" sphinx dvc pip"
+    mamba_packages+=" sphinx pip"
 fi
 
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
     packages+=" graphicsmagick"
-    mamba_packages+=" dvc"
 fi
 
 if [ "$PACKAGE" = "true" ]; then

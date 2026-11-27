@@ -1,5 +1,0 @@
-[core]
-    analytics = false
-    remote = origin
-['remote "origin"']
-    url = https://dagshub.com/GenericMappingTools/gmt.dvc

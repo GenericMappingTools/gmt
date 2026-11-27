@@ -28,12 +28,11 @@ fi
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
     packages+=" graphicsmagick gdal-bin texlive-latex-base texlive-binaries texlive-fonts-recommended"
-    mamba_packages+=" dvc"
 fi
 
 # packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    mamba_packages+=" pngquant sphinx dvc pip"
+    mamba_packages+=" pngquant sphinx pip"
 fi
 
 # Install packages via apt-get

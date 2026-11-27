@@ -1,0 +1,32 @@
+# Check out the Git LFS objects, with the objects cached by GitHub Actions
+#
+# The Git LFS objects (i.e., the PostScript baseline images for tests and
+# documentation) are restored from the GitHub Actions cache, so that they are
+# fetched from the Git LFS server only when they are missing from the cache,
+# which saves the Git LFS bandwidth.
+#
+# This action must be used after the "actions/checkout" step, and that step must
+# set "lfs: false" (the default), otherwise the objects are fetched from the Git
+# LFS server before the cache can be restored.
+#
+name: Checkout Git LFS objects
+description: Check out the Git LFS objects, restoring them from the GitHub Actions cache
+
+runs:
+  using: composite
+  steps:
+    - name: Get the list of Git LFS objects
+      shell: bash
+      run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
+
+    - name: Cache the Git LFS objects
+      uses: actions/cache@v6.1.0
+      with:
+        path: .git/lfs
+        key: git-lfs-${{ hashFiles('.lfs-assets-id') }}
+        # Fall back to the most recent cache so Git LFS only fetches missing objects.
+        restore-keys: git-lfs-
+
+    - name: Checkout the Git LFS objects
+      shell: bash
+      run: git lfs pull
