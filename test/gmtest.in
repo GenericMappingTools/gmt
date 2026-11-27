@@ -107,6 +107,7 @@ function psldemo()
 
 for apiprog in \
 	testapi_columns \
+    testapi_contour_wrap \
     testapi_cube \
     testapi_gmtgrid \
     testapi_makecpt \

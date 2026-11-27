@@ -49,6 +49,11 @@ struct GMT_XINGS {
 	unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+struct GMT_CONTOUR_SOURCE {
+	const double *lon, *lat;	/* Source vertices in projected order when no clipping is needed */
+	int8_t *x_crossings;	/* After clipping, the direction of each retained seam edge at its second vertex */
+};
+
 #if defined (WIN32) /* Use Windows API */
 EXTERN_MSC char *dlerror (void);
 #endif
@@ -196,6 +201,9 @@ EXTERN_MSC unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, d
 EXTERN_MSC void gmtlib_rotate2D (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double x0, double y0, double angle, double xp[], double yp[]);
 EXTERN_MSC void gmtlib_set_bin_io (struct GMT_CTRL *GMT);
 EXTERN_MSC uint64_t * gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, bool add_crossings);
+EXTERN_MSC uint64_t * gmtlib_split_line_with_source (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, bool add_crossings, const struct GMT_CONTOUR_SOURCE *source);
+EXTERN_MSC uint64_t gmtlib_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np, double **x, double **y, struct GMT_CONTOUR_SOURCE *source);
+EXTERN_MSC void gmtlib_hold_contour (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t nn, double zval, char *label, char ctype, double cangle, bool closed, bool contour, struct GMT_CONTOUR *G, const struct GMT_CONTOUR_SOURCE *source);
 EXTERN_MSC int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit);	/* Check that time step and unit for time axis are OK  */
 EXTERN_MSC int gmtlib_y2_to_y4_yearfix (struct GMT_CTRL *GMT, unsigned int y2);	/* Convert a 2-digit year to a 4-digit year */
 EXTERN_MSC bool gmtlib_g_ymd_is_bad (int y, int m, int d);	/* Check range of month and day for Gregorian YMD calendar values  */

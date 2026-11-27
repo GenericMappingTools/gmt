@@ -1743,11 +1743,35 @@ GMT_LOCAL uint64_t gmtmap_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, doub
 	return (j);
 }
 
+GMT_LOCAL bool gmtmap_contour_has_x_seam (struct GMT_CTRL *GMT) {
+	/* Geographic longitude wraps only for these projections on a world map. */
+	return GMT->current.map.is_world && gmt_M_is_periodic (GMT) && (gmt_M_is_rect_graticule (GMT) || gmt_M_is_misc (GMT));
+}
+
+GMT_LOCAL int8_t gmtmap_contour_x_crossing (struct GMT_CTRL *GMT, double first_lon, double last_lon) {
+	/* Compare the grid step to the step after winding about the projection's central meridian. */
+	double step = last_lon - first_lon;
+	if (!(fabs (step) < 180.0) || step == 0.0) return 0;
+	gmt_M_wind_lon (GMT, first_lon);
+	gmt_M_wind_lon (GMT, last_lon);
+	if (fabs ((last_lon - first_lon) - step) <= 180.0) return 0;
+	return (step > 0.0) ? -1 : +1;
+}
+
+GMT_LOCAL void gmtmap_wesn_clip_alloc (struct GMT_CTRL *GMT, double *x[], double *y[], int8_t *crossings[], size_t n, size_t *n_alloc) {
+	gmt_M_malloc4 (GMT, x[0], y[0], x[1], y[1], n, n_alloc, double);
+	if (crossings) {
+		crossings[0] = gmt_M_memory (GMT, crossings[0], *n_alloc, int8_t);
+		crossings[1] = gmt_M_memory (GMT, crossings[1], *n_alloc, int8_t);
+	}
+}
+
 /*! . */
-uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx) {
+GMT_LOCAL uint64_t gmtmap_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx, int8_t **x_crossings) {
 	char *x_type = NULL, *name = "SENW";
+	int8_t *crossings[2] = {NULL, NULL}, **seams = NULL;
 	size_t n_alloc = 0, n_x_alloc = 0, n_t_alloc = 0;
-	uint64_t new_n, i, n_get, n, m, n_cross = 0, *x_index = NULL;
+	uint64_t new_n, i, n_get, n, m = 0, n_cross = 0, *x_index = NULL;
 	unsigned int j, np, side, in = 1, out = 0;
 	int cross = 0;
 	bool curved, jump = false, polygon, periodic = false;
@@ -1789,6 +1813,15 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 	inside[GMT_BOTTOM] = inside[GMT_LEFT] = gmtmap_inside_lower_boundary;	outside[GMT_BOTTOM] = outside[GMT_LEFT] = gmtmap_outside_lower_boundary;
 	border[GMT_BOTTOM] = GMT->common.R.wesn[YLO]; border[GMT_LEFT] = GMT->common.R.wesn[XLO];	border[GMT_RIGHT] = GMT->common.R.wesn[XHI];	border[GMT_TOP] = GMT->common.R.wesn[YHI];
 
+	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
+	seams = (x_crossings && periodic) ? crossings : NULL;
+	if (seams) {
+		gmtmap_wesn_clip_alloc (GMT, xtmp, ytmp, seams, n_get, &n_alloc);
+		/* Record original edges before the longitude normalization. */
+		seams[0][0] = 0;
+		for (i = 1; i < n; i++) seams[0][i] = gmtmap_contour_x_crossing (GMT, lon[i-1], lon[i]);
+	}
+
 /* This is new approach to get rid of those crossing lines for filled polygons,
  * i.e., issue # 949.  Also see comments further down.
  * P. Wessel, Dec 1 2016 */
@@ -1813,15 +1846,11 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		gmtlib_get_lon_minmax (GMT, lon, n, &xmin, &xmax);
 		xmin -= 360.0;	xmax -= 360.0;
 		while (xmax < border[GMT_LEFT]) {xmin += 360.0;	xmax += 360.0;}
-		if (xmin > border[GMT_RIGHT]) return 0;	/* Outside */
+		if (xmin > border[GMT_RIGHT]) goto done;	/* Outside */
 	}
 
-	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
-	/* Create a pair of arrays for holding input and output */
-	gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
-
+	if (!seams) gmtmap_wesn_clip_alloc (GMT, xtmp, ytmp, NULL, n_get, &n_alloc);
 	/* Make copy of lon/lat coordinates */
-
 	gmt_M_memcpy (xtmp[0], lon, n, double);	gmt_M_memcpy (ytmp[0], lat, n, double);
 	m = n;
 
@@ -1838,6 +1867,7 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 	}
 #endif
 	for (side = 0; side < 4; side++) {	/* Must clip polygon against a single border, one border at a time */
+		bool previous_kept = false;
 		n = m;		/* Current size of polygon */
 		m = 0;		/* Start with nuthin' */
 		n_cross = 0;	/* No crossings so far */
@@ -1846,9 +1876,10 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		gmt_M_uint_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		if (side%2 && periodic) {	/* No clipping can take place on w or e border; just copy all and go to next side */
 			m = n;
-			if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+			if (m == n_alloc) gmtmap_wesn_clip_alloc (GMT, xtmp, ytmp, seams, m, &n_alloc);
 			gmt_M_memcpy (xtmp[out], xtmp[in], m, double);
 			gmt_M_memcpy (ytmp[out], ytmp[in], m, double);
+			if (seams) gmt_M_memcpy (seams[out], seams[in], m, int8_t);
 			continue;
 		}
 #if 0
@@ -1870,9 +1901,13 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 			}
 		}
 #endif
-		if (n) {
-			/* Must ensure we copy the very first point if it is inside the clip rectangle */
-			if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
+		if (n && inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {
+			/* The first retained point has no incoming edge. */
+			xtmp[out][0] = xtmp[in][0];
+			ytmp[out][0] = ytmp[in][0];
+			if (seams) seams[out][0] = 0;
+			m = 1;
+			previous_kept = true;
 		}
 		for (i = 1; i < n; i++) {	/* For each line segment */
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
@@ -1885,16 +1920,21 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 				}
 			}
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
-				if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+				if (m == n_alloc) gmtmap_wesn_clip_alloc (GMT, xtmp, ytmp, seams, m, &n_alloc);
+				/* Only an unchanged edge keeps its original crossing direction. */
+				if (seams) seams[out][m] = (previous_kept && cross == 0) ? seams[in][i] : 0;
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
 			}
+			previous_kept = np > 0 && cross != -1;
 		}
 		if (polygon && gmt_polygon_is_open (GMT, xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
-			if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+			if (m == n_alloc) gmtmap_wesn_clip_alloc (GMT, xtmp, ytmp, seams, m, &n_alloc);
+			if (seams) seams[out][m] = 0;
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
 		}
 		if (polygon && curved && n_cross) {	/* Must resample between crossing points */
 			double *x_add = NULL, *y_add = NULL, *x_cpy = NULL, *y_cpy = NULL;
+			int8_t *seams_cpy = NULL;
 			size_t np = 0;
 			uint64_t add, last_index = 0, p, p_next;
 
@@ -1907,13 +1947,17 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 			gmt_M_malloc2 (GMT, x_cpy, y_cpy, m, &np, double);
 			gmt_M_memcpy (x_cpy, xtmp[out], m, double);
 			gmt_M_memcpy (y_cpy, ytmp[out], m, double);
-
+			if (seams) {
+				seams_cpy = gmt_M_memory (GMT, NULL, m, int8_t);
+				gmt_M_memcpy (seams_cpy, seams[out], m, int8_t);
+			}
 			for (p = np = 0; p < n_cross; p++) {	/* Process each crossing point */
 				if (last_index < x_index[p]) {	/* Copy over segment from were we left off to this crossing point */
 					add = x_index[p] - last_index;
-					if ((new_n = (np+add)) >= n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+					if ((new_n = (np+add)) >= n_alloc) gmtmap_wesn_clip_alloc (GMT, xtmp, ytmp, seams, new_n, &n_alloc);
 					gmt_M_memcpy (&xtmp[out][np], &x_cpy[last_index], add, double);
 					gmt_M_memcpy (&ytmp[out][np], &y_cpy[last_index], add, double);
+					if (seams) gmt_M_memcpy (&seams[out][np], &seams_cpy[last_index], add, int8_t);
 					np += add;
 					last_index = x_index[p];
 				}
@@ -1928,9 +1972,10 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 							stop_lon -= 360.0;
 					}
 					add = gmtlib_map_path (GMT, start_lon, y_cpy[x_index[p]], stop_lon, y_cpy[x_index[p_next]], &x_add, &y_add);
-					if ((new_n = (np+add)) >= n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+					if ((new_n = (np+add)) >= n_alloc) gmtmap_wesn_clip_alloc (GMT, xtmp, ytmp, seams, new_n, &n_alloc);
 					gmt_M_memcpy (&xtmp[out][np], x_add, add, double);
 					gmt_M_memcpy (&ytmp[out][np], y_add, add, double);
+					if (seams) gmt_M_memset (&seams[out][np], add, int8_t);
 					if (add) { gmt_M_free (GMT, x_add);	gmt_M_free (GMT, y_add); }
 					np += add;
 					last_index = x_index[p_next];
@@ -1938,16 +1983,19 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 			}
 			if (x_index[0] > 0) {	/* First point was clean inside, must add last connection */
 				add = m - last_index;
-				if ((new_n = (np+add)) >= n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+				if ((new_n = (np+add)) >= n_alloc) gmtmap_wesn_clip_alloc (GMT, xtmp, ytmp, seams, new_n, &n_alloc);
 				gmt_M_memcpy (&xtmp[out][np], &x_cpy[last_index], add, double);
 				gmt_M_memcpy (&ytmp[out][np], &y_cpy[last_index], add, double);
+				if (seams) gmt_M_memcpy (&seams[out][np], &seams_cpy[last_index], add, int8_t);
 				np += add;
 			}
 			m = np;	/* New total of points */
 			gmt_M_free (GMT, x_cpy);	gmt_M_free (GMT, y_cpy);
+			gmt_M_free (GMT, seams_cpy);
 		}
 	}
 
+done:
 	gmt_M_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
 	gmt_M_free (GMT, ytmp[1]);
 	gmt_M_free (GMT, x_index);	/* Free the pairs of arrays that holds the crossing info */
@@ -1973,8 +2021,17 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		gmt_M_free (GMT, xtmp[0]);
 		gmt_M_free (GMT, ytmp[0]);
 	}
-
+	if (seams) {
+		gmt_M_free (GMT, seams[1]);
+		if (m) *x_crossings = seams[0];
+		else gmt_M_free (GMT, seams[0]);
+	}
 	return (m);
+}
+
+/*! . */
+uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, double **x, double **y, uint64_t *total_nx) {
+	return gmtmap_wesn_clip (GMT, lon, lat, n, x, y, total_nx, NULL);
 }
 
 /*! . */
@@ -6939,17 +6996,22 @@ bool gmt_cart_outside (struct GMT_CTRL *GMT, double x, double y) {
 	return ((GMT->current.map.this_x_status != 0 || GMT->current.map.this_y_status != 0) ? true : false);
 }
 
-/*! . */
-uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np, double **x, double **y) {
-	/* This routine makes sure that all points are either inside or on the map boundary
-	 * and returns the number of points to be used for plotting (in x,y units) */
+GMT_LOCAL uint64_t gmtmap_clip_with_source (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np, double **x, double **y, uint64_t *total_nx, struct GMT_CONTOUR_SOURCE *source) {
+	if (source && GMT->current.map.clip == &gmt_map_wesn_clip && gmtmap_contour_has_x_seam (GMT))
+		return gmtmap_wesn_clip (GMT, lon, lat, np, x, y, total_nx, &source->x_crossings);
+	return (*GMT->current.map.clip) (GMT, lon, lat, np, x, y, total_nx);
+}
 
+/*! . */
+uint64_t gmtlib_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np, double **x, double **y, struct GMT_CONTOUR_SOURCE *source) {
+	/* Source arrays are borrowed when nothing is clipped. The caller owns any crossing directions returned after clipping. */
 	uint64_t i, out, n;
 	uint64_t total_nx = 0;
 	int64_t out_x, out_y, np2;
 	bool polygon;
 	double *xx = NULL, *yy = NULL;
 
+	if (source) gmt_M_memset (source, 1, struct GMT_CONTOUR_SOURCE);
 	/* First check for trivial cases:  All points outside or all points inside */
 
 	for (i = out = out_x = out_y = 0; i < np; i++)  {
@@ -6961,6 +7023,7 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 	if (out == 0) {		/* All points are inside map boundary; no clipping required */
 		gmt_M_malloc2 (GMT, xx, yy, np, NULL, double);
 		for (i = 0; i < np; i++) gmt_geo_to_xy (GMT, lon[i], lat[i], &xx[i], &yy[i]);
+		if (source) { source->lon = lon; source->lat = lat; }
 		*x = xx;	*y = yy;	n = np;
 	}
 	else if (out == np) {	/* All points are outside map boundary */
@@ -6968,7 +7031,7 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 		if (int64_abs (out_x) == np2 || int64_abs (out_y) == np2)	/* All points safely outside the region, no part of polygon survives */
 			n = 0;
 		else {	/* All points are outside, but they are not just to one side so lines _may_ intersect the region */
-			n = (*GMT->current.map.clip) (GMT, lon, lat, np, x, y, &total_nx);
+			n = gmtmap_clip_with_source (GMT, lon, lat, np, x, y, &total_nx, source);
 			polygon = (np > 2 && !gmt_polygon_is_open (GMT, lon, lat, np));	/* The following can only be used on closed polygons */
 			/* Polygons that completely contains the -R region will not generate crossings, just duplicate -R box */
 			if (polygon && n > 0 && total_nx == 0) {	/* No crossings and all points outside means one of two things: */
@@ -6996,9 +7059,15 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 		}
 	}
 	else	/* Mixed case so we must clip the polygon */
-		n = (*GMT->current.map.clip) (GMT, lon, lat, np, x, y, &total_nx);
+		n = gmtmap_clip_with_source (GMT, lon, lat, np, x, y, &total_nx, source);
 
+	if (!n && source) gmt_M_free (GMT, source->x_crossings);
 	return (n);
+}
+
+/*! . */
+uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np, double **x, double **y) {
+	return gmtlib_clip_to_map (GMT, lon, lat, np, x, y, NULL);
 }
 
 /*! . */
@@ -7883,17 +7952,33 @@ int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B
 	return (0);				/* Return zero if intersection is between A and B */
 }
 
-GMT_LOCAL void gmtmap_swap_if_needed (int way, double previous, double *xc, double *yc) {
-	/* Check if we need to swap the order of (xc,yc).  Note: xc may be yc and vice versa; see the calls */
-	if (way == 0) return;	/* Nothing to consider */
-	if ((way > 0 && xc[0] > previous) || (way < 0 && xc[1] > previous)) {	/* Flip the order of xc,yc to fit the need */
+GMT_LOCAL void gmtmap_swap_if_needed (int way, double previous, double *xc, double *yc, bool crosses_seam) {
+	/* Crossings are returned low to high on the split axis. At a periodic seam,
+	 * use the jump direction to end the segment on the side it came from. */
+	bool swap = crosses_seam ? (way < 0) : ((way > 0 && xc[0] > previous) || (way < 0 && xc[1] > previous));
+	if (swap) {
 		gmt_M_double_swap (xc[0], xc[1]);
 		gmt_M_double_swap (yc[0], yc[1]);
 	}
 }
 
+GMT_LOCAL bool gmtmap_contour_crosses_tm (struct GMT_CTRL *GMT, double lon0, double lat0, double lon1, double lat1) {
+	/* TM wraps the angle of (cos(lat)*cos(dlon), sin(lat)). The step in radians
+	 * bounds the movement of this vector. If that bound is smaller than its
+	 * initial length, its angle changes by less than half a turn, so a detected
+	 * y jump must cross the seam. */
+	double step, radius;
+	if (GMT->current.proj.GMT_convert_latitudes) {
+		lat0 = gmt_M_latg_to_latc (GMT, lat0);
+		lat1 = gmt_M_latg_to_latc (GMT, lat1);
+	}
+	step = D2R * (fabs (lon1 - lon0) + fabs (lat1 - lat0));
+	radius = hypot (cosd (lat0) * cosd (lon0 - GMT->current.proj.central_meridian), sind (lat0));
+	return step < radius;
+}
+
 /*! . */
-uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, bool add_crossings) {
+uint64_t *gmtlib_split_line_with_source (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, bool add_crossings, const struct GMT_CONTOUR_SOURCE *source) {
 	/* Accepts x/y array for a line in projected inches and looks for
 	 * map jumps.  If found it will insert the boundary crossing points and
 	 * build a split integer array with the nodes of the first point
@@ -7902,12 +7987,14 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	 * so that the new PS contouring machinery only sees lines that do no
 	 * jump across the map.
 	 * add_crossings is true if we need to find the crossings; false means
-	 * they are already part of the line. */
+	 * they are already part of the line. Source vertices or retained edge
+	 * directions, when supplied, are indexed in the same order as xx/yy. */
 
 	uint64_t i, j, jc, k, n, n_seg, *split = NULL, *pos = NULL;
 	size_t n_alloc = 0;
- 	int l_or_r;
- 	char *way = NULL;
+	int l_or_r;
+	int8_t *way = NULL;
+	bool periodic_x = false, periodic_y = false;
 	double *x = NULL, *y = NULL, *xin = NULL, *yin = NULL, xc[2], yc[2];
 
 	/* First quick scan to see how many jumps there are */
@@ -7919,10 +8006,10 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 			if (n_seg == n_alloc) {
 				pos = gmt_M_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
 				n_alloc = n_seg;
-				way = gmt_M_malloc (GMT, way, n_seg, &n_alloc, char);
+				way = gmt_M_malloc (GMT, way, n_seg, &n_alloc, int8_t);
 			}
-			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
-			way[n_seg] = (char)l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right, +2 is top to bottom, -2 is bottom to top */
+			pos[n_seg] = i;	/* 2nd of the two points that generate the jump */
+			way[n_seg] = (int8_t)l_or_r;	/* Negative when the previous point has the higher coordinate */
 			n_seg++;
 		}
 	}
@@ -7931,6 +8018,12 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	if (n_seg == 0) return (NULL);	/* No jumps, just return NULL */
 
 	/* Here we have one or more jumps so we need to split the line */
+	if (add_crossings && source && GMT->current.map.is_world) {
+		/* The crossing handler identifies TM even if is_world_tm comes from an earlier map. */
+		periodic_y = source->lon && source->lat && GMT->current.map.get_crossings == &gmtmap_get_crossings_tm &&
+		             GMT->current.map.is_world_tm && GMT->current.proj.fwd == &gmtproj_tm_sph;
+		periodic_x = (source->x_crossings || source->lon) && gmtmap_contour_has_x_seam (GMT);
+	}
 
 	n = *nn;				/* Original line count */
 	if (add_crossings) n += 2 * n_seg;	/* Must add 2 crossing points per jump */
@@ -7943,13 +8036,23 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	for (i = j = 1, k = 0; i < *nn; i++, j++) {
 		if (k < n_seg && i == pos[k]) {	/* At jump point */
 			if (add_crossings) {	/* Find and insert the crossings */
-				if (way[k] == -2 || way[k] == +2) {	/* Jump in y for TM */
-					gmtmap_get_crossings_y (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
-					gmtmap_swap_if_needed (way[k], y[j-1], yc, xc);	/* Passing previous y and yc, xc for y-crossing */
+				int direction = way[k];
+				bool crosses_seam = false;
+				if (periodic_y && abs (direction) == 2)
+					crosses_seam = gmtmap_contour_crosses_tm (GMT, source->lon[i-1], source->lat[i-1], source->lon[i], source->lat[i]);
+				else if (periodic_x && abs (direction) == 1) {
+					int8_t crossing = source->x_crossings ? source->x_crossings[i] : gmtmap_contour_x_crossing (GMT, source->lon[i-1], source->lon[i]);
+					crosses_seam = (crossing == direction);
 				}
-				else {	/* Jump in x for any projection with periodic w/e boundaries */
+				/* The legacy axis and crossing order both use plain char promotion. */
+				if (!crosses_seam) direction = (char)direction;
+				if (abs (direction) == 2) {	/* Jump in y */
+					gmtmap_get_crossings_y (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
+					gmtmap_swap_if_needed (direction, y[j-1], yc, xc, crosses_seam);
+				}
+				else {	/* Jump in x */
 					gmtmap_get_crossings_x (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
-					gmtmap_swap_if_needed (way[k], x[j-1], xc, yc);	/* Passing previous x and xc, yc for x-crossing */
+					gmtmap_swap_if_needed (direction, x[j-1], xc, yc, crosses_seam);
 				}
 				x[j] = xc[0];	y[j++] = yc[0];	/* End of one segment */
 				jc = j;		/* Node of first point in next segment */
@@ -7975,6 +8078,11 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	*nn = j;
 
 	return (split);
+}
+
+/*! . */
+uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, bool add_crossings) {
+	return gmtlib_split_line_with_source (GMT, xx, yy, nn, add_crossings, NULL);
 }
 
 /*  Routines to add pieces of parallels or meridians */
