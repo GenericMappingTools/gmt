@@ -5770,10 +5770,145 @@ GMT_LOCAL void gmtapi_cube_set_units (struct GMT_CTRL *GMT, struct GMT_CUBE *U) 
 	}
 }
 
+struct GMT_WRITER_GRID_COPY {
+	struct GMT_GRID *grid;
+	char *ProjRefPROJ4;
+	char *ProjRefWKT;
+	char *title;
+	char *cpt;
+	char *command;
+	char *remark;
+	char *pocket;
+};
+
+GMT_LOCAL char *gmtapi_copy_writer_string (struct GMT_CTRL *GMT, const char *source) {
+	char *copy = NULL;
+	size_t length;
+	if (source == NULL) return (NULL);
+	length = strlen (source) + 1;
+	if ((copy = gmt_M_memory (GMT, NULL, length, char)) == NULL) return (NULL);
+	memcpy (copy, source, length);
+	return (copy);
+}
+
+GMT_LOCAL void gmtapi_free_writer_string (struct GMT_CTRL *GMT, char **current, char *copy);
+GMT_LOCAL void gmtapi_free_writer_grid_copy (struct GMTAPI_CTRL *API, struct GMT_WRITER_GRID_COPY **copy_ptr);
+
+GMT_LOCAL struct GMT_WRITER_GRID_COPY *gmtapi_create_writer_grid_copy (struct GMTAPI_CTRL *API, struct GMT_GRID *source) {
+	struct GMT_WRITER_GRID_COPY *copy = NULL;
+	struct GMT_GRID_HEADER *header = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *header_hidden = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *source_HH = NULL, *copy_HH = NULL;
+	struct GMT_GRID_HIDDEN *copy_GH = NULL;
+	struct GMT_CTRL *GMT = API->GMT;
+	size_t data_size;
+
+	if (source == NULL || source->header == NULL) return (NULL);
+	if (source->data == NULL || source->header->size == 0 ||
+	    source->header->size > SIZE_MAX / sizeof (gmt_grdfloat)) return (NULL);
+	if (source->header->hidden == NULL || source->hidden == NULL) return (NULL);
+	source_HH = gmt_get_H_hidden (source->header);
+	if (gmt_get_G_hidden (source) == NULL) return (NULL);
+	data_size = source->header->size * sizeof (gmt_grdfloat);
+	if ((copy = gmt_M_memory (GMT, NULL, 1, struct GMT_WRITER_GRID_COPY)) == NULL) return (NULL);
+	copy->ProjRefPROJ4 = copy->ProjRefWKT = NULL;
+	copy->title = copy->cpt = copy->command = copy->remark = copy->pocket = NULL;
+	if ((copy->grid = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID)) == NULL) goto fail;
+	copy->grid->header = NULL;
+	copy->grid->data = NULL;
+	copy->grid->x = copy->grid->y = NULL;
+	copy->grid->hidden = NULL;
+	if ((copy->grid->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HIDDEN)) == NULL) goto fail;
+	if ((header = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER)) == NULL) goto fail;
+	copy->grid->header = header;
+	if ((header_hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER_HIDDEN)) == NULL) goto fail;
+
+	memcpy (header, source->header, sizeof (*header));
+	header->hidden = header_hidden;
+	memcpy (header_hidden, source_HH, sizeof (*source_HH));
+	header->ProjRefPROJ4 = NULL;
+	header->ProjRefWKT = NULL;
+	copy_HH = gmt_get_H_hidden (header);
+	copy_HH->title = copy_HH->cpt = copy_HH->command = copy_HH->remark = copy_HH->pocket = NULL;
+	copy_HH->ncid = copy_HH->z_id = -1;
+	copy_HH->xyz_id[GMT_X] = copy_HH->xyz_id[GMT_Y] = copy_HH->xyz_id[GMT_Z] = -1;
+	copy_HH->data_offset = 0;
+	copy_HH->stride = 0;
+	copy_HH->n_alloc = data_size;
+
+	copy_GH = gmt_get_G_hidden (copy->grid);
+	copy_GH->id = gmt_get_G_hidden (source)->id;
+	copy_GH->extra = NULL;
+	copy_GH->alloc_mode = GMT_ALLOC_INTERNALLY;
+	copy_GH->alloc_level = GMT->hidden.func_level;
+	copy_GH->xy_alloc_mode[GMT_X] = copy_GH->xy_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
+	copy->grid->x = copy->grid->y = NULL;
+	copy->grid->data = gmt_M_memory_aligned (GMT, NULL, source->header->size, gmt_grdfloat);
+	if (copy->grid->data == NULL) goto fail;
+	memcpy (copy->grid->data, source->data, data_size);
+
+	if ((header->ProjRefPROJ4 = gmtapi_copy_writer_string (GMT, source->header->ProjRefPROJ4)) == NULL && source->header->ProjRefPROJ4 != NULL) goto fail;
+	copy->ProjRefPROJ4 = header->ProjRefPROJ4;
+	if ((header->ProjRefWKT = gmtapi_copy_writer_string (GMT, source->header->ProjRefWKT)) == NULL && source->header->ProjRefWKT != NULL) goto fail;
+	copy->ProjRefWKT = header->ProjRefWKT;
+	if ((copy_HH->title = gmtapi_copy_writer_string (GMT, source_HH->title)) == NULL && source_HH->title != NULL) goto fail;
+	copy->title = copy_HH->title;
+	if ((copy_HH->cpt = gmtapi_copy_writer_string (GMT, source_HH->cpt)) == NULL && source_HH->cpt != NULL) goto fail;
+	copy->cpt = copy_HH->cpt;
+	if ((copy_HH->command = gmtapi_copy_writer_string (GMT, source_HH->command)) == NULL && source_HH->command != NULL) goto fail;
+	copy->command = copy_HH->command;
+	if ((copy_HH->remark = gmtapi_copy_writer_string (GMT, source_HH->remark)) == NULL && source_HH->remark != NULL) goto fail;
+	copy->remark = copy_HH->remark;
+	if ((copy_HH->pocket = gmtapi_copy_writer_string (GMT, source_HH->pocket)) == NULL && source_HH->pocket != NULL) goto fail;
+	copy->pocket = copy_HH->pocket;
+	return (copy);
+
+fail:
+	gmtapi_free_writer_grid_copy (API, &copy);
+	return (NULL);
+}
+
+GMT_LOCAL void gmtapi_free_writer_string (struct GMT_CTRL *GMT, char **current, char *copy) {
+	/* Keep the original allocation separately because writers may replace or clear the field. */
+	if (*current != NULL && *current != copy) gmt_M_str_free (*current);
+	if (copy != NULL) gmt_M_free (GMT, copy);
+	*current = NULL;
+}
+
+GMT_LOCAL void gmtapi_free_writer_grid_copy (struct GMTAPI_CTRL *API, struct GMT_WRITER_GRID_COPY **copy_ptr) {
+	struct GMT_WRITER_GRID_COPY *copy;
+	struct GMT_CTRL *GMT;
+	struct GMT_GRID_HEADER_HIDDEN *HH;
+	if (copy_ptr == NULL || *copy_ptr == NULL) return;
+	copy = *copy_ptr;
+	GMT = API->GMT;
+	if (copy->grid) {
+		gmt_M_free_aligned (GMT, copy->grid->data);
+		if (copy->grid->header) {
+			HH = gmt_get_H_hidden (copy->grid->header);
+			gmtapi_free_writer_string (GMT, &copy->grid->header->ProjRefPROJ4, copy->ProjRefPROJ4);
+			gmtapi_free_writer_string (GMT, &copy->grid->header->ProjRefWKT, copy->ProjRefWKT);
+			if (HH) {
+				gmtapi_free_writer_string (GMT, &HH->title, copy->title);
+				gmtapi_free_writer_string (GMT, &HH->cpt, copy->cpt);
+				gmtapi_free_writer_string (GMT, &HH->command, copy->command);
+				gmtapi_free_writer_string (GMT, &HH->remark, copy->remark);
+				gmtapi_free_writer_string (GMT, &HH->pocket, copy->pocket);
+				gmt_M_free (GMT, HH);
+			}
+			gmt_M_free (GMT, copy->grid->header);
+		}
+		gmt_M_free (GMT, copy->grid->hidden);
+		gmt_M_free (GMT, copy->grid);
+	}
+	gmt_M_free (GMT, *copy_ptr);
+	*copy_ptr = NULL;
+}
+
 /*! Writes out a single grid to destination */
 GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *G_obj) {
 	int item, error;
-	bool done = true, row_by_row;
+	bool done = true, row_by_row, copy_external_grid;
 	unsigned int method;
 	openmp_int row, col, i0, i1, j0, j1;
 	uint64_t ij, ijp, ij_orig;
@@ -5783,15 +5918,21 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 	GMT_putfunction api_put_val = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_GRID *G_copy = NULL;
+	struct GMT_WRITER_GRID_COPY *writer_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
-	struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (G_obj), *GH2 = NULL;
+	struct GMT_GRID_HIDDEN *GH = NULL, *GH2 = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *source_HH = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
 	GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_export_grid: Passed ID = %d and mode = %d\n", object_ID, mode);
 
+	if (G_obj == NULL || G_obj->header == NULL) return (gmtlib_report_error (API, GMT_PTR_IS_NULL));
 	if (object_ID == GMT_NOTSET) return (gmtlib_report_error (API, GMT_OUTPUT_NOT_SET));
 	if (G_obj->data == NULL && !(mode & GMT_CONTAINER_ONLY)) return (gmtlib_report_error (API, GMT_PTR_IS_NULL));
+	if (G_obj->hidden == NULL || G_obj->header->hidden == NULL) return (gmtlib_report_error (API, GMT_PTR_IS_NULL));
+	GH = gmt_get_G_hidden (G_obj);
+	source_HH = gmt_get_H_hidden (G_obj->header);
 	if ((item = gmtlib_validate_id (API, GMT_IS_GRID, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (gmtlib_report_error (API, API->error));
 
 	S_obj = API->object[item];	/* The current object whose data we will export */
@@ -5817,8 +5958,20 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			gmt_set_cartesian (GMT, GMT_OUT);
 	}
 
-	gmtlib_grd_set_units (GMT, G_obj->header);	/* Ensure unit strings are set, regardless of destination */
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
+	copy_external_grid = API->external;
+#ifdef FORTRAN_API
+	if (API == GMT_FORTRAN) copy_external_grid = false;
+#endif
+	if (copy_external_grid && method == GMT_IS_FILE && S_obj->actual_family == GMT_IS_GRID &&
+	    source_HH->t_index[0] == 0 && source_HH->t_index[1] == 0 && source_HH->t_index[2] == 0 &&
+	    !(mode & (GMT_CONTAINER_ONLY | GMT_GRID_ROW_BY_ROW | GMT_GRID_ROW_BY_ROW_MANUAL))) {
+		writer_copy = gmtapi_create_writer_grid_copy (API, G_obj);
+		if (writer_copy == NULL) return (gmtlib_report_error (API, GMT_MEMORY_ERROR));
+		G_obj = writer_copy->grid;
+		GH = gmt_get_G_hidden (G_obj);
+	}
+	gmtlib_grd_set_units (GMT, G_obj->header);	/* Ensure unit strings are set, regardless of destination */
 	switch (method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
 			if (mode & GMT_CONTAINER_ONLY) {	/* Update header structure only */
@@ -5839,7 +5992,9 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			}
 			else {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Writing grid to file %s\n", S_obj->filename);
-				if (gmt_M_err_pass (GMT, gmtlib_write_grd (GMT, S_obj->filename, G_obj->header, G_obj->data, S_obj->wesn, G_obj->header->pad, mode), S_obj->filename)) return (gmtlib_report_error (API, GMT_GRID_WRITE_ERROR));
+				error = gmtlib_write_grd (GMT, S_obj->filename, G_obj->header, G_obj->data, S_obj->wesn, G_obj->header->pad, mode);
+				gmtapi_free_writer_grid_copy (API, &writer_copy);
+				if (gmt_M_err_pass (GMT, error, S_obj->filename)) return (gmtlib_report_error (API, GMT_GRID_WRITE_ERROR));
 			}
 			break;
 
