@@ -180,6 +180,7 @@ jobs:
           head -n 30 /tmp/cost.txt | awk 'NF==3 {printf("%50-s %d %5.1f\n", $1, $2, $3)}'
         env:
           CTEST_ARGS : "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
+          OMP_NUM_THREADS : 1    # ctest -j4 already fills the cores; more threads per test oversubscribe them
 
       - name: Run DOS batch examples (Windows)
         shell: cmd
