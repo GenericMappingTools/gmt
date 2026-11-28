@@ -13,6 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt image** *imagefile*
+[ |-A|\ [**w**][**h**] ]
 [ |SYN_OPT-B| ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *box* ]
@@ -60,6 +61,16 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-A:
+
+**-A**\ [**w**][**h**]
+    Report the dimensions of the image, as set by |-D|, to standard output and exit without
+    plotting anything. Append **w** for the width only or **h** for the height only
+    [Default reports both as *width* *height*, separated by a tab]. This is useful to find the
+    height that results from maintaining the aspect ratio when only a width is given, e.g.,
+    **-Dx0/0+w3i** **-Ah**. Values are given in the unit set by :term:`PROJ_LENGTH_UNIT`.
+    If **+n** is used with |-D| the size of a single image is reported.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
@@ -180,6 +191,11 @@ To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
 accordingly), use::
 
     gmt image @needle.jpg -Dx0/0+w7c -pdf plot
+
+To find the height of that image (in the unit set by :term:`PROJ_LENGTH_UNIT`)
+without plotting it, e.g., to size a map frame to match, use::
+
+    gmt image @needle.jpg -D+w7c -Ah
 
 To plot the same file but reversing the bands, use::
 
