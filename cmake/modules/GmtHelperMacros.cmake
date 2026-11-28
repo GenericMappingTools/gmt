@@ -145,7 +145,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 			# create gmt module symlinks to gmt
 			foreach (_gmtmodule ${ARGV})
 				install (CODE "
-				execute_process (COMMAND ${CMAKE_COMMAND} -E remove -f
+				execute_process (COMMAND ${CMAKE_COMMAND} -E rm -f
 					\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/${_gmtmodule})
 				execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
 					gmt${GMT_INSTALL_NAME_SUFFIX}

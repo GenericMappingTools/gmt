@@ -57,7 +57,7 @@ if (APPLE AND DEBUG_BUILD)
 					string (REPLACE ".dylib" ".${_version}.dylib" _name "${_name}")
 				endif (_type STREQUAL "SHARED_LIBRARY")
 				add_custom_target (_dsym_clean_${target}
-					COMMAND ${RM} -rf $<TARGET_FILE:${target}>.dSYM
+					COMMAND ${CMAKE_COMMAND} -E rm -rf $<TARGET_FILE:${target}>.dSYM
 					COMMENT "Removing .dSYM bundle")
 				add_depend_to_target (dsym_clean${_tag} _dsym_clean_${target})
 
