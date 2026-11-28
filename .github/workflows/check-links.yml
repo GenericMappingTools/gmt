@@ -3,7 +3,7 @@
 # This workflow runs the lychee tool to check all links in plaintext files. It will
 # create an issue if broken links are found.
 #
-# It is scheduled to run weekly at 12 noon every Sunday.
+# It is scheduled to run monthly at 12 noon on the first day of the month.
 #
 name: Check Links
 
@@ -11,9 +11,9 @@ on:
   # Uncomment the 'pull_request' line below to trigger the workflow in PR
   # pull_request:
   workflow_dispatch:
-  # Schedule runs on 12 noon every Sunday
+  # Schedule runs on 12 noon on the first day of every month
   schedule:
-    - cron: '0 12 * * 0'
+    - cron: '0 12 1 * *'
 
 permissions:
   issues: write
