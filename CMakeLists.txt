@@ -46,7 +46,7 @@ if (${srcdir} STREQUAL ${bindir})
 endif (${srcdir} STREQUAL ${bindir})
 
 # Define minimum CMake version required
-cmake_minimum_required (VERSION 3.16...3.31)
+cmake_minimum_required (VERSION 3.17...4.4)
 message ("CMake version: ${CMAKE_VERSION}")
 
 # Use NEW behavior with newer CMake releases
@@ -107,19 +107,19 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	# so that they are not included in the final release tarball
 	add_custom_target (git_export_release
 		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/
-		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.dvc
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.dvcignore
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/admin
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.gitignore
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/examples/.gitignore
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/examples/images.dvc
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/scripts/.gitignore
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/scripts/images.dvc
+		COMMAND ${CMAKE_COMMAND} -E rm -rf
+			${GMT_RELEASE_PREFIX}/.dvc
+			${GMT_RELEASE_PREFIX}/.dvcignore
+			${GMT_RELEASE_PREFIX}/.git
+			${GMT_RELEASE_PREFIX}/.github
+			${GMT_RELEASE_PREFIX}/.gitignore
+			${GMT_RELEASE_PREFIX}/admin
+			${GMT_RELEASE_PREFIX}/ci
+			${GMT_RELEASE_PREFIX}/test
+			${GMT_RELEASE_PREFIX}/doc/examples/.gitignore
+			${GMT_RELEASE_PREFIX}/doc/examples/images.dvc
+			${GMT_RELEASE_PREFIX}/doc/scripts/.gitignore
+			${GMT_RELEASE_PREFIX}/doc/scripts/images.dvc
 	)
 	add_depend_to_target (gmt_release git_export_release)
 	find_program (GNUTAR NAMES gnutar gtar tar)
